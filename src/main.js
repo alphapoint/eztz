@@ -592,7 +592,7 @@ const //CLI below
         repeater();
       });
     },
-    prepareOperation: function(from, operation, keys, newAccount) {
+    prepareOperation: function(from, operation, keys, newAccount, manager) {
       if (typeof keys == "undefined") keys = false;
       var hash, counter, pred_block, sopbytes, returnedContracts, opOb;
       var promises = [],
@@ -607,10 +607,13 @@ const //CLI below
         if (
           ["transaction", "origination", "delegation"].indexOf(ops[i].kind) >= 0
         ) {
-          if (!newAccount) {
-            requiresReveal = true;
+          requiresReveal = true;
+          if (!newAccount || operation.kind == "transaction") {
             promises.push(rpc.getCounter(from));
             promises.push(rpc.getManager(from));
+          } else {
+            promises.push(new Promise((resolve, reject) => resolve(0)));
+            promises.push(new Promise((resolve, reject) => resolve({})));
           }
           break;
         }
@@ -627,11 +630,8 @@ const //CLI below
             storage_limit: 0
           });
         }
-        if (!newAccount) {
-          counter = parseInt(f[1]) + 1;
-        } else {
-          counter = operation.kind == "transaction" ? 1 : 2;
-        }
+        counter = parseInt(f[1]) + 1;
+
         if (typeof counters[from] == "undefined") counters[from] = counter;
         if (counter > counters[from]) counters[from] = counter;
         //fix reset bug temp
@@ -656,8 +656,13 @@ const //CLI below
             if (typeof ops[i].gas_limit == "undefined") ops[i].gas_limit = "0";
             if (typeof ops[i].storage_limit == "undefined")
               ops[i].storage_limit = "0";
-            ops[i].counter = (counters[from]++).toString();
-
+            let newCounter = counters[from] + 1;
+            if (newAccount && ops[0].kind == "transaction") {
+              ops[i].counter = newCounter;
+              // counters[from]++;
+            } else {
+              ops[i].counter = counters[from]++;
+            }
             ops[i].fee = ops[i].fee.toString();
             ops[i].gas_limit = ops[i].gas_limit.toString();
             ops[i].storage_limit = ops[i].storage_limit.toString();
@@ -684,11 +689,12 @@ const //CLI below
       operation,
       keys,
       skipPrevalidation,
-      newAccount
+      newAccount,
+      manager
     ) {
       if (typeof skipPrevalidation == "undefined") skipPrevalidation = false;
       return rpc
-        .prepareOperation(from, operation, keys, newAccount)
+        .prepareOperation(from, operation, keys, newAccount, manager)
         .then(function(fullOp) {
           if (keys.sk === false) {
             return fullOp;
@@ -778,7 +784,7 @@ const //CLI below
         operation.delegatable = delegatable;
       if (typeof delegate != "undefined" && delegate)
         operation.delegate = delegate;
-      return rpc.sendOperation(keys.pkh, operation, keys);
+      return rpc.sendOperation(keys.pkh, operation, keys, false, false);
     },
     transfer: function(
       from,
@@ -843,7 +849,16 @@ const //CLI below
         operation.delegate = delegate;
       return rpc.sendOperation(keys.pkh, operation, keys);
     },
-    setDelegate(from, keys, delegate, fee, gasLimit, storageLimit, newAccount) {
+    setDelegate(
+      from,
+      keys,
+      delegate,
+      fee,
+      gasLimit,
+      storageLimit,
+      newAccount,
+      manager
+    ) {
       if (typeof gasLimit == "undefined") gasLimit = "10000";
       if (typeof storageLimit == "undefined") storageLimit = "0";
       var operation = {
@@ -855,7 +870,14 @@ const //CLI below
       if (typeof delegate != "undefined" && delegate) {
         operation.delegate = delegate;
       }
-      return rpc.sendOperation(from, operation, keys, false, newAccount);
+      return rpc.sendOperation(
+        from,
+        operation,
+        keys,
+        false,
+        newAccount,
+        manager
+      );
     },
     registerDelegate(keys, fee, gasLimit, storageLimit) {
       if (typeof gasLimit == "undefined") gasLimit = "10000";
