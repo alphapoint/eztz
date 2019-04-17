@@ -855,7 +855,7 @@ const //CLI below
       if (typeof delegate != "undefined" && delegate) {
         operation.delegate = delegate;
       }
-      return rpc.sendOperation(from, operation, keys, newAccount);
+      return rpc.sendOperation(from, operation, keys, false, newAccount);
     },
     registerDelegate(keys, fee, gasLimit, storageLimit) {
       if (typeof gasLimit == "undefined") gasLimit = "10000";
