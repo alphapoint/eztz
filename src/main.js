@@ -804,7 +804,7 @@ const //CLI below
         fee: fee.toString(),
         gas_limit: gasLimit,
         storage_limit: storageLimit,
-        amount: utility.mutez(amount).toString(),
+        amount: amount.toString(),
         destination: to
       };
       if (typeof parameter == "undefined") parameter = false;
