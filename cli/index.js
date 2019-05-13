@@ -52,7 +52,7 @@ validCommands = [
     // Inject eztz.js
     await _sodium.ready;
     var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-    var eztz = require("./lib/eztz.cli.js").eztz;
+    var eztz = require("../dist/index");
     eztz.library.sodium = _sodium;
     
     // Load config

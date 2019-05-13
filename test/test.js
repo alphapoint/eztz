@@ -1,7 +1,7 @@
-describe('main', () => {
+describe('eztz', () => {
   describe('utility', () => {
-    const main = require('../src/main');
-    const utility = main.eztz.utility;
+    const eztz = require('../src/index');
+    const utility = eztz.utility;
 
     test('mintotz', () => {
       const num1 = 1000000;
@@ -59,8 +59,8 @@ describe('main', () => {
   });
 
   describe('crypto', () => {
-    const main = require('../src/main');
-    const crypto = main.eztz.crypto;
+    const eztz = require('../src/index');
+    const crypto = eztz.crypto;
 
     test('generateMnemonic', () => {
       const string = crypto.generateMnemonic();
@@ -118,7 +118,7 @@ describe('main', () => {
 
     test('verify', () => {
       //todo
-      // const keys = crypto.sign('AA5', 'p');
+      const keys = crypto.sign('AA5', 'p');
       // expect(typeof keys.bytes).toBe('number');
       // expect(typeof keys.sig).toBe('string');
       // expect(typeof keys.edsig).toBe('string');
@@ -127,12 +127,12 @@ describe('main', () => {
   });
 
   describe('node', () => {
-    let main,
+    let eztz,
       node;
 
     beforeEach(() => {
-      main = require('../src/main');
-      node = main.eztz.node;
+      eztz = require('../src/index');
+      node = eztz.node;
     });
 
     test('init params', () => {
