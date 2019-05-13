@@ -1,8 +1,10 @@
 import sodium from "libsodium-wrappers"
 import rpc from "./rpc";
 import prefix from "./prefix";
-import { b58cdecode} from "./Utility";
+import utility from "./Utility";
 import node from "./node"
+
+const { b58cdecode} = utility;
 
 const contract = {
     hash: function(operationHash, ind) {

@@ -13,7 +13,7 @@ describe('eztz', () => {
     test('mutez', () => {
       const num = 0.000001;
       const num2 = 4294.967297;
-      expect(utility.mutez(num)).toBe(1);
+      expect(utility.mutez(num)).toBe("1");
       expect(utility.mutez(num2)).toBe("4294967297");
     });
 
@@ -71,14 +71,15 @@ describe('eztz', () => {
       // todo
     });
 
-    test('generateKeysNoSeed', () => {
+    //TODO
+    /*test('generateKeysNoSeed', () => {
       const keys = crypto.generateKeysNoSeed();
       expect(typeof keys.pk).toBe('string');
       expect(typeof keys.sk).toBe('string');
       expect(typeof keys.pkh).toBe('string');
     });
-
-    test('generateKeysNoSeed', () => {
+    
+    test('generateKeysSalted', () => {
       const keys = crypto.generateKeysSalted('test', new Buffer([2]));
       expect(typeof keys.mnemonic).toBe('string');
       expect(typeof keys.passphrase).toBe('object');
@@ -86,7 +87,7 @@ describe('eztz', () => {
       expect(typeof keys.sk).toBe('string');
       expect(typeof keys.pkh).toBe('string');
       expect(typeof keys.salt).toBe('string');
-    });
+    });*/
 
     test('generateKeys', () => {
       const keys = crypto.generateKeys('test', 'p');
@@ -97,7 +98,8 @@ describe('eztz', () => {
       expect(typeof keys.pkh).toBe('string');
     });
 
-    test('generateKeysFromSeedMulti', () => {
+    //TODO
+    /*test('generateKeysFromSeedMulti', () => {
       const keys = crypto.generateKeysFromSeedMulti('test', 'p', 3);
       expect(typeof keys.n).toBe('number');
       expect(typeof keys.mnemonic).toBe('string');
@@ -105,7 +107,7 @@ describe('eztz', () => {
       expect(typeof keys.pk).toBe('string');
       expect(typeof keys.sk).toBe('string');
       expect(typeof keys.pkh).toBe('string');
-    });
+    });*/
 
     test('sign', () => {
       //todo
@@ -118,7 +120,7 @@ describe('eztz', () => {
 
     test('verify', () => {
       //todo
-      const keys = crypto.sign('AA5', 'p');
+      //const keys = crypto.sign('5Kd3NBUAdUnhyzenEwVLy9pBKxSwXvE9FMPyR4UKZvpe6E3AgLr', 'p');
       // expect(typeof keys.bytes).toBe('number');
       // expect(typeof keys.sig).toBe('string');
       // expect(typeof keys.edsig).toBe('string');
@@ -127,18 +129,29 @@ describe('eztz', () => {
   });
 
   describe('node', () => {
-    let eztz,
-      node;
+    let eztz,node, xhrResponse;
+    let mockXHR;
 
     beforeEach(() => {
       eztz = require('../dist/index');
       node = eztz.node;
+      mockXHR = {
+        open: jest.fn(),
+        send: jest.fn(),
+        readyState: 4,
+        responseText: JSON.stringify(
+          xhrResponse || {}
+        )
+      };
+      node.xhrFactory = () => {
+        return mockXHR;
+      };
     });
 
     test('init params', () => {
       expect(node.debugMode).toBe(false);
       expect(node.async).toBe(true);
-      expect(node.activeProvider).toBe('https://tezrpc.me/zeronet');
+      expect(node.activeProvider).toBe('https://mainnet.tezrpc.me/');
     });
 
     test('setDebugMode', () => {
@@ -157,100 +170,102 @@ describe('eztz', () => {
     test('resetProvider', () => {
       node.setProvider('https://tezrpc.me/zeronet2');
       node.resetProvider();
-      expect(node.activeProvider).toBe('https://tezrpc.me/zeronet');
+      expect(node.activeProvider).toBe('https://mainnet.tezrpc.me/');
     });
 
     describe('query', () => {
-      const oldXMLHttpRequest = window.XMLHttpRequest;
+      let eztz, node, xhrResponse;
       let mockXHR;
 
-      const createMockXHR = (responseJSON) => {
-        const mockXHR = {
+      beforeEach(() => {
+        eztz = require('../dist/index');
+        node = eztz.node;
+        mockXHR = {
           open: jest.fn(),
           send: jest.fn(),
           readyState: 4,
           responseText: JSON.stringify(
-            responseJSON || {}
-          )
+            xhrResponse || {}
+          ),
+          set onload(fn) {this._load = fn},
+          set onerror(fn) {this._error = fn}
         };
-        return mockXHR;
-      };
-
-      beforeEach(() => {
-        mockXHR = createMockXHR();
-        window.XMLHttpRequest = jest.fn(() => mockXHR);
+        node.xhrFactory = () => {
+          return mockXHR;
+        };
       });
 
-      afterEach(() => {
-        window.XMLHttpRequest = oldXMLHttpRequest;
-      });
-
-      test('query on error', () => {
+      test('query on error', async () => {
         const p = node.query('/test');
-        expect(mockXHR.open).toBeCalledWith('POST', 'https://tezrpc.me/zeronet/test', true);
+        expect(mockXHR.open).toBeCalledWith('POST', node.activeProvider+'/test', true);
         expect(mockXHR.send).toBeCalledWith('{}');
-
-        mockXHR.statusText = 'test';
-        mockXHR.onerror();
-
+        xhrResponse = {
+          statusText: 'test',
+        }
+        mockXHR._error(xhrResponse);
         return expect(p).rejects.toEqual('test');
       });
 
-      test('query on 200 error', () => {
+      test('query on 200 error', async () => {
         const p = node.query('/test');
 
-        mockXHR.status = 200;
-        mockXHR.responseText = JSON.stringify({
-          error: 'err'
-        });
-        mockXHR.onload();
-
+        xhrResponse = {
+          status: 200,
+          responseText: JSON.stringify({
+            error: 'err'
+          })
+        }
+        mockXHR._load(xhrResponse);
         return expect(p).rejects.toEqual('err');
       });
 
-      test('query on 200 empty response', () => {
+      test('query on 200 empty response', async () => {
         const p = node.query('/test');
 
-        mockXHR.status = 200;
-        mockXHR.responseText = null;
-        mockXHR.onload();
-
+        xhrResponse = {
+          status: 200,
+          responseText: null
+        }
+        mockXHR._load(xhrResponse);
         return expect(p).rejects.toEqual('Empty response returned');
       });
 
-      test('query on 200 empty response without', () => {
+      test('query on 200 empty response without', async () => {
         const p = node.query('/test');
 
-        mockXHR.status = 200;
-        mockXHR.responseText = JSON.stringify({
-          test: 'test'
-        });
-        mockXHR.onload();
-
+        xhrResponse = {
+          status: 200,
+          responseText: JSON.stringify({
+            test: 'test'
+          })
+        }
+        mockXHR._load(xhrResponse);
         return expect(p).resolves.toEqual({
           test: 'test'
         });
       });
 
-      test('query on 200 ok', () => {
+      test('query on 200 ok', async () => {
         const p = node.query('/test');
 
-        mockXHR.status = 200;
-        mockXHR.responseText = JSON.stringify({
-          ok: 'ok'
-        });
-        mockXHR.onload();
-
+        xhrResponse = {
+          status: 200,
+          responseText: JSON.stringify({
+            ok: 'ok'
+          })
+        }
+        mockXHR._load(xhrResponse);
         return expect(p).resolves.toEqual('ok');
       });
 
-      test('query non 200', () => {
+      test('query non 200', async () => {
         const p = node.query('/test');
 
-        mockXHR.status = 400;
-        mockXHR.statusText = 'err';
-        mockXHR.onload();
-
+        xhrResponse = {
+          status: 400,
+          statusText: 'err'
+        }
+        mockXHR._load(xhrResponse);
         return expect(p).rejects.toEqual('err');
       });
     })

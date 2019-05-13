@@ -1,11 +1,8 @@
-const library = {
-    bs58check: require("bs58check"),
-    sodium: require("libsodium-wrappers"),
-    bip39: require("bip39"),
-    pbkdf2: require("pbkdf2")
-};
+import utility from "./Utility";
+import library from "./library"
+import prefix from "./prefix"
 
-import { b58cencode, b58cdecode, mergebuf, buf2hex, hex2buf } from "./Utility";
+const { b58cencode, b58cdecode, mergebuf, buf2hex, hex2buf } = utility;
 
 //TODO: Add p256 and secp256k1 cryptographay
 const crypto = {

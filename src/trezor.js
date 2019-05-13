@@ -1,5 +1,6 @@
-import { b58cdecode, mergebuf, buf2hex, hex2buf } from "./Utility";
+import utility from "./Utility";
 
+const { b58cdecode, mergebuf, buf2hex, hex2buf } = utility;
 const trezor = {
     source: function(address) {
       var tag = address[0] == "t" ? 0 : 1;

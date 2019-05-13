@@ -1,5 +1,5 @@
 import BN from "bignumber.js";
-const library = { bs58check: require("bs58check")};
+import bs58check from "bs58check"
 
 const utility = {
     totez: m => parseInt(m) / 1000000,
@@ -10,10 +10,10 @@ const utility = {
       const n = new Uint8Array(prefix.length + payload.length);
       n.set(prefix);
       n.set(payload, prefix.length);
-      return library.bs58check.encode(new Buffer(n, "hex"));
+      return bs58check.encode(new Buffer(n, "hex"));
     },
     b58cdecode: function(enc, prefix) {
-      return library.bs58check.decode(enc).slice(prefix.length);
+      return bs58check.decode(enc).slice(prefix.length);
     },
     buf2hex: function(buffer) {
       const byteArray = new Uint8Array(buffer),
@@ -191,7 +191,7 @@ const utility = {
             val = "";
             continue;
           }
-          ret.push(utility.ml2tzjson(val));
+          ret.push(this.ml2tzjson(val));
           val = "";
           continue;
         } else if (mi[i] === '"' && sopen) sopen = false;

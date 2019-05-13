@@ -1,7 +1,8 @@
 import watermark from "./watermark"
 import node from "./node"
-import {sexp2mic, mutez, ml2mic} from "./Utility"
+import utility from "./Utility"
 
+const {sexp2mic, mutez, ml2mic} = utility;
 const counters = {};
 const rpc = {
     call: function(e, d) {

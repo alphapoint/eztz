@@ -1,9 +1,11 @@
 import {forgeOp} from "./forgefunctions";
 import node from "./node"
-import {b58cdecode, buf2hex} from "./Utility"
+import utility from "./Utility"
 import BN from "bignumber.js"
-import {prim_mapping_reverse, op_mapping_reverse, op_mapping} from "./library"
+import library from "./library"
 
+const {b58cdecode, buf2hex} = utility;
+const {prim_mapping_reverse, op_mapping_reverse, op_mapping} = library;
 export default {
     forge: async function(head, opOb, validateLocalForge) {
       if (typeof validateLocalForge == "undefined") validateLocalForge = true;

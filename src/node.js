@@ -1,25 +1,25 @@
-if (typeof Buffer == "undefined") Buffer = require("buffer/").Buffer;
-if (typeof XMLHttpRequest == "undefined") XMLHttpRequest = require("xhr2");
+import XMLHttpRequest from "xhr2"
 
 const defaultProvider = "https://mainnet.tezrpc.me/";
 
 const node = {
     defaultProvider,
+    xhrFactory: () => new XMLHttpRequest(),
     activeProvider: defaultProvider,
     debugMode: false,
     async: true,
     isZeronet: false,
-    setDebugMode: function(t) {
-      node.debugMode = t;
+    setDebugMode(t) {
+      this.debugMode = t;
     },
-    setProvider: function(u, z) {
-      if (typeof z != "undefined") node.isZeronet = z;
-      node.activeProvider = u;
+    setProvider(u, z) {
+      if (typeof z != "undefined") this.isZeronet = z;
+      this.activeProvider = u;
     },
-    resetProvider: function() {
-      node.activeProvider = defaultProvider;
+    resetProvider() {
+      this.activeProvider = defaultProvider;
     },
-    query: function(e, o, t) {
+    query(e, o, t) {
       if (typeof o === "undefined") {
         if (typeof t === "undefined") {
           t = "GET";
@@ -27,16 +27,16 @@ const node = {
       } else {
         if (typeof t === "undefined") t = "POST";
       }
-      return new Promise(function(resolve, reject) {
+      return new Promise((resolve, reject) => {
         try {
-          const http = new XMLHttpRequest();
-          http.open(t, node.activeProvider + e, node.async);
-          if (node.debugMode) console.log("Node call", e, o);
-          http.onload = function() {
+          const http = this.xhrFactory();
+          http.open(t, this.activeProvider + e, this.async);
+          if (this.debugMode) console.log("Node call", e, o);
+          http.onload = () => {
             if (http.status === 200) {
               if (http.responseText) {
                 let r = JSON.parse(http.responseText);
-                if (node.debugMode) console.log("Node response", e, o, r);
+                if (this.debugMode) console.log("Node response", e, o, r);
                 if (typeof r.error !== "undefined") {
                   reject(r.error);
                 } else {
@@ -48,16 +48,16 @@ const node = {
               }
             } else {
               if (http.responseText) {
-                if (node.debugMode) console.log(e, o, http.responseText);
+                if (this.debugMode) console.log(e, o, http.responseText);
                 reject(http.responseText);
               } else {
-                if (node.debugMode) console.log(e, o, http.statusText);
+                if (this.debugMode) console.log(e, o, http.statusText);
                 reject(http.statusText);
               }
             }
           };
-          http.onerror = function() {
-            if (node.debugMode) console.log(e, o, http.responseText);
+          http.onerror = () => {
+            if (this.debugMode) console.log(e, o, http.responseText);
             reject(http.statusText);
           };
           if (t == "POST") {

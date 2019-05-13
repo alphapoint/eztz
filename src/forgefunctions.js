@@ -1,6 +1,9 @@
-import { b58cdecode, buf2hex } from "./Utility";
-import {encodeRawBytes} from "./tezos"
-import { toBytesInt32, toBytesInt32Hex } from "./library";
+import utility from "./Utility";
+import tezos from "./tezos"
+import library from "./library";
+
+const { toBytesInt32, toBytesInt32Hex } = library
+const { b58cdecode, buf2hex } = utility;
 
 //Forge functions
 const forgeOpTags = {
@@ -106,16 +109,16 @@ function forgeBool(b) {
     return b ? "ff" : "00";
 }
 
-  function forgeScript(s) {
-    var t1 = encodeRawBytes(s.code).toLowerCase();
-    var t2 = encodeRawBytes(s.storage).toLowerCase();
+function forgeScript(s) {
+    var t1 = tezos.encodeRawBytes(s.code).toLowerCase();
+    var t2 = tezos.encodeRawBytes(s.storage).toLowerCase();
     return (
       toBytesInt32Hex(t1.length / 2) + t1 + toBytesInt32Hex(t2.length / 2) + t2
     );
 }
 
 function forgeParameters(p) {
-    var t = encodeRawBytes(p).toLowerCase();
+    var t = tezos.encodeRawBytes(p).toLowerCase();
     return toBytesInt32Hex(t.length / 2) + t;
 }
 
