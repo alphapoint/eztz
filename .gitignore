@@ -1,7 +1,3 @@
 node_modules/
 coverage/
-tests/
-index.html
-test/*
-test.html
-dist/*
+dist/
