@@ -10,7 +10,7 @@ import trezor from "./trezor"
 import tezos from "./tezos"
 
 //Expose library
-export default {
+export {
     library,
     prefix,
     watermark,

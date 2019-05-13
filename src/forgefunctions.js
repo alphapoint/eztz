@@ -181,6 +181,6 @@ function forgePublicKey(pk) {
     return fpk;
 }
 
-export default forgefunctions = {
+export default {
     forgeOp
 }
