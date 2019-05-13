@@ -2,18 +2,12 @@ function getMockXhr() {
     const mockXhr = {
         open: jest.fn(),
         send: jest.fn(function () {
-            mockXhr.sent()
+            this.sent()
         }),
         readyState: 4,
         sent: false,
         onsend(fn) {
-            mockXhr.sent = fn
-        },
-        set onload(fn) {
-            mockXhr.loaded = fn
-        },
-        set onerror(fn) {
-            mockXhr.errored = fn
+            this.sent = fn
         }
     };
     return mockXhr;
@@ -200,7 +194,7 @@ describe('eztz', () => {
                 mockXhr = Object.assign({
                     statusText: 'test'
                 }, mockXhr);
-                mockXhr.onsend(() => mockXhr.errored(mockXhr));
+                mockXhr.onsend(() => mockXhr.onerror(mockXhr));
 
                 const p = node.query('/test');
 
@@ -217,7 +211,7 @@ describe('eztz', () => {
                         error: 'err'
                     })
                 }, mockXhr);
-                mockXhr.onsend(() => mockXhr.loaded(mockXhr));
+                mockXhr.onsend(() => mockXhr.onload(mockXhr));
 
                 const p = node.query('/test');
 
@@ -229,7 +223,7 @@ describe('eztz', () => {
                     status: 200,
                     responseText: null
                 }, mockXhr);
-                mockXhr.onsend(() => mockXhr.loaded(mockXhr));
+                mockXhr.onsend(() => mockXhr.onload(mockXhr));
 
                 const p = node.query('/test');
 
@@ -243,7 +237,7 @@ describe('eztz', () => {
                         test: 'test'
                     })
                 }, mockXhr);
-                mockXhr.onsend(() => mockXhr.loaded(mockXhr));
+                mockXhr.onsend(() => mockXhr.onload(mockXhr));
 
                 const p = node.query('/test');
 
@@ -259,7 +253,7 @@ describe('eztz', () => {
                         ok: 'ok'
                     })
                 }, mockXhr);
-                mockXhr.onsend(() => mockXhr.loaded(mockXhr));
+                mockXhr.onsend(() => mockXhr.onload(mockXhr));
 
                 const p = node.query('/test');
 
@@ -271,7 +265,7 @@ describe('eztz', () => {
                     status: 400,
                     statusText: 'err'
                 }, mockXhr);
-                mockXhr.onsend(() => mockXhr.loaded(mockXhr));
+                mockXhr.onsend(() => mockXhr.onload(mockXhr));
 
                 const p = node.query('/test');
 
