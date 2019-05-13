@@ -9,11 +9,10 @@
       "sourceMap": true,
       "outDir": "dist",
       "lib":["es6", "es7", "esnext"],
-      "allowJs": true,
-      "types": ["node"]
+      "allowJs": true
     },
     "include": [
-      "src/**/*",
+      "src/**/*"
     ],
     "exclude": [
         "node_modules"

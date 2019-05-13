@@ -1,6 +1,6 @@
 import XMLHttpRequest from "xhr2"
 
-const defaultProvider = "https://mainnet.tezrpc.me/";
+const defaultProvider = "https://mainnet.tezrpc.me";
 
 const node = {
     defaultProvider,
@@ -60,7 +60,7 @@ const node = {
             if (this.debugMode) console.log(e, o, http.responseText);
             reject(http.statusText);
           };
-          if (t == "POST") {
+          if (t === "POST") {
             http.setRequestHeader("Content-Type", "application/json");
             http.send(JSON.stringify(o));
           } else {
@@ -71,6 +71,6 @@ const node = {
         }
       });
     }
-}
+};
 
 export default node
