@@ -1,16 +1,32 @@
 function getMockXhr() {
-    const mockXhr = {
-        open: jest.fn(),
-        send: jest.fn(function () {
-            this.sent()
-        }),
-        readyState: 4,
-        sent: false,
-        onsend(fn) {
-            this.sent = fn
+  const mockXhr = {
+      open: jest.fn(),
+      _properties: {
+        configurable: false,
+        enumerable: false,
+        requestHeaders: {
+          configurable: false,
+          enumerable: true,
+          value: {},
+          writable: true
         }
-    };
-    return mockXhr;
+      },
+      send: jest.fn(function () {
+        this.sent()
+      }),
+      readyState: 4,
+      sent: false,
+      setRequestHeader(header, value){
+        if (this.readyState === XMLHttpRequest.UNSENT) {
+          throw new Error(''); // todo
+        }
+        this._properties.requestHeaders[header] = value;
+      },
+      onsend(fn) {
+          this.sent = fn
+      }
+  };
+  return mockXhr;
 }
 
 describe('eztz', () => {
@@ -196,7 +212,7 @@ describe('eztz', () => {
                 }, mockXhr);
                 mockXhr.onsend(() => mockXhr.onerror(mockXhr));
 
-                const p = node.query('/test');
+                const p = node.query('/test', {});
 
                 expect(mockXhr.open).toBeCalledWith('POST', node.activeProvider + '/test', true);
                 expect(mockXhr.send).toBeCalledWith('{}');
