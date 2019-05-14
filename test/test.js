@@ -1,33 +1,4 @@
-function getMockXhr() {
-  const mockXhr = {
-      open: jest.fn(),
-      _properties: {
-        configurable: false,
-        enumerable: false,
-        requestHeaders: {
-          configurable: false,
-          enumerable: true,
-          value: {},
-          writable: true
-        }
-      },
-      send: jest.fn(function () {
-        this.sent()
-      }),
-      readyState: 4,
-      sent: false,
-      setRequestHeader(header, value){
-        if (this.readyState === XMLHttpRequest.UNSENT) {
-          throw new Error(''); // todo
-        }
-        this._properties.requestHeaders[header] = value;
-      },
-      onsend(fn) {
-          this.sent = fn
-      }
-  };
-  return mockXhr;
-}
+const MockXHR = require('mock-xmlhttprequest');
 
 describe('eztz', () => {
     describe('utility', () => {
@@ -161,13 +132,10 @@ describe('eztz', () => {
 
     describe('node', () => {
         let eztz, node;
-        let mockXhr;
 
         beforeEach(() => {
             eztz = require('../dist/index');
             node = eztz.node;
-            mockXhr = getMockXhr();
-            node.xhrFactory = () => mockXhr;
         });
 
         test('init params', () => {
@@ -197,37 +165,44 @@ describe('eztz', () => {
 
         describe('query', () => {
             let eztz, node;
-            let mockXhr;
 
             beforeEach(() => {
                 eztz = require('../dist/index');
                 node = eztz.node;
-                mockXhr = getMockXhr();
-                node.xhrFactory = () => mockXhr;
             });
 
             test('query on error', async () => {
-                mockXhr = Object.assign({
-                    statusText: 'test'
-                }, mockXhr);
-                mockXhr.onsend(() => mockXhr.onerror(mockXhr));
+                var mockXhrProvider = MockXHR.newServer({
+                    post: ['https://mainnet.tezrpc.me/test',
+                        {
+                            status: 500,
+                            statusText: 'test'
+                        }
+                    ]
+                });
+                mockXhrProvider.setDefaultHandler(xhr => {
+                    throw [xhr.method, xhr.url, xhr.body];
+                });
+                node.xhrFactory = mockXhrProvider.xhrFactory;
 
                 const p = node.query('/test', {});
-
-                expect(mockXhr.open).toBeCalledWith('POST', node.activeProvider + '/test', true);
-                expect(mockXhr.send).toBeCalledWith('{}');
 
                 return expect(p).rejects.toEqual('test');
             });
 
             test('query on 200 error', async () => {
-                mockXhr = Object.assign({
-                    status: 200,
-                    responseText: JSON.stringify({
-                        error: 'err'
-                    })
-                }, mockXhr);
-                mockXhr.onsend(() => mockXhr.onload(mockXhr));
+                var mockXhrProvider = MockXHR.newServer({
+                    get: ['https://mainnet.tezrpc.me/test',
+                        {
+                            status: 200,
+                            body: JSON.stringify({error: 'err'})
+                        }
+                    ]
+                });
+                mockXhrProvider.setDefaultHandler(xhr => {
+                    throw [xhr.method, xhr.url, xhr.body];
+                });
+                node.xhrFactory = mockXhrProvider.xhrFactory;
 
                 const p = node.query('/test');
 
@@ -235,11 +210,18 @@ describe('eztz', () => {
             });
 
             test('query on 200 empty response', async () => {
-                mockXhr = Object.assign({
-                    status: 200,
-                    responseText: null
-                }, mockXhr);
-                mockXhr.onsend(() => mockXhr.onload(mockXhr));
+                var mockXhrProvider = MockXHR.newServer({
+                    get: ['https://mainnet.tezrpc.me/test',
+                        {
+                            status: 200,
+                            body: ''
+                        }
+                    ]
+                });
+                mockXhrProvider.setDefaultHandler(xhr => {
+                    throw [xhr.method, xhr.url, xhr.body];
+                });
+                node.xhrFactory = mockXhrProvider.xhrFactory;
 
                 const p = node.query('/test');
 
@@ -247,13 +229,18 @@ describe('eztz', () => {
             });
 
             test('query on 200 empty response without', async () => {
-                mockXhr = Object.assign({
-                    status: 200,
-                    responseText: JSON.stringify({
-                        test: 'test'
-                    })
-                }, mockXhr);
-                mockXhr.onsend(() => mockXhr.onload(mockXhr));
+                var mockXhrProvider = MockXHR.newServer({
+                    get: ['https://mainnet.tezrpc.me/test',
+                        {
+                            status: 200,
+                            body: JSON.stringify({test: 'test'})
+                        }
+                    ]
+                });
+                mockXhrProvider.setDefaultHandler(xhr => {
+                    throw [xhr.method, xhr.url, xhr.body];
+                });
+                node.xhrFactory = mockXhrProvider.xhrFactory;
 
                 const p = node.query('/test');
 
@@ -263,13 +250,18 @@ describe('eztz', () => {
             });
 
             test('query on 200 ok', async () => {
-                mockXhr = Object.assign({
-                    status: 200,
-                    responseText: JSON.stringify({
-                        ok: 'ok'
-                    })
-                }, mockXhr);
-                mockXhr.onsend(() => mockXhr.onload(mockXhr));
+                var mockXhrProvider = MockXHR.newServer({
+                    get: ['https://mainnet.tezrpc.me/test',
+                        {
+                            status: 200,
+                            body: JSON.stringify({ok: 'ok'})
+                        }
+                    ]
+                });
+                mockXhrProvider.setDefaultHandler(xhr => {
+                    throw [xhr.method, xhr.url, xhr.body];
+                });
+                node.xhrFactory = mockXhrProvider.xhrFactory;
 
                 const p = node.query('/test');
 
@@ -277,11 +269,18 @@ describe('eztz', () => {
             });
 
             test('query non 200', async () => {
-                mockXhr = Object.assign({
-                    status: 400,
-                    statusText: 'err'
-                }, mockXhr);
-                mockXhr.onsend(() => mockXhr.onload(mockXhr));
+                var mockXhrProvider = MockXHR.newServer({
+                    get: ['https://mainnet.tezrpc.me/test',
+                        {
+                            status: 400,
+                            statusText: 'err'
+                        }
+                    ]
+                });
+                mockXhrProvider.setDefaultHandler(xhr => {
+                    throw [xhr.method, xhr.url, xhr.body];
+                });
+                node.xhrFactory = mockXhrProvider.xhrFactory;
 
                 const p = node.query('/test');
 

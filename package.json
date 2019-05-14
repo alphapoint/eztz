@@ -20,6 +20,7 @@
     "eslint": "^5.16.0",
     "eslint-config-google": "^0.13.0",
     "jest": "^24.8.0",
+    "mock-xmlhttprequest": "^4.4.0",
     "typescript": "^3.4.5"
   }
 }
