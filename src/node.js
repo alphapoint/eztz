@@ -1,4 +1,4 @@
-import XMLHttpRequest from "xhr2"
+import {XMLHttpRequest} from "w3c-xmlhttprequest"
 
 const defaultProvider = "https://mainnet.tezrpc.me";
 
