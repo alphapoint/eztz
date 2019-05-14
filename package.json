@@ -1,5 +1,5 @@
 {
-  "name": "eztz.js",
+  "name": "@ap/eztz",
   "version": "0.0.1",
   "dependencies": {
     "bignumber.js": "^7.2.1",
@@ -22,5 +22,8 @@
     "jest": "^24.8.0",
     "mock-xmlhttprequest": "^4.4.0",
     "typescript": "^3.4.5"
+  },
+  "publishConfig": {
+    "registry": "http://nexus.alphapoint.com:8087/repository/npm-private/"
   }
 }
