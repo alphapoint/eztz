@@ -1,13 +1,13 @@
-import library from "./library"
-import prefix from "./prefix"
-import watermark from "./watermark"
-import utility from "./Utility"
-import crypto from "./crypto"
-import node from "./node"
-import rpc from "./rpc"
-import contract from "./contract"
-import trezor from "./trezor"
-import tezos from "./tezos"
+import * as library from "./library"
+import * as prefix from "./prefix"
+import * as watermark from "./watermark"
+import * as utility from "./Utility"
+import * as crypto from "./crypto"
+import * as node from "./node"
+import * as rpc from "./rpc"
+import * as contract from "./contract"
+import * as trezor from "./trezor"
+import * as tezos from "./tezos"
 
 //Expose library
 export {

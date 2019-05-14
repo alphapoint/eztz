@@ -113,7 +113,7 @@ const op_mapping = {
     "6F": "SLICE"
 };
 
-export default {
+const library = {
     bs58check: require("bs58check"),
     sodium: require("libsodium-wrappers"),
     bip39: require("bip39"),
@@ -170,3 +170,5 @@ export default {
     },
     op_mapping
 };
+
+module.exports = library;

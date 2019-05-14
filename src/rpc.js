@@ -441,6 +441,6 @@ const rpc = {
         storage: sexp2mic(storage)
       });
     }
-  }
+}
 
-  export default rpc
+module.exports = rpc;

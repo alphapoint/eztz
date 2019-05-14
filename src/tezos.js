@@ -6,7 +6,7 @@ import library from "./library"
 
 const {b58cdecode, buf2hex} = utility;
 const {prim_mapping_reverse, op_mapping_reverse, op_mapping} = library;
-export default {
+const tezos = {
     forge: async function(head, opOb, validateLocalForge) {
       if (typeof validateLocalForge == "undefined") validateLocalForge = true;
   
@@ -240,3 +240,5 @@ export default {
       return rec();
     }
 }
+
+module.exports = tezos;

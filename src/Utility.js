@@ -224,4 +224,4 @@ const utility = {
     }
 }
 
-export default utility
+module.exports = utility;

@@ -94,6 +94,6 @@ const contract = {
       ct();
       return setInterval(ct, timeout * 1000);
     }
-  }
+}
 
-  export default contract
+module.exports = contract

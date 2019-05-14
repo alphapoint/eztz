@@ -1,4 +1,4 @@
-export default {
+const prefix = {
     tz1: new Uint8Array([6, 161, 159]),
     tz2: new Uint8Array([6, 161, 161]),
     tz3: new Uint8Array([6, 161, 164]),
@@ -31,3 +31,4 @@ export default {
     id: new Uint8Array([153, 103])
 }
 
+module.exports = prefix;

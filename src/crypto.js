@@ -147,6 +147,6 @@ const crypto = {
         b58cdecode(pk, prefix.edpk)
       );
     }
-  };
+};
 
-  export default crypto
+module.exports = crypto;

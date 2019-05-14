@@ -1,4 +1,5 @@
 import {XMLHttpRequest} from "w3c-xmlhttprequest"
+import { isModuleSpecifier } from "@babel/types";
 
 const defaultProvider = "https://mainnet.tezrpc.me";
 
@@ -73,4 +74,4 @@ const node = {
     }
 };
 
-export default node
+module.exports = node;

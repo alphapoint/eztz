@@ -97,6 +97,6 @@ const trezor = {
       var tx = {};
       return [operation, revealOp];
     }
-  }
+}
 
-  export default trezor
+module.exports = trezor;
