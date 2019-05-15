@@ -443,4 +443,5 @@ const rpc = {
     }
 }
 
-module.exports = rpc;
+import * as rpc from "rpc"
+export {rpc}

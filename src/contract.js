@@ -83,8 +83,8 @@ const contract = {
     },
     watch: function(cc, timeout, cb) {
       let storage = [];
-      const ct = function() {
-        contract.storage(cc).then(function(r) {
+      const ct = () => {
+        this.storage(cc).then(function(r) {
           if (JSON.stringify(storage) != JSON.stringify(r)) {
             storage = r;
             cb(storage);

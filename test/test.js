@@ -2,7 +2,7 @@ const MockXHR = require('mock-xmlhttprequest');
 
 describe('eztz', () => {
     describe('utility', () => {
-        const eztz = require('../dist/index');
+        const eztz = require('../index');
         const utility = eztz.utility;
 
         test('mintotz', () => {
@@ -61,7 +61,7 @@ describe('eztz', () => {
     });
 
     describe('crypto', () => {
-        const eztz = require('../dist/index');
+        const eztz = require('../index');
         const crypto = eztz.crypto;
 
         test('generateMnemonic', () => {
@@ -134,7 +134,7 @@ describe('eztz', () => {
         let eztz, node;
 
         beforeEach(() => {
-            eztz = require('../dist/index');
+            eztz = require('../index');
             node = eztz.node;
         });
 
@@ -167,7 +167,7 @@ describe('eztz', () => {
             let eztz, node;
 
             beforeEach(() => {
-                eztz = require('../dist/index');
+                eztz = require('../index');
                 node = eztz.node;
             });
 

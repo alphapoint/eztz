@@ -74,4 +74,5 @@ const node = {
     }
 };
 
-module.exports = node;
+import * as node from "node"
+export {node}

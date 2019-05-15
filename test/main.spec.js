@@ -3,7 +3,7 @@ describe('eztz.node', () => {
   let eztz;
 
   beforeEach(() => {
-    eztz = require('../dist/index');
+    eztz = require('../index');
     node = eztz.node;
   });
 
