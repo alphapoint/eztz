@@ -1,4 +1,13 @@
-const op_mapping = {
+// @ts-ignore
+import bs58check from "bs58check";
+// @ts-ignore
+import sodium from "libsodium-wrappers";
+// @ts-ignore
+import bip39 from "bip39";
+// @ts-ignore
+import pbkdf2 from "pbkdf2";
+
+const op_mapping: { [key: string]: string } = {
     "00": "parameter",
     "01": "storage",
     "02": "code",
@@ -113,62 +122,36 @@ const op_mapping = {
     "6F": "SLICE"
 };
 
-const library = {
-    bs58check: require("bs58check"),
-    sodium: require("libsodium-wrappers"),
-    bip39: require("bip39"),
-    pbkdf2: require("pbkdf2"),
-    op_mapping_reverse: (function() {
-        var result = {};
+export default {
+    bs58check,
+    sodium,
+    bip39,
+    pbkdf2,
+    op_mapping_reverse: <{ [key: string]: string }>(function () {
+        const result: { [key: string]: string } = {};
         for (const key in op_mapping) {
-          result[op_mapping[key]] = key;
+            result[op_mapping[key]] = key;
         }
         return result;
     })(),
-    prim_mapping: {
+    prim_mapping: <{ [key: string]: string | { name: string, len: number, annots: boolean } }>{
         "00": "int",
         "01": "string",
         "02": "seq",
-        "03": { name: "prim", len: 0, annots: false },
-        "04": { name: "prim", len: 0, annots: true },
-        "05": { name: "prim", len: 1, annots: false },
-        "06": { name: "prim", len: 1, annots: true },
-        "07": { name: "prim", len: 2, annots: false },
-        "08": { name: "prim", len: 2, annots: true },
-        "09": { name: "prim", len: 3, annots: true },
+        "03": {name: "prim", len: 0, annots: false},
+        "04": {name: "prim", len: 0, annots: true},
+        "05": {name: "prim", len: 1, annots: false},
+        "06": {name: "prim", len: 1, annots: true},
+        "07": {name: "prim", len: 2, annots: false},
+        "08": {name: "prim", len: 2, annots: true},
+        "09": {name: "prim", len: 3, annots: true},
         "0A": "bytes"
     },
-    prim_mapping_reverse: {
-        [0]: {
-          false: "03",
-          true: "04"
-        },
-        [1]: {
-          false: "05",
-          true: "06"
-        },
-        [2]: {
-          false: "07",
-          true: "08"
-        },
-        [3]: {
-          true: "09"
-        }
-    },
-    toBytesInt32Hex: function(num) {
-        return utility.buf2hex(toBytesInt32(num));
-    },
-    toBytesInt32: function(num) {
-        num = parseInt(num);
-        arr = new Uint8Array([
-            (num & 0xff000000) >> 24,
-            (num & 0x00ff0000) >> 16,
-            (num & 0x0000ff00) >> 8,
-            num & 0x000000ff
-        ]);
-        return arr.buffer;
+    prim_mapping_reverse: <{ [key: number]: { false?: string, true: string } }>{
+        [0]: {false: "03", true: "04"},
+        [1]: {false: "05", true: "06"},
+        [2]: {false: "07", true: "08"},
+        [3]: {true: "09"}
     },
     op_mapping
 };
-
-module.exports = library;

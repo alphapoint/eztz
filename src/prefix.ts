@@ -1,4 +1,4 @@
-const prefix = {
+export default <{ [key: string]: Uint8Array }>{
     tz1: new Uint8Array([6, 161, 159]),
     tz2: new Uint8Array([6, 161, 161]),
     tz3: new Uint8Array([6, 161, 164]),
@@ -29,6 +29,4 @@ const prefix = {
     P: new Uint8Array([2, 170]),
     Co: new Uint8Array([79, 179]),
     id: new Uint8Array([153, 103])
-}
-
-module.exports = prefix;
+};
