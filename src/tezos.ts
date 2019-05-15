@@ -1,29 +1,16 @@
 import {forgeOp} from "./forgefunctions";
 import node from "./node";
 import utility from "./utility";
+// @ts-ignore
 import BN from "bignumber.js";
 import library from "./library";
 import prefix from "./prefix";
 // @ts-ignore
 import {TextEncoder, TextDecoder} from "text-encoding";
+//import {Block, OperationParameter} from "./rpc-types";
 
 const {b58cdecode, buf2hex} = utility;
 const {prim_mapping_reverse, op_mapping_reverse, op_mapping} = library;
-
-export interface ForgeOperation {
-    prim?: string,
-    annots?: Uint8Array,
-    args?: ForgeOperation[],
-    bytes?: string | Uint8Array,
-    int?: number,
-    string?: string
-}
-
-export interface ForgeOperationObject {
-    contents: any[],
-    protocol: string,
-
-}
 
 export default {
     async forge(head: Block, opOb: any, validateLocalForge?: boolean)
@@ -49,10 +36,10 @@ export default {
         else
             throw "Forge validation error - local and remote bytes don't match";
     },
-    encodeRawBytes(input: ForgeOperation | ForgeOperation[]): string {
+    encodeRawBytes(input: OperationParameter | OperationParameter[]): string {
         return this._encodeRawBytes(input).toUpperCase();
     },
-    _encodeRawBytes(input: ForgeOperation | ForgeOperation[]): string {
+    _encodeRawBytes(input: OperationParameter | OperationParameter[]): string {
         const result = [];
 
         if (input instanceof Array) {

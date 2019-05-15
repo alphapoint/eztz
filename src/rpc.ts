@@ -270,7 +270,7 @@ export default {
     ) {
         if (typeof gasLimit == "undefined") gasLimit = "10000";
         if (typeof storageLimit == "undefined") storageLimit = "257";
-        const operation : any = {
+        const operation : Operation = {
             kind: "origination",
             balance: mutez(amount).toString(),
             fee: fee.toString(),
@@ -306,7 +306,7 @@ export default {
     ) {
         if (typeof gasLimit == "undefined") gasLimit = "10100";
         if (typeof storageLimit == "undefined") storageLimit = "0";
-        const operation : any = {
+        const operation : Operation = {
             kind: "transaction",
             fee: fee.toString(),
             gas_limit: gasLimit,
@@ -335,11 +335,11 @@ export default {
         if (typeof gasLimit == "undefined") gasLimit = "10000";
         if (typeof storageLimit == "undefined") storageLimit = "257";
         const _code = ml2mic(code),
-            script = {
+            script : OperationScript = {
                 code: _code,
                 storage: sexp2mic(init)
             },
-            operation : any = {
+            operation : Operation = {
                 kind: "origination",
                 balance: mutez(amount).toString(),
                 storage_limit: storageLimit,
@@ -376,7 +376,7 @@ export default {
     ) {
         if (typeof gasLimit == "undefined") gasLimit = "10000";
         if (typeof storageLimit == "undefined") storageLimit = "0";
-        const operation : any = {
+        const operation : Operation = {
             kind: "delegation",
             fee: fee.toString(),
             gas_limit: gasLimit,
@@ -397,7 +397,7 @@ export default {
     registerDelegate(keys, fee, gasLimit, storageLimit) {
         if (typeof gasLimit == "undefined") gasLimit = "10000";
         if (typeof storageLimit == "undefined") storageLimit = "0";
-        const operation = {
+        const operation: Operation = {
             kind: "delegation",
             fee: fee.toString(),
             gas_limit: gasLimit,
@@ -408,7 +408,7 @@ export default {
     },
 
     activate: function (pkh, secret) {
-        const operation = {
+        const operation: Operation = {
             kind: "activate_account",
             pkh: pkh,
             secret: secret
