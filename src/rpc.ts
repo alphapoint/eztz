@@ -17,7 +17,7 @@ export default {
                 return r;
             });
     },
-    getDelegate(a): any {
+    getDelegate(a: string): any {
         return node
             .query("/chains/main/blocks/head/context/contracts/" + a + "/delegate")
             .then(function (r) {
@@ -28,17 +28,17 @@ export default {
                 return false;
             });
     },
-    getManager(a): any {
+    getManager(a: string): any {
         return node.query(
             "/chains/main/blocks/head/context/contracts/" + a + "/manager_key"
         );
     },
-    getCounter(a): any {
+    getCounter(a: string): any {
         return node.query(
             "/chains/main/blocks/head/context/contracts/" + a + "/counter"
         );
     },
-    getBaker(tz1): any {
+    getBaker(tz1: string): any {
         return node.query("/chains/main/blocks/head/context/delegates/" + tz1);
     },
     getHead(): any {
@@ -120,8 +120,8 @@ export default {
             ) {
                 requiresReveal = true;
                 if (!newAccount || operation.kind === "transaction") {
-                    promises.push(rpc.getCounter(from));
-                    promises.push(rpc.getManager(from));
+                    promises.push(this.getCounter(from));
+                    promises.push(this.getManager(from));
                 } else {
                     promises.push(new Promise((resolve, reject) => resolve(0)));
                     promises.push(new Promise((resolve, reject) => resolve({})));
@@ -184,7 +184,7 @@ export default {
         return tezos.forge(head, opOb);
     },
     async simulateOperation(from, operation, keys) {
-        const fullOp = await rpc.prepareOperation(from, operation, keys);
+        const fullOp = await this.prepareOperation(from, operation, keys);
         return node.query("/chains/main/blocks/head/helpers/scripts/run_operation", fullOp.opOb);
     },
     async sendOperation(
@@ -214,9 +214,9 @@ export default {
             }
             console.log(fullOp);
             if (skipPrevalidation)
-                return rpc.silentInject(fullOp.opbytes);
+                return this.silentInject(fullOp.opbytes);
             else
-                return rpc.inject(fullOp.opOb, fullOp.opbytes);
+                return this.inject(fullOp.opOb, fullOp.opbytes);
         }
     },
     inject(opOb, sopbytes) {
@@ -318,7 +318,7 @@ export default {
         if (parameter) {
             operation.parameters = sexp2mic(parameter);
         }
-        return rpc.sendOperation(from, operation, keys, true, newAccount);
+        return this.sendOperation(from, operation, keys, true, newAccount);
     },
     originate(
         keys,
@@ -362,7 +362,7 @@ export default {
         if (typeof delegate != "undefined" && delegate)
             operation.delegate = delegate;
 
-        return rpc.sendOperation(keys.pkh, operation, keys);
+        return this.sendOperation(keys.pkh, operation, keys);
     },
     setDelegate(
         from,
@@ -385,7 +385,7 @@ export default {
         if (typeof delegate != "undefined" && delegate) {
             operation.delegate = delegate;
         }
-        return rpc.sendOperation(
+        return this.sendOperation(
             from,
             operation,
             keys,
@@ -404,7 +404,7 @@ export default {
             storage_limit: storageLimit,
             delegate: keys.pkh
         };
-        return rpc.sendOperation(keys.pkh, operation, keys);
+        return this.sendOperation(keys.pkh, operation, keys);
     },
 
     activate: function (pkh, secret) {
@@ -413,7 +413,7 @@ export default {
             pkh: pkh,
             secret: secret
         };
-        return rpc.sendOperation(pkh, operation, false);
+        return this.sendOperation(pkh, operation, false);
     },
 
     typecheckCode(code) {
