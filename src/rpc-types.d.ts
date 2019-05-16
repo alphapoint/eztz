@@ -78,7 +78,7 @@ interface Operation {
     amount?: string | number
     destination?: Source | string
     delegatable?: boolean
-    delegate?: string | Uint8Array
+    delegate?: string
     spendable?: boolean
     managerPubkey?: string | Uint8Array
     manager_pubkey?: string | Uint8Array
@@ -99,7 +99,7 @@ interface OperationParameter {
     annots?: Uint8Array,
     args?: OperationParameter[],
     bytes?: string | Uint8Array,
-    int?: number,
+    int?: number | string,
     string?: string
 }
 
@@ -114,13 +114,14 @@ interface ContractInfo {
 
 interface ContractScript {
     code: OperationParameter[]
-    storage: {string: string}
+    storage: { string: string }
 }
 
 interface KeyPair {
     pk: any,
     sk: any,
-    pkh: any
+    // public key hash
+    pkh: string
 }
 
 interface TypeCheckData {

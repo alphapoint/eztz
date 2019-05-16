@@ -1,8 +1,6 @@
-import utility from "./Utility";
+import utility from "./utility";
 import tezos from "./tezos"
 import prefix from "./prefix";
-
-const {b58cdecode, buf2hex, toBytesInt32, toBytesInt32Hex} = utility;
 
 //Forge functions
 const forgeOpTags = <{ [key: string]: number }>{
@@ -20,12 +18,11 @@ const forgeOpTags = <{ [key: string]: number }>{
 };
 
 function forgeOp(op: any) {
-    var fop;
-    fop = buf2hex(new Uint8Array([forgeOpTags[op.kind]]));
+    let fop = utility.buf2hex(new Uint8Array([forgeOpTags[op.kind]]));
     switch (forgeOpTags[op.kind]) {
         case 0:
         case 1:
-            fop += buf2hex(toBytesInt32(op.level));
+            fop += utility.buf2hex(utility.toBytesInt32(op.level));
             if (forgeOpTags[op.kind] == 0) break;
             fop += op.nonce;
             if (forgeOpTags[op.kind] == 1) break;
@@ -35,21 +32,21 @@ function forgeOp(op: any) {
             if (forgeOpTags[op.kind] == 3) break;
             throw "Double bake and double endorse forging is not complete";
         case 4:
-            fop += buf2hex(
-                b58cdecode(op.pkh, prefix.tz1)
+            fop += utility.buf2hex(
+                utility.b58cdecode(op.pkh, prefix.tz1)
             );
             fop += op.secret;
             if (forgeOpTags[op.kind] == 4) break;
         case 5:
         case 6:
             fop += forgePublicKeyHash(op.source);
-            fop += buf2hex(toBytesInt32(op.period));
+            fop += utility.buf2hex(utility.toBytesInt32(op.period));
             if (forgeOpTags[op.kind] == 5) {
                 throw "Proposal forging is not complete";
                 break;
             } else if (forgeOpTags[op.kind] == 6) {
-                fop += buf2hex(
-                    b58cdecode(op.proposal, prefix.P)
+                fop += utility.buf2hex(
+                    utility.b58cdecode(op.proposal, prefix.P)
                 );
                 fop += op.ballot == "yay" ? "00" : op.ballot == "nay" ? "01" : "02";
                 break;
@@ -112,20 +109,20 @@ function forgeScript(s: OperationScript) {
     var t1 = tezos.encodeRawBytes(s.code).toLowerCase();
     var t2 = tezos.encodeRawBytes(s.storage).toLowerCase();
     return (
-        toBytesInt32Hex(t1.length / 2) + t1 + toBytesInt32Hex(t2.length / 2) + t2
+        utility.toBytesInt32Hex(t1.length / 2) + t1 + utility.toBytesInt32Hex(t2.length / 2) + t2
     );
 }
 
 function forgeParameters(p: OperationParameter | OperationParameter[]) {
     var t = tezos.encodeRawBytes(p).toLowerCase();
-    return toBytesInt32Hex(t.length / 2) + t;
+    return utility.toBytesInt32Hex(t.length / 2) + t;
 }
 
 function forgeAddress(a: string) {
     var fa;
     if (a.substr(0, 1) == "K") {
         fa = "01";
-        fa += buf2hex(b58cdecode(a, prefix.KT));
+        fa += utility.buf2hex(utility.b58cdecode(a, prefix.KT));
         fa += "00";
     } else {
         fa = "00";
@@ -157,8 +154,8 @@ function forgePublicKeyHash(pkh: string) {
     var fpkh;
     var t = parseInt(pkh.substr(2, 1));
     fpkh = "0" + (t - 1).toString();
-    fpkh += buf2hex(
-        b58cdecode(pkh, prefix[pkh.substr(0, 3)])
+    fpkh += utility.buf2hex(
+        utility.b58cdecode(pkh, prefix[pkh.substr(0, 3)])
     );
     return fpkh;
 }
@@ -177,8 +174,8 @@ function forgePublicKey(pk: string) {
             fpk = "02";
             break;
     }
-    fpk += buf2hex(
-        b58cdecode(pk, prefix[pk.substr(0, 4)])
+    fpk += utility.buf2hex(
+        utility.b58cdecode(pk, prefix[pk.substr(0, 4)])
     );
     return fpk;
 }

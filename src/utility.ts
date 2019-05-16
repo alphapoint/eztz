@@ -87,8 +87,8 @@ export default {
                 escaped = false;
                 continue;
             } else if (
-                (i === mi.length - 1 && sopen === false) ||
-                (mi[i] === " " && pl === 0 && sopen === false)
+                (i === mi.length - 1 && !sopen) ||
+                (mi[i] === " " && pl === 0 && !sopen)
             ) {
                 if (i === mi.length - 1) val += mi[i];
                 if (val) {

@@ -6,11 +6,7 @@ import BN from "bignumber.js";
 import library from "./library";
 import prefix from "./prefix";
 // @ts-ignore
-import {TextEncoder, TextDecoder} from "text-encoding";
-//import {Block, OperationParameter} from "./rpc-types";
-
-const {b58cdecode, buf2hex} = utility;
-const {prim_mapping_reverse, op_mapping_reverse, op_mapping, prim_mapping} = library;
+import {TextDecoder, TextEncoder} from "text-encoding";
 
 export default {
     async forge(head: Block, opOb: any, validateLocalForge?: boolean)
@@ -23,7 +19,7 @@ export default {
                 "/blocks/" +
                 head.hash +
                 "/helpers/forge/operations", opOb, undefined);
-        let localForgedBytes = buf2hex(b58cdecode(opOb.branch, prefix.b));
+        let localForgedBytes = utility.buf2hex(utility.b58cdecode(opOb.branch, prefix.b));
         for (let i = 0; i < opOb.contents.length; i++) {
             localForgedBytes += forgeOp(opOb.contents[i]);
         }
@@ -55,8 +51,8 @@ export default {
         } else if (typeof input === "object") {
             if (input.prim) {
                 const args_len = input.args ? input.args.length : 0;
-                result.push(prim_mapping_reverse[args_len][input.annots ? 'true' : 'false']);
-                result.push(op_mapping_reverse[input.prim]);
+                result.push(library.prim_mapping_reverse[args_len][input.annots ? 'true' : 'false']);
+                result.push(library.op_mapping_reverse[input.prim]);
                 if (input.args) {
                     input.args.forEach((arg) => {
                         return result.push(this._encodeRawBytes(arg));
@@ -66,7 +62,7 @@ export default {
                 if (input.annots) {
                     const annots_bytes = input.annots
                         .map(x => {
-                            return parseInt(buf2hex(new TextEncoder().encode(x)));
+                            return parseInt(utility.buf2hex(new TextEncoder().encode(x)));
                         })
                         .join("20");
                     result.push(
@@ -133,11 +129,11 @@ export default {
 
         const rec: any = () => {
             const b = read(2);
-            const prim = prim_mapping[b];
+            const prim = library.prim_mapping[b];
 
             if (prim instanceof Object) {
                 index += 2;
-                const op = op_mapping[read(2)];
+                const op = library.op_mapping[read(2)];
                 index += 2;
 
                 const args = Array.apply(null, new Array(prim.len));
@@ -241,7 +237,7 @@ export default {
                 }
             }
 
-            throw `Invalid raw bytes: Byte:${b} Index:${index}`;
+            throw new Error(`Invalid raw bytes: Byte:${b} Index:${index}`);
         };
 
         return rec();
