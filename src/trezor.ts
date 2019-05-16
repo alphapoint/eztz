@@ -3,7 +3,7 @@ import node from "./node";
 import prefix from "./prefix";
 
 export default {
-    source(address: any): Source {
+    source(address: string): Source {
         const tag = address[0] === "t" ? 0 : 1;
         const curve = parseInt(address[2]) - 1;
         const pp = tag === 1 ? prefix.KT : prefix["tz" + (curve + 1)];
@@ -18,7 +18,7 @@ export default {
             hash: bytes
         };
     },
-    parameter(address: any, opbytes: string) {
+    parameter(address: string, opbytes: string) {
         const tag = address[0] === "t" ? 0 : 1;
         const curve = parseInt(address[2]) - 1;
         const pp = tag === 1 ? prefix.KT : prefix["tz" + (curve + 1)];

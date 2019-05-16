@@ -3,7 +3,6 @@ import node from "./node"
 import utility from "./utility"
 import crypto from "./crypto"
 import tezos from "./tezos";
-import {KeyPair, Operation, OperationScript, TypeCheckData} from "./rpc-types";
 
 const counters: { [key: string]: number } = {};
 
@@ -11,11 +10,11 @@ export default {
     call(e: string, d?: any): Promise<any> {
         return node.query(e, d);
     },
-    getBalance(a: string): Promise<any> {
+    getBalance(a: string): Promise<string> {
         return node
             .query("/chains/main/blocks/head/context/contracts/" + a + "/balance");
     },
-    getDelegate(a: string): Promise<any> {
+    getDelegate(a: string): Promise<string | false> {
         return node
             .query("/chains/main/blocks/head/context/contracts/" + a + "/delegate")
             .then(function (r) {
@@ -24,27 +23,26 @@ export default {
             })
             .catch(() => false);
     },
-    getManager(a: string): Promise<any> {
+    getManager(a: string): Promise<string> {
         return node.query(
             "/chains/main/blocks/head/context/contracts/" + a + "/manager_key"
         );
     },
-    getCounter(a: string): Promise<any> {
+    getCounter(a: string): Promise<string> {
         return node.query("/chains/main/blocks/head/context/contracts/" + a + "/counter");
     },
-    getBaker(tz1: string): Promise<any> {
+    getBaker(tz1: string): Promise<string> {
         return node.query("/chains/main/blocks/head/context/delegates/" + tz1);
     },
-    getHead(): Promise<any> {
+    getHead(): Promise<Block> {
         return node.query("/chains/main/blocks/head");
     },
-    getHeader(): Promise<any> {
+    getHeader(): Promise<BlockHeader> {
         return node.query("/chains/main/blocks/head/header");
     },
-    getHeadHash(): Promise<any> {
+    getHeadHash(): Promise<string> {
         return node.query("/chains/main/blocks/head/hash");
     },
-
     getBallotList(): Promise<any> {
         return node.query("/chains/main/blocks/head/votes/ballot_list");
     },
@@ -102,7 +100,7 @@ export default {
             repeater();
         });
     },
-    async prepareOperation(from: string, operation: Operation, keys: KeyPair, newAccount?: boolean, manager?: string) {
+    async prepareOperation(from: string, operation: Operation, keys: KeyPair | boolean, newAccount?: boolean, manager?: string) {
         if (typeof keys == "undefined") keys = false;
         let counter, opOb;
         const promises = [];
@@ -178,14 +176,14 @@ export default {
         };
         return tezos.forge(head, opOb);
     },
-    async simulateOperation(from: string, operation: Operation, keys: KeyPair) {
+    async simulateOperation(from: string, operation: Operation, keys: KeyPair | boolean) {
         const fullOp = await this.prepareOperation(from, operation, keys);
         return node.query("/chains/main/blocks/head/helpers/scripts/run_operation", fullOp.opOb);
     },
     async sendOperation(
         from: string,
         operation: Operation,
-        keys: KeyPair,
+        keys: KeyPair | boolean,
         skipPrevalidation?: boolean,
         newAccount?: boolean,
         manager?: string
@@ -214,7 +212,7 @@ export default {
                 return this.inject(fullOp.opOb, fullOp.opbytes);
         }
     },
-    inject(opOb, sopbytes) {
+    inject(opOb: any, sopbytes) {
         const opResponse = [];
         let errors = [];
         return node
@@ -294,8 +292,7 @@ export default {
         to: string,
         amount: string,
         fee: string,
-        //TODO: what is param, actually
-        parameter: any,
+        parameter: string,
         gasLimit: string,
         storageLimit: string,
         newAccount?: boolean
@@ -310,7 +307,7 @@ export default {
             amount: amount.toString(),
             destination: to
         };
-        if (typeof parameter == "undefined") parameter = false;//sets parameter to boolean???
+        if (typeof parameter == "undefined")throw new Error("transfer() received invalid parameter");//sets parameter to boolean???
         if (parameter) {
             operation.parameters = utility.sexp2mic(parameter);
         }
@@ -403,10 +400,9 @@ export default {
         return this.sendOperation(keys.pkh, operation, keys);
     },
 
-    activate: function (pkh, secret) {
-        const operation:  = {
+    activate: function (pkh: any, secret: any) {
+        const operation: Operation = {
             kind: "activate_account",
-            pkh: pkh,
             secret: secret
         };
         return this.sendOperation(pkh, operation, false);

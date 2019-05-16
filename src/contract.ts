@@ -4,7 +4,6 @@ import rpc from "./rpc";
 import prefix from "./prefix";
 import utility from "./utility";
 import node from "./node"
-import {ContractInfo} from "./rpc-types";
 
 export default {
     hash(operationHash: any, ind: any) {
@@ -25,7 +24,7 @@ export default {
             prefix.KT
         );
     },
-    originate(keys: string, amount: string, code: any, init: string, spendable: boolean, delegatable: boolean, delegate: string, fee: string, gasLimit: string, storageLimit: string) {
+    originate(keys: KeyPair, amount: string, code: any, init: string, spendable: boolean, delegatable: boolean, delegate: string, fee: string, gasLimit: string, storageLimit: string) {
         if (typeof gasLimit == "undefined") gasLimit = "10000";
         if (typeof storageLimit == "undefined") storageLimit = "10000";
         return rpc.originate(
@@ -41,7 +40,7 @@ export default {
             storageLimit
         );
     },
-    send(contract: string, from: string, keys: string, amount: string, parameter: any, fee: string, gasLimit: string, storageLimit: string) {
+    send(contract: string, from: string, keys: KeyPair, amount: string, parameter: any, fee: string, gasLimit: string, storageLimit: string) {
         if (typeof gasLimit == "undefined") gasLimit = "2000";
         if (typeof storageLimit == "undefined") storageLimit = "0";
         return rpc.transfer(
@@ -58,29 +57,15 @@ export default {
     balance(contract: string) {
         return rpc.getBalance(contract);
     },
-    storage(contract: string) {
-        return new Promise(function (resolve, reject) {
-            node
-                .query(
-                    "/chains/main/blocks/head/context/contracts/" +
-                    contract +
-                    "/storage"
-                )
-                .then(function (r) {
-                    resolve(r);
-                })
-                .catch(function (e) {
-                    reject(e);
-                });
-        });
+    storage(contract: string): Promise<OperationParameter> {
+        return node
+            .query("/chains/main/blocks/head/context/contracts/" + contract + "/storage");
     },
     load: function (contract: string) {
-        return node.query(
-            "/chains/main/blocks/head/context/contracts/" + contract
-        );
+        return node.query("/chains/main/blocks/head/context/contracts/" + contract);
     },
-    watch(cc: string, timeout: number, cb: any) {
-        let storage = [];
+    watch(cc: string, interval: number, cb: any) {
+        let storage: OperationParameter[] | OperationParameter = [];
         const ct = () => {
             this.storage(cc).then(function (r) {
                 if (JSON.stringify(storage) != JSON.stringify(r)) {
@@ -90,6 +75,6 @@ export default {
             });
         };
         ct();
-        return setInterval(ct, timeout * 1000);
+        return setInterval(ct, interval * 1000);
     }
 };

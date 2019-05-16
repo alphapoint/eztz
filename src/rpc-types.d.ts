@@ -68,15 +68,15 @@ interface ManagerKey {
 }
 
 interface Operation {
-    source?: Source
+    source?: Source | string
     counter?: string | number
     kind: string
     balance?: string | number
-    fee: string | number
-    gas_limit: string | number
-    storage_limit: string | number
+    fee?: string | number
+    gas_limit?: string | number
+    storage_limit?: string | number
     amount?: string | number
-    destination?: Source
+    destination?: Source | string
     delegatable?: boolean
     delegate?: string | Uint8Array
     spendable?: boolean
