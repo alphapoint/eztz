@@ -3,6 +3,7 @@ import library from "./library"
 import prefix from "./prefix";
 // @ts-ignore
 import {TextEncoder} from "text-encoding";
+// @ts-ignore
 import {Crypto} from "@peculiar/webcrypto";
 
 const crypto = new Crypto();

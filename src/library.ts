@@ -1,6 +1,7 @@
 // @ts-ignore
 import bs58check from "bs58check";
 import sodium from "libsodium-wrappers";
+// @ts-ignore
 import bip39 from "bip39";
 import pbkdf2 from "pbkdf2";
 
