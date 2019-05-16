@@ -52,6 +52,7 @@ export default {
                     // TODO: these parseInt calls are subject to overflow, maybe use native BigInt?
                     fee: typeof op.fee === 'string' ? parseInt(op.fee) : op.fee,
                     counter: typeof op.counter === 'string' ? parseInt(op.counter) : op.counter,
+                    // TODO: are these field names correct?
                     gasLimit: typeof op.gas_limit === 'string' ? parseInt(op.gas_limit) : op.gas_limit,
                     storageLimit: typeof op.storage_limit === 'string' ? parseInt(op.storage_limit) : op.storage_limit,
                     publicKey: utility.mergebuf(
