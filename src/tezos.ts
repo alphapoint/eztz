@@ -237,7 +237,7 @@ export default {
                 }
             }
 
-            throw `Invalid raw bytes: Byte:${b} Index:${index}`;
+            throw new Error(`Invalid raw bytes: Byte:${b} Index:${index}`);
         };
 
         return rec();
