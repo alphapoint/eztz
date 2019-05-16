@@ -1,13 +1,10 @@
 import {forgeOp} from "./forgefunctions";
 import node from "./node";
 import utility from "./utility";
-// @ts-ignore
 import BN from "bignumber.js";
 import library from "./library";
 import prefix from "./prefix";
-// @ts-ignore
 import {TextEncoder, TextDecoder} from "text-encoding";
-//import {Block, OperationParameter} from "./rpc-types";
 
 const {b58cdecode, buf2hex} = utility;
 const {prim_mapping_reverse, op_mapping_reverse, op_mapping, prim_mapping} = library;
@@ -65,9 +62,7 @@ export default {
 
                 if (input.annots) {
                     const annots_bytes = input.annots
-                        .map(x => {
-                            return parseInt(buf2hex(new TextEncoder().encode(x)));
-                        })
+                        .map((x: any) => parseInt(buf2hex(new TextEncoder().encode(x))))
                         .join("20");
                     result.push(
                         (annots_bytes.length / 2).toString(16).padStart(8, "0")

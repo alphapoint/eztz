@@ -213,36 +213,29 @@ export default {
                 return this.inject(fullOp.opOb, fullOp.opbytes);
         }
     },
-    inject(opOb, sopbytes) {
+    async inject(opOb, sopbytes) {
         const opResponse = [];
         let errors = [];
-        return node
-            .query("/chains/main/blocks/head/helpers/preapply/operations", [opOb])
-            .then(function (f) {
-                if (!Array.isArray(f)) throw {error: "RPC Fail", errors: []};
-                for (let i = 0; i < f.length; i++) {
-                    for (let j = 0; j < f[i].contents.length; j++) {
-                        opResponse.push(f[i].contents[j]);
-                        if (
-                            typeof f[i].contents[j].metadata.operation_result !=
-                            "undefined" &&
-                            f[i].contents[j].metadata.operation_result.status === "failed"
-                        )
-                            errors = errors.concat(
-                                f[i].contents[j].metadata.operation_result.errors
-                            );
-                    }
-                }
-                if (errors.length)
-                    throw {error: "ForgeOperation Failed", errors: errors};
-                return node.query("/injection/operation", sopbytes);
-            })
-            .then(function (f) {
-                return {
-                    hash: f,
-                    operations: opResponse
-                };
-            });
+        const f = await node
+            .query("/chains/main/blocks/head/helpers/preapply/operations", [opOb]);
+        if (!Array.isArray(f))
+            throw { error: "RPC Fail", errors: [] };
+        for (let i = 0; i < f.length; i++) {
+            for (let j = 0; j < f[i].contents.length; j++) {
+                opResponse.push(f[i].contents[j]);
+                if (typeof f[i].contents[j].metadata.operation_result !=
+                    "undefined" &&
+                    f[i].contents[j].metadata.operation_result.status === "failed")
+                    errors = errors.concat(f[i].contents[j].metadata.operation_result.errors);
+            }
+        }
+        if (errors.length)
+            throw { error: "ForgeOperation Failed", errors: errors };
+        const f_1 = await node.query("/injection/operation", sopbytes);
+        return {
+            hash: f_1,
+            operations: opResponse
+        };
     },
     silentInject(sopbytes) {
         return node.query("/injection/operation", sopbytes).then(function (f) {

@@ -1,21 +1,22 @@
-import utility from "./utility";
+import utility from "./Utility";
 import library from "./library"
 import prefix from "./prefix";
-// @ts-ignore
 import {TextEncoder} from "text-encoding";
 import {Crypto} from "@peculiar/webcrypto";
 
 const crypto = new Crypto();
 
+const {b58cencode, b58cdecode, mergebuf, buf2hex, hex2buf} = utility;
+
 //TODO: Add p256 and secp256k1 cryptographay
 export default {
-    extractEncryptedKeys(esk: Uint8Array, password: string) {
+    extractEncryptedKeys(esk: string, password: string) {
         if (typeof esk == "undefined")
             return false;
         if (typeof password == "undefined")
             return false;
 
-        const esb = utility.b58cdecode(esk, prefix.edesk);
+        const esb = b58cdecode(esk, prefix.edesk);
         const salt = esb.slice(0, 8);
         const esm = esb.slice(8);
 
@@ -57,9 +58,9 @@ export default {
                     )
                 );
                 return {
-                    sk: utility.b58cencode(kp.privateKey, prefix.edsk),
-                    pk: utility.b58cencode(kp.publicKey, prefix.edpk),
-                    pkh: utility.b58cencode(
+                    sk: b58cencode(kp.privateKey, prefix.edsk),
+                    pk: b58cencode(kp.publicKey, prefix.edpk),
+                    pkh: b58cencode(
                         library.sodium.crypto_generichash(20, kp.publicKey),
                         prefix.tz1
                     )
@@ -72,14 +73,14 @@ export default {
             case "edsk":
                 if (sk.length == 98) {
                     return {
-                        pk: utility.b58cencode(
-                            utility.b58cdecode(sk, prefix.edsk).slice(32),
+                        pk: b58cencode(
+                            b58cdecode(sk, prefix.edsk).slice(32),
                             prefix.edpk
                         ),
-                        pkh: utility.b58cencode(
+                        pkh: b58cencode(
                             library.sodium.crypto_generichash(
                                 20,
-                                utility.b58cdecode(sk, prefix.edsk).slice(32)
+                                b58cdecode(sk, prefix.edsk).slice(32)
                             ),
                             prefix.tz1
                         ),
@@ -87,12 +88,12 @@ export default {
                     };
                 } else if (sk.length == 54) {
                     //seed
-                    const s = utility.b58cdecode(sk, prefix.edsk2);
+                    const s = b58cdecode(sk, prefix.edsk2);
                     const kp = library.sodium.crypto_sign_seed_keypair(s);
                     return {
-                        sk: utility.b58cencode(kp.privateKey, prefix.edsk),
-                        pk: utility.b58cencode(kp.publicKey, prefix.edpk),
-                        pkh: utility.b58cencode(
+                        sk: b58cencode(kp.privateKey, prefix.edsk),
+                        pk: b58cencode(kp.publicKey, prefix.edpk),
+                        pkh: b58cencode(
                             library.sodium.crypto_generichash(20, kp.publicKey),
                             prefix.tz1
                         )
@@ -109,7 +110,7 @@ export default {
     },
     checkAddress(a: string) {
         try {
-            utility.b58cdecode(a, prefix.tz1);
+            b58cdecode(a, prefix.tz1);
             return true;
         } catch (e) {
             return false;
@@ -122,24 +123,24 @@ export default {
         return {
             mnemonic: m,
             passphrase: p,
-            sk: utility.b58cencode(kp.privateKey, prefix.edsk),
-            pk: utility.b58cencode(kp.publicKey, prefix.edpk),
-            pkh: utility.b58cencode(
+            sk: b58cencode(kp.privateKey, prefix.edsk),
+            pk: b58cencode(kp.publicKey, prefix.edpk),
+            pkh: b58cencode(
                 library.sodium.crypto_generichash(20, kp.publicKey),
                 prefix.tz1
             )
         };
     },
-    sign(bytes: string, sk: string | Uint8Array, wm: Uint8Array | number[]) {
-        var bb = utility.hex2buf(bytes);
-        if (typeof wm != "undefined") bb = utility.mergebuf(wm, bb);
+    sign(bytes: string, sk: string, wm: Uint8Array | number[]) {
+        var bb = hex2buf(bytes);
+        if (typeof wm != "undefined") bb = mergebuf(wm, bb);
         const sig = library.sodium.crypto_sign_detached(
             library.sodium.crypto_generichash(32, bb),
-            utility.b58cdecode(sk, prefix.edsk),
+            b58cdecode(sk, prefix.edsk),
             "uint8array"
         );
-        const edsig = utility.b58cencode(sig, prefix.edsig);
-        const sbytes = bytes + utility.buf2hex(sig);
+        const edsig = b58cencode(sig, prefix.edsig);
+        const sbytes = bytes + buf2hex(sig);
         return {
             bytes: bytes,
             sig: sig,
@@ -147,11 +148,11 @@ export default {
             sbytes: sbytes
         };
     },
-    verify(bytes: string, sig: any, pk: string | Uint8Array) {
+    verify(bytes: string, sig: any, pk: string) {
         return library.sodium.crypto_sign_verify_detached(
             sig,
-            utility.hex2buf(bytes),
-            utility.b58cdecode(pk, prefix.edpk)
+            hex2buf(bytes),
+            b58cdecode(pk, prefix.edpk)
         );
     }
 };
