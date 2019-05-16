@@ -96,7 +96,7 @@ interface OperationScript {
 
 interface OperationParameter {
     prim?: string,
-    annots?: Uint8Array,
+    annots?: Uint8Array | string[],
     args?: OperationParameter[],
     bytes?: string | Uint8Array,
     int?: number,

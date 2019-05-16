@@ -15,18 +15,35 @@
   "scripts": {
     "test": "jest",
     "coverage": "jest --coverage && codecov",
-    "build": "tsc"
+    "lint": "tslint --project tsconfig.json -t codeFrame",
+    "build": "tsc --build tsconfig.json",
+    "watch": "tsc --watch",
+    "precommit": "npm run build && lint-staged && npm run lint"
   },
   "devDependencies": {
     "@types/libsodium-wrappers": "^0.7.5",
+    "@types/pbkdf2": "^3.0.0",
+    "@types/text-encoding": "0.0.35",
     "codecov": "^3.4.0",
     "eslint": "^5.16.0",
     "eslint-config-google": "^0.13.0",
     "jest": "^24.8.0",
+    "lint-staged": "^7.2.2",
     "mock-xmlhttprequest": "^4.4.0",
+    "prettier": "^1.14.2",
+    "tslint": "^5.11.0",
+    "tslint-config-prettier": "^1.14.0",
+    "tslint-config-standard": "^7.1.0",
+    "tslint-microsoft-contrib": "^5.1.0",
     "typescript": "^3.4.5"
   },
   "publishConfig": {
     "registry": "http://nexus.alphapoint.com:8087/repository/npm-private/"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "prettier --write --print-width 80 --tab-width 4 --no-semi --single-quote --trailing-comma all --arrow-parens always",
+      "git add"
+    ]
   }
 }

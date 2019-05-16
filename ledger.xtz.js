@@ -6337,7 +6337,7 @@ function defer() {
     resolve = success;
     reject = failure;
   });
-  if (!resolve || !reject) throw "defer() error"; // this never happens and is just to make flow happy
+  if (!resolve || !reject) throw new Error("defer() error"); // this never happens and is just to make flow happy
   return { promise: promise, resolve: resolve, reject: reject };
 }
 
