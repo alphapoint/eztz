@@ -4,7 +4,6 @@ import prefix from "./prefix";
 // @ts-ignore
 import {TextEncoder} from "text-encoding";
 import {Crypto} from "@peculiar/webcrypto";
-import { KeyPair } from "./rpc-types";
 
 const crypto = new Crypto();
 

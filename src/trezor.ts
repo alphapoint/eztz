@@ -1,7 +1,6 @@
 import utility from "./utility";
 import node from "./node";
 import prefix from "./prefix";
-import { Operation } from "./rpc-types";
 
 export default {
     source(address: string): Source | any {

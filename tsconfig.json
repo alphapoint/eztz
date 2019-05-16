@@ -1,15 +1,24 @@
 {
     "compilerOptions": {
       "module": "commonjs",
-      "esModuleInterop": true,
-      "target": "es6",
-      "strict": true,
-      "noImplicitAny": true,
+      "target": "esnext",
       "moduleResolution": "node",
       "sourceMap": true,
-      "outDir": "dist",
+      "declaration": true,
+      "declarationMap": true,
+      "strict": true,
+      "alwaysStrict": true,
+      "noImplicitUseStrict": false,
+      "noImplicitReturns": true,
+      "preserveConstEnums": true,
+      "noEmitOnError": true,
+      "declarationDir": "./dist/",
+      "outDir": "./dist/",
+      "rootDir": "./src/",
       "lib":["es6", "es7", "esnext"],
-      "allowJs": true
+      "esModuleInterop": true,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true
     },
     "include": [
       "src/**/*"

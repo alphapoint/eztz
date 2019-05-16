@@ -37,7 +37,7 @@ export default {
     getHead(): Promise<Block> {
         return node.query("/chains/main/blocks/head");
     },
-    getHeader(): Promise<Block> {
+    getHeader(): Promise<BlockHeader> {
         return node.query("/chains/main/blocks/head/header");
     },
     getHeadHash(): Promise<string> {

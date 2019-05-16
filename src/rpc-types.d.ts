@@ -1,5 +1,3 @@
-import { AnyARecord } from "dns";
-
 interface Block {
     protocol: string
     chain_id: string
@@ -80,7 +78,7 @@ interface Operation {
     amount?: string | number
     destination?: Source | string | any
     delegatable?: boolean
-    delegate?: string 
+    delegate?: string
     spendable?: boolean
     managerPubkey?: string | any
     manager_pubkey?: string | any

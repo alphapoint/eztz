@@ -7,7 +7,6 @@ import library from "./library";
 import prefix from "./prefix";
 // @ts-ignore
 import {TextDecoder, TextEncoder} from "text-encoding";
-import { Block, OperationParameter } from "./rpc-types";
 
 export default {
     async forge(head: Block, opOb: any, validateLocalForge?: boolean)
