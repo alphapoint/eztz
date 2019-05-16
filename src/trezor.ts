@@ -20,7 +20,7 @@ export default {
             hash: bytes
         };
     },
-    parameter: function (address: any, opbytes: { substr: { (arg0: number): string; (arg0: any): string; }; indexOf: (arg0: string) => number; }) {
+    parameter: function (address: any, opbytes: string) {
         const tag = address[0] === "t" ? 0 : 1;
         const curve = parseInt(address[2]) - 1;
         const pp = tag === 1 ? prefix.KT : prefix["tz" + (curve + 1)];
@@ -37,7 +37,7 @@ export default {
                 opbytes.substr(opbytes.indexOf(hex) + hex.length + 2)
             );
     },
-    operation(d: { opOb: { contents: any[]; }; opbytes: { substr: { (arg0: number): string; (arg0: any): string; }; indexOf: (arg0: string) => number; }; }) {
+    operation(d: { opOb: { contents: any[]; }; opbytes: string }) {
         const operations = [];
         let revealOp : any = false;
         let op;
