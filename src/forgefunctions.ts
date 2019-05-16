@@ -1,11 +1,11 @@
 import utility from "./Utility";
 import tezos from "./tezos"
-import library from "./library";
+import prefix from "./prefix";
 
 const {b58cdecode, buf2hex, toBytesInt32, toBytesInt32Hex} = utility;
 
 //Forge functions
-const forgeOpTags = <> {
+const forgeOpTags = <{ [key: string]: number }> {
     endorsement: 0,
     seed_nonce_revelation: 1,
     double_endorsement_evidence: 2,
@@ -19,7 +19,7 @@ const forgeOpTags = <> {
     delegation: 10
 };
 
-function forgeOp(op) {
+function forgeOp(op: any) {
     var fop;
     fop = buf2hex(new Uint8Array([forgeOpTags[op.kind]]));
     switch (forgeOpTags[op.kind]) {
@@ -31,12 +31,12 @@ function forgeOp(op) {
             if (forgeOpTags[op.kind] == 1) break;
         case 2:
         case 3:
-            throw "Double bake and double endorse forging is not complete";
             if (forgeOpTags[op.kind] == 2) break;
             if (forgeOpTags[op.kind] == 3) break;
+            throw "Double bake and double endorse forging is not complete";
         case 4:
             fop += buf2hex(
-                b58cdecode(op.pkh, eztz.prefix.tz1)
+                b58cdecode(op.pkh, prefix.tz1)
             );
             fop += op.secret;
             if (forgeOpTags[op.kind] == 4) break;
@@ -49,7 +49,7 @@ function forgeOp(op) {
                 break;
             } else if (forgeOpTags[op.kind] == 6) {
                 fop += buf2hex(
-                    b58cdecode(op.proposal, eztz.prefix.P)
+                    b58cdecode(op.proposal, prefix.P)
                 );
                 fop += op.ballot == "yay" ? "00" : op.ballot == "nay" ? "01" : "02";
                 break;
@@ -104,11 +104,11 @@ function forgeOp(op) {
     return fop;
 }
 
-function forgeBool(b) {
+function forgeBool(b: string | boolean) {
     return b ? "ff" : "00";
 }
 
-function forgeScript(s) {
+function forgeScript(s: OperationScript) {
     var t1 = tezos.encodeRawBytes(s.code).toLowerCase();
     var t2 = tezos.encodeRawBytes(s.storage).toLowerCase();
     return (
@@ -116,16 +116,16 @@ function forgeScript(s) {
     );
 }
 
-function forgeParameters(p) {
+function forgeParameters(p: OperationParameter | OperationParameter[]) {
     var t = tezos.encodeRawBytes(p).toLowerCase();
     return toBytesInt32Hex(t.length / 2) + t;
 }
 
-function forgeAddress(a) {
+function forgeAddress(a: string) {
     var fa;
     if (a.substr(0, 1) == "K") {
         fa = "01";
-        fa += buf2hex(b58cdecode(a, eztz.prefix.KT));
+        fa += buf2hex(b58cdecode(a, prefix.KT));
         fa += "00";
     } else {
         fa = "00";
@@ -134,36 +134,36 @@ function forgeAddress(a) {
     return fa;
 }
 
-function forgeZarith(n) {
+function forgeZarith(n: string) {
     var fn = "";
-    n = parseInt(n);
+    let num : number | bigint = parseInt(n);
     while (true) {
-        if (n < 128) {
-            if (n < 16) fn += "0";
-            fn += n.toString(16);
+        if (num < 128) {
+            if (num < 16) fn += "0";
+            fn += num.toString(16);
             break;
         } else {
-            var b = n % 128;
-            n -= b;
-            n /= 128;
-            b += 128;
+            var b = num % 128;
+            num -= b;
+            num /= 128;
+            num += 128;
             fn += b.toString(16);
         }
     }
     return fn;
 }
 
-function forgePublicKeyHash(pkh) {
+function forgePublicKeyHash(pkh: string) {
     var fpkh;
     var t = parseInt(pkh.substr(2, 1));
     fpkh = "0" + (t - 1).toString();
     fpkh += buf2hex(
-        b58cdecode(pkh, eztz.prefix[pkh.substr(0, 3)])
+        b58cdecode(pkh, prefix[pkh.substr(0, 3)])
     );
     return fpkh;
 }
 
-function forgePublicKey(pk) {
+function forgePublicKey(pk: string) {
     var fpk;
     var t;
     switch (pk.substr(0, 2)) {
@@ -178,7 +178,7 @@ function forgePublicKey(pk) {
             break;
     }
     fpk += buf2hex(
-        b58cdecode(pk, eztz.prefix[pk.substr(0, 4)])
+        b58cdecode(pk, prefix[pk.substr(0, 4)])
     );
     return fpk;
 }

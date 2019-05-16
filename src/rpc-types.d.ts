@@ -67,19 +67,21 @@ interface ManagerKey {
 }
 
 interface Operation {
+    source?: Source
+    counter?: number
     kind: string
-    balance?: string
-    fee: string
-    gas_limit: string
-    storage_limit: string
-    amount?: string
-    destination?: string
+    balance?: string | number
+    fee: string | number
+    gas_limit: string | number
+    storage_limit: string | number
+    amount?: string | number
+    destination?: Source
     delegatable?: string
-    delegate?: string
+    delegate?: string | Uint8Array
     spendable?: string
-    managerPubkey?: string
-    manager_pubkey?: string
-    parameters?: OperationParameter
+    managerPubkey?: string | Uint8Array 
+    manager_pubkey?: string | Uint8Array
+    parameters?: OperationParameter | Uint8Array
     signature?: string
     script?: OperationScript
     secret?: string

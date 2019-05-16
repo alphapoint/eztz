@@ -1,6 +1,7 @@
 import utility from "./Utility";
 import library from "./library"
 import prefix from "./prefix";
+// @ts-ignore
 import {TextEncoder} from "text-encoding";
 import {Crypto} from "@peculiar/webcrypto";
 
@@ -28,7 +29,7 @@ export default {
                 false,
                 ["deriveBits"]
             )
-            .then(function (key) {
+            .then(function (key: any) {
                 console.log(key);
                 return crypto.subtle.deriveBits(
                     {
@@ -41,7 +42,7 @@ export default {
                     256
                 );
             })
-            .then(function (key) {
+            .then(function (key: Iterable<number>) {
                 console.log(key);
                 console.log(
                     library.sodium.crypto_secretbox_open_easy(
@@ -67,7 +68,7 @@ export default {
                 };
             });
     },
-    extractKeys(sk) {
+    extractKeys(sk: string) {
         const pref = sk.substr(0, 4);
         switch (pref) {
             case "edsk":
@@ -108,7 +109,7 @@ export default {
     generateMnemonic() {
         return library.bip39.generateMnemonic(160)
     },
-    checkAddress(a) {
+    checkAddress(a: string) {
         try {
             b58cdecode(a, prefix.tz1);
             return true;
@@ -116,9 +117,10 @@ export default {
             return false;
         }
     },
-    generateKeys(m, p) {
-        const s = library.bip39.mnemonicToSeed(m, p).slice(0, 32);
-        const kp = library.sodium.crypto_sign_seed_keypair(s);
+    async generateKeys(m: string, p: string) {
+        const s: Buffer = await library.bip39.mnemonicToSeed(m, p);
+        let seed: Buffer = s.slice(0, 32);
+        const kp = library.sodium.crypto_sign_seed_keypair(seed);
         return {
             mnemonic: m,
             passphrase: p,
@@ -130,7 +132,7 @@ export default {
             )
         };
     },
-    sign(bytes, sk, wm) {
+    sign(bytes: string, sk: string | Uint8Array, wm: Uint8Array | number[]) {
         var bb = hex2buf(bytes);
         if (typeof wm != "undefined") bb = mergebuf(wm, bb);
         const sig = library.sodium.crypto_sign_detached(
@@ -147,7 +149,7 @@ export default {
             sbytes: sbytes
         };
     },
-    verify(bytes, sig, pk) {
+    verify(bytes: string, sig: any, pk: string | Uint8Array) {
         return library.sodium.crypto_sign_verify_detached(
             sig,
             hex2buf(bytes),

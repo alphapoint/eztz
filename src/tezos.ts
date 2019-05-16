@@ -10,7 +10,7 @@ import {TextEncoder, TextDecoder} from "text-encoding";
 //import {Block, OperationParameter} from "./rpc-types";
 
 const {b58cdecode, buf2hex} = utility;
-const {prim_mapping_reverse, op_mapping_reverse, op_mapping} = library;
+const {prim_mapping_reverse, op_mapping_reverse, op_mapping, prim_mapping} = library;
 
 export default {
     async forge(head: Block, opOb: any, validateLocalForge?: boolean)
@@ -66,7 +66,7 @@ export default {
                 if (input.annots) {
                     const annots_bytes = input.annots
                         .map(x => {
-                            return buf2hex(new TextEncoder().encode(x));
+                            return parseInt(buf2hex(new TextEncoder().encode(x)));
                         })
                         .join("20");
                     result.push(
@@ -89,8 +89,6 @@ export default {
                         : (binary.length - 6) % 7
                         ? binary.length + 7 - ((binary.length - 6) % 7)
                         : binary.length;
-
-
                 const split = binary
                     .padStart(pad, "0")
                     .match(/\d{6,7}/g);
@@ -124,16 +122,16 @@ export default {
 
         return result.join("");
     },
-    decodeRawBytes(bytes) {
+    decodeRawBytes(bytes : string) {
         bytes = bytes.toUpperCase();
 
         let index = 0;
 
-        const read = (len) => {
+        const read = (len: number) => {
             return bytes.slice(index, index + len);
         };
 
-        const rec = () => {
+        const rec: any = () => {
             const b = read(2);
             const prim = prim_mapping[b];
 
@@ -143,7 +141,7 @@ export default {
                 index += 2;
 
                 const args = Array.apply(null, new Array(prim.len));
-                const result = {
+                const result : OperationParameter = {
                     prim: op,
                     args: args.map(function () {
                         return rec();
