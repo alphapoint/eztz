@@ -1,6 +1,7 @@
 import BN from "bignumber.js";
 // @ts-ignore
 import bs58check from "bs58check";
+import { OperationParameter } from "./rpc-types";
 
 export default {
     toBytesInt32Hex(num: string | number) {

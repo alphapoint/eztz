@@ -4,6 +4,7 @@ import rpc from "./rpc";
 import prefix from "./prefix";
 import utility from "./utility";
 import node from "./node"
+import { KeyPair, OperationParameter } from "./rpc-types";
 
 export default {
     hash(operationHash: any, ind: any) {

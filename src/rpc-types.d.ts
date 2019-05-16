@@ -1,3 +1,5 @@
+import { AnyARecord } from "dns";
+
 interface Block {
     protocol: string
     chain_id: string
@@ -68,7 +70,7 @@ interface ManagerKey {
 }
 
 interface Operation {
-    source?: Source | string
+    source?: Source | string | any
     counter?: string | number
     kind: string
     balance?: string | number
@@ -76,12 +78,12 @@ interface Operation {
     gas_limit?: string | number
     storage_limit?: string | number
     amount?: string | number
-    destination?: Source | string
+    destination?: Source | string | any
     delegatable?: boolean
-    delegate?: string
+    delegate?: string 
     spendable?: boolean
-    managerPubkey?: string | Uint8Array
-    manager_pubkey?: string | Uint8Array
+    managerPubkey?: string | any
+    manager_pubkey?: string | any
     parameters?: OperationParameter | Uint8Array
     signature?: string
     script?: OperationScript
@@ -96,7 +98,7 @@ interface OperationScript {
 
 interface OperationParameter {
     prim?: string,
-    annots?: Uint8Array,
+    annots?: Uint8Array | string[],
     args?: OperationParameter[],
     bytes?: string | Uint8Array,
     int?: number | string,

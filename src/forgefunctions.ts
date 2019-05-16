@@ -1,6 +1,7 @@
 import utility from "./utility";
 import tezos from "./tezos"
 import prefix from "./prefix";
+import { OperationScript, OperationParameter } from "./rpc-types";
 
 //Forge functions
 const forgeOpTags = <{ [key: string]: number }>{

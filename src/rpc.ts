@@ -3,6 +3,7 @@ import node from "./node"
 import utility from "./utility"
 import crypto from "./crypto"
 import tezos from "./tezos";
+import { KeyPair, Block, Operation, OperationScript, TypeCheckData } from "./rpc-types";
 
 const counters: { [key: string]: number } = {};
 
@@ -37,7 +38,7 @@ export default {
     getHead(): Promise<Block> {
         return node.query("/chains/main/blocks/head");
     },
-    getHeader(): Promise<BlockHeader> {
+    getHeader(): Promise<Block> {
         return node.query("/chains/main/blocks/head/header");
     },
     getHeadHash(): Promise<string> {
@@ -100,7 +101,7 @@ export default {
             repeater();
         });
     },
-    async prepareOperation(from: string, operation: Operation, keys: KeyPair | boolean, newAccount?: boolean, manager?: string) {
+    async prepareOperation(from: string, operation: Operation, keys: KeyPair | boolean | any, newAccount?: boolean, manager?: string) {
         if (typeof keys == "undefined") keys = false;
         let counter, opOb;
         const promises = [];
@@ -183,7 +184,7 @@ export default {
     async sendOperation(
         from: string,
         operation: Operation,
-        keys: KeyPair | boolean,
+        keys: KeyPair | boolean | any,
         skipPrevalidation?: boolean,
         newAccount?: boolean,
         manager?: string
@@ -212,43 +213,35 @@ export default {
                 return this.inject(fullOp.opOb, fullOp.opbytes);
         }
     },
-    inject(opOb: any, sopbytes) {
-        const opResponse = [];
-        let errors = [];
-        return node
-            .query("/chains/main/blocks/head/helpers/preapply/operations", [opOb])
-            .then(function (f) {
-                if (!Array.isArray(f)) throw {error: "RPC Fail", errors: []};
-                for (let i = 0; i < f.length; i++) {
-                    for (let j = 0; j < f[i].contents.length; j++) {
-                        opResponse.push(f[i].contents[j]);
-                        if (
-                            typeof f[i].contents[j].metadata.operation_result !=
-                            "undefined" &&
-                            f[i].contents[j].metadata.operation_result.status === "failed"
-                        )
-                            errors = errors.concat(
-                                f[i].contents[j].metadata.operation_result.errors
-                            );
-                    }
-                }
-                if (errors.length)
-                    throw {error: "ForgeOperation Failed", errors: errors};
-                return node.query("/injection/operation", sopbytes);
-            })
-            .then(function (f) {
-                return {
-                    hash: f,
-                    operations: opResponse
-                };
-            });
+    async inject(opOb: any, sopbytes: any) {
+        const opResponse : Operation[] = [];
+        let errors: Operation[] = [];
+        const f = await node
+            .query("/chains/main/blocks/head/helpers/preapply/operations", [opOb]);
+        if (!Array.isArray(f))
+            throw { error: "RPC Fail", errors: [] };
+        for (let i = 0; i < f.length; i++) {
+            for (let j = 0; j < f[i].contents.length; j++) {
+                opResponse.push(f[i].contents[j]);
+                if (typeof f[i].contents[j].metadata.operation_result !=
+                    "undefined" &&
+                    f[i].contents[j].metadata.operation_result.status === "failed")
+                    errors = errors.concat(f[i].contents[j].metadata.operation_result.errors);
+            }
+        }
+        if (errors.length)
+            throw { error: "ForgeOperation Failed", errors: errors };
+        const f_1 = await node.query("/injection/operation", sopbytes);
+        return {
+            hash: f_1,
+            operations: opResponse
+        };
     },
-    silentInject(sopbytes) {
-        return node.query("/injection/operation", sopbytes).then(function (f) {
-            return {
-                hash: f
-            };
-        });
+    async silentInject(sopbytes:any) {
+        const f = await node.query("/injection/operation", sopbytes);
+        return {
+            hash: f
+        };
     },
 
     account(
@@ -415,7 +408,7 @@ export default {
             {program: _code, gas: "10000"}
         );
     },
-    packData(data, type) {
+    packData(data: any, type: any) {
         const check = {
             data: utility.sexp2mic(data),
             type: utility.sexp2mic(type),
@@ -426,7 +419,7 @@ export default {
             check
         );
     },
-    typecheckData(data, type) {
+    typecheckData(data: any, type: any) {
         const check: TypeCheckData = {
             data: utility.sexp2mic(data),
             type: utility.sexp2mic(type),

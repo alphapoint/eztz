@@ -7,6 +7,7 @@ import library from "./library";
 import prefix from "./prefix";
 // @ts-ignore
 import {TextDecoder, TextEncoder} from "text-encoding";
+import { Block, OperationParameter } from "./rpc-types";
 
 export default {
     async forge(head: Block, opOb: any, validateLocalForge?: boolean)
@@ -61,7 +62,7 @@ export default {
 
                 if (input.annots) {
                     const annots_bytes = input.annots
-                        .map(x => {
+                        .map((x: any) => {
                             return parseInt(utility.buf2hex(new TextEncoder().encode(x)));
                         })
                         .join("20");

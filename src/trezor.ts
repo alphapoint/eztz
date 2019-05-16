@@ -1,9 +1,12 @@
 import utility from "./utility";
 import node from "./node";
 import prefix from "./prefix";
+import { Operation } from "./rpc-types";
 
 export default {
-    source(address: string): Source {
+    source(address: string): Source | any {
+        if(address === undefined)
+            throw new Error("Source cannot be undefined or empty");
         const tag = address[0] === "t" ? 0 : 1;
         const curve = parseInt(address[2]) - 1;
         const pp = tag === 1 ? prefix.KT : prefix["tz" + (curve + 1)];
@@ -37,7 +40,7 @@ export default {
     },
     operation(d: { opOb: { contents: any[]; }, opbytes: string }) {
         const operations = [];
-        let revealOp: boolean | any = false;
+        let revealOp: boolean | Operation | any = false;
         let op: Operation;
         let op2: Operation;
         let p: boolean | Uint8Array;
@@ -53,8 +56,8 @@ export default {
                     fee: typeof op.fee === 'string' ? parseInt(op.fee) : op.fee,
                     counter: typeof op.counter === 'string' ? parseInt(op.counter) : op.counter,
                     // TODO: are these field names correct?
-                    gasLimit: typeof op.gas_limit === 'string' ? parseInt(op.gas_limit) : op.gas_limit,
-                    storageLimit: typeof op.storage_limit === 'string' ? parseInt(op.storage_limit) : op.storage_limit,
+                    gas_limit: typeof op.gas_limit === 'string' ? parseInt(op.gas_limit) : op.gas_limit,
+                    storage_limit: typeof op.storage_limit === 'string' ? parseInt(op.storage_limit) : op.storage_limit,
                     publicKey: utility.mergebuf(
                         [0],
                         utility.b58cdecode(op.public_key, prefix.edpk)
@@ -62,7 +65,7 @@ export default {
                 };
             } else {
                 if (["origination", "transaction", "delegation"].indexOf(op.kind) < 0)
-                    return console.log("err2");
+                    throw new Error(`Operation kind is not origination, transaction, delegation. Operation kind is ${op.kind}`);
                 op2 = {
                     kind: op.kind,
                     source: this.source(op.source),
@@ -76,7 +79,8 @@ export default {
                     case "transaction":
                         // TODO: these parseInt calls are subject to overflow, maybe use native BigInt?
                         op2.amount = typeof op.amount === 'string' ? parseInt(op.amount) : op.amount;
-                        op2.destination = this.source(op.destination);
+                        if(op.destination !== undefined)
+                            op2.destination = this.source(op.destination);
                         if ((p = this.parameter(op.destination, d.opbytes)))
                             op2.parameters = p;
                         break;
