@@ -19,6 +19,8 @@
   },
   "devDependencies": {
     "@types/libsodium-wrappers": "^0.7.5",
+    "@types/pbkdf2": "^3.0.0",
+    "@types/text-encoding": "0.0.35",
     "codecov": "^3.4.0",
     "eslint": "^5.16.0",
     "eslint-config-google": "^0.13.0",

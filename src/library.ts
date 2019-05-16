@@ -1,10 +1,7 @@
 // @ts-ignore
 import bs58check from "bs58check";
-// @ts-ignore
 import sodium from "libsodium-wrappers";
-// @ts-ignore
 import bip39 from "bip39";
-// @ts-ignore
 import pbkdf2 from "pbkdf2";
 
 const op_mapping: { [key: string]: string } = {
