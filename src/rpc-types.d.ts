@@ -69,7 +69,7 @@ interface ManagerKey {
 
 interface Operation {
     source?: Source
-    counter?: number
+    counter?: string | number
     kind: string
     balance?: string | number
     fee: string | number
@@ -86,6 +86,7 @@ interface Operation {
     signature?: string
     script?: OperationScript
     secret?: string
+    public_key?: string
 }
 
 interface OperationScript {

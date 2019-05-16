@@ -35,22 +35,25 @@ export default {
                 opbytes.substr(opbytes.indexOf(hex) + hex.length + 2)
             );
     },
-    operation(d: { opOb: { contents: any[]; }; opbytes: string }) {
+    operation(d: { opOb: { contents: any[]; }, opbytes: string }) {
         const operations = [];
-        let revealOp: any = false;
-        let op;
+        let revealOp: boolean | any = false;
+        let op: Operation;
         let op2: Operation;
         let p: boolean | Uint8Array;
         for (let i = 0; i < d.opOb.contents.length; i++) {
             op = d.opOb.contents[i];
             if (op.kind === "reveal") {
-                if (revealOp) throw "Can't have 2 reveals";
+                if (revealOp) throw new Error("Can't have 2 reveals");
+                if (op.public_key === undefined)
+                    throw new Error("Missing public key in reveal op.");
                 revealOp = {
                     source: this.source(op.source),
-                    fee: parseInt(op.fee),
-                    counter: parseInt(op.counter),
-                    gasLimit: parseInt(op.gas_limit),
-                    storageLimit: parseInt(op.storage_limit),
+                    // TODO: these parseInt calls are subject to overflow, maybe use native BigInt?
+                    fee: typeof op.fee === 'string' ? parseInt(op.fee) : op.fee,
+                    counter: typeof op.counter === 'string' ? parseInt(op.counter) : op.counter,
+                    gasLimit: typeof op.gas_limit === 'string' ? parseInt(op.gas_limit) : op.gas_limit,
+                    storageLimit: typeof op.storage_limit === 'string' ? parseInt(op.storage_limit) : op.storage_limit,
                     publicKey: utility.mergebuf(
                         [0],
                         utility.b58cdecode(op.public_key, prefix.edpk)
@@ -62,14 +65,16 @@ export default {
                 op2 = {
                     kind: op.kind,
                     source: this.source(op.source),
-                    fee: parseInt(op.fee),
-                    counter: parseInt(op.counter),
-                    gas_limit: parseInt(op.gas_limit),
-                    storage_limit: parseInt(op.storage_limit)
+                    // TODO: these parseInt calls are subject to overflow, maybe use native BigInt?
+                    fee: typeof op.fee === 'string' ? parseInt(op.fee) : op.fee,
+                    counter: typeof op.counter === 'string' ? parseInt(op.counter) : op.counter,
+                    gas_limit: typeof op.gas_limit === 'string' ? parseInt(op.gas_limit) : op.gas_limit,
+                    storage_limit: typeof op.storage_limit === 'string' ? parseInt(op.storage_limit) : op.storage_limit
                 };
                 switch (op.kind) {
                     case "transaction":
-                        op2.amount = parseInt(op.amount);
+                        // TODO: these parseInt calls are subject to overflow, maybe use native BigInt?
+                        op2.amount = typeof op.amount === 'string' ? parseInt(op.amount) : op.amount;
                         op2.destination = this.source(op.destination);
                         if ((p = this.parameter(op.destination, d.opbytes)))
                             op2.parameters = p;
@@ -78,7 +83,8 @@ export default {
                         if (node.isZeronet)
                             op2.manager_pubkey = this.source(op.manager_pubkey).hash;
                         else op2.managerPubkey = this.source(op.managerPubkey).hash;
-                        op2.balance = parseInt(op.balance);
+                        // TODO: these parseInt calls are subject to overflow, maybe use native BigInt?
+                        op2.balance = typeof op.balance === 'string' ? parseInt(op.balance) : op.balance;
                         op2.spendable = op.spendable;
                         op2.delegatable = op.delegatable;
                         if (typeof op.delegate != "undefined") {
@@ -95,7 +101,10 @@ export default {
                 operations.push(op2);
             }
         }
-        if (operations.length > 1) return console.log("Too many operations");
+
+        if (operations.length > 1)
+            throw new Error("Too many operations");
+
         const operation = operations[0];
         return [operation, revealOp];
     }

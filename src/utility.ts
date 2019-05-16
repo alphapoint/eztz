@@ -29,7 +29,7 @@ export default {
         n.set(payload, prefix.length);
         return bs58check.encode(Buffer.from(n));
     },
-    b58cdecode(enc: Uint8Array | string, prefix: Uint8Array): Uint8Array {
+    b58cdecode(enc: string, prefix: Uint8Array): Uint8Array {
         return bs58check.decode(enc).slice(prefix.length);
     },
     buf2hex(buffer: Uint8Array | ArrayBuffer): string {
