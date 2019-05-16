@@ -4,9 +4,10 @@ import rpc from "./rpc";
 import prefix from "./prefix";
 import utility from "./utility";
 import node from "./node"
+import {ContractInfo} from "./rpc-types";
 
 export default {
-    hash(operationHash, ind) {
+    hash(operationHash: any, ind: any) {
         var ob = utility.b58cdecode(operationHash, prefix.o),
             tt = [],
             i = 0;
@@ -24,7 +25,7 @@ export default {
             prefix.KT
         );
     },
-    originate(keys, amount, code, init, spendable, delegatable, delegate, fee, gasLimit, storageLimit) {
+    originate(keys: string, amount: string, code: any, init: string, spendable: boolean, delegatable: boolean, delegate: string, fee: string, gasLimit: string, storageLimit: string) {
         if (typeof gasLimit == "undefined") gasLimit = "10000";
         if (typeof storageLimit == "undefined") storageLimit = "10000";
         return rpc.originate(
@@ -40,7 +41,7 @@ export default {
             storageLimit
         );
     },
-    send(contract, from, keys, amount, parameter, fee, gasLimit, storageLimit) {
+    send(contract: string, from: string, keys: string, amount: string, parameter: any, fee: string, gasLimit: string, storageLimit: string) {
         if (typeof gasLimit == "undefined") gasLimit = "2000";
         if (typeof storageLimit == "undefined") storageLimit = "0";
         return rpc.transfer(
@@ -54,10 +55,10 @@ export default {
             storageLimit
         );
     },
-    balance(contract) {
+    balance(contract: string) {
         return rpc.getBalance(contract);
     },
-    storage(contract) {
+    storage(contract: string) {
         return new Promise(function (resolve, reject) {
             node
                 .query(
@@ -73,12 +74,12 @@ export default {
                 });
         });
     },
-    load: function (contract) {
+    load: function (contract: string) {
         return node.query(
             "/chains/main/blocks/head/context/contracts/" + contract
         );
     },
-    watch(cc, timeout, cb) {
+    watch(cc: string, timeout: number, cb: any) {
         let storage = [];
         const ct = () => {
             this.storage(cc).then(function (r) {

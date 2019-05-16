@@ -1,8 +1,9 @@
-import watermark from "./watermark";
-import node from "./node";
-import utility from "./utility";
-import crypto from "./crypto";
+import watermark from "./watermark"
+import node from "./node"
+import utility from "./utility"
+import crypto from "./crypto"
 import tezos from "./tezos";
+import {KeyPair, Operation, OperationScript, TypeCheckData} from "./rpc-types";
 
 const counters: { [key: string]: number } = {};
 
@@ -101,7 +102,7 @@ export default {
             repeater();
         });
     },
-    async prepareOperation(from, operation, keys, newAccount, manager) {
+    async prepareOperation(from: string, operation: Operation, keys: KeyPair, newAccount?: boolean, manager?: string) {
         if (typeof keys == "undefined") keys = false;
         let counter, opOb;
         const promises = [];
@@ -177,21 +178,21 @@ export default {
         };
         return tezos.forge(head, opOb);
     },
-    async simulateOperation(from, operation, keys) {
+    async simulateOperation(from: string, operation: Operation, keys: KeyPair) {
         const fullOp = await this.prepareOperation(from, operation, keys);
         return node.query("/chains/main/blocks/head/helpers/scripts/run_operation", fullOp.opOb);
     },
     async sendOperation(
-        from,
-        operation,
-        keys,
-        skipPrevalidation?,
-        newAccount?,
-        manager?
+        from: string,
+        operation: Operation,
+        keys: KeyPair,
+        skipPrevalidation?: boolean,
+        newAccount?: boolean,
+        manager?: string
     ) {
         if (typeof skipPrevalidation == "undefined")
             skipPrevalidation = false;
-        const fullOp = await rpc
+        const fullOp = await this
             .prepareOperation(from, operation, keys, newAccount, manager);
         if (keys.sk === false) {
             return fullOp;
@@ -253,14 +254,14 @@ export default {
     },
 
     account(
-        keys,
-        amount,
-        spendable,
-        delegatable,
-        delegate,
-        fee,
-        gasLimit,
-        storageLimit
+        keys: KeyPair,
+        amount: string,
+        spendable: boolean,
+        delegatable: boolean,
+        delegate: string,
+        fee: string,
+        gasLimit: string,
+        storageLimit: string
     ) {
         if (typeof gasLimit == "undefined") gasLimit = "10000";
         if (typeof storageLimit == "undefined") storageLimit = "257";
@@ -288,15 +289,16 @@ export default {
         return this.sendOperation(keys.pkh, operation, keys, false, false);
     },
     transfer(
-        from,
-        keys,
-        to,
-        amount,
-        fee,
-        parameter,
-        gasLimit,
-        storageLimit,
-        newAccount
+        from: string,
+        keys: KeyPair,
+        to: string,
+        amount: string,
+        fee: string,
+        //TODO: what is param, actually
+        parameter: any,
+        gasLimit: string,
+        storageLimit: string,
+        newAccount?: boolean
     ) {
         if (typeof gasLimit == "undefined") gasLimit = "10100";
         if (typeof storageLimit == "undefined") storageLimit = "0";
@@ -308,23 +310,23 @@ export default {
             amount: amount.toString(),
             destination: to
         };
-        if (typeof parameter == "undefined") parameter = false;
+        if (typeof parameter == "undefined") parameter = false;//sets parameter to boolean???
         if (parameter) {
             operation.parameters = utility.sexp2mic(parameter);
         }
         return this.sendOperation(from, operation, keys, true, newAccount);
     },
     originate(
-        keys,
-        amount,
-        code,
-        init,
-        spendable,
-        delegatable,
-        delegate,
-        fee,
-        gasLimit,
-        storageLimit
+        keys: KeyPair,
+        amount: string,
+        code: string,
+        init: string,
+        spendable: boolean,
+        delegatable: boolean,
+        delegate: string,
+        fee: string,
+        gasLimit: string,
+        storageLimit: string
     ) {
         if (typeof gasLimit == "undefined") gasLimit = "10000";
         if (typeof storageLimit == "undefined") storageLimit = "257";
@@ -339,7 +341,7 @@ export default {
                 storage_limit: storageLimit,
                 gas_limit: gasLimit,
                 fee: fee.toString(),
-                script
+                script: script
             };
 
         if (node.isZeronet)
@@ -359,14 +361,14 @@ export default {
         return this.sendOperation(keys.pkh, operation, keys);
     },
     setDelegate(
-        from,
-        keys,
-        delegate,
-        fee,
-        gasLimit,
-        storageLimit,
-        newAccount,
-        manager
+        from: string,
+        keys: KeyPair,
+        delegate: string,
+        fee: string,
+        gasLimit: string,
+        storageLimit: string,
+        newAccount?: boolean,
+        manager?: string
     ) {
         if (typeof gasLimit == "undefined") gasLimit = "10000";
         if (typeof storageLimit == "undefined") storageLimit = "0";
@@ -388,7 +390,7 @@ export default {
             manager
         );
     },
-    registerDelegate(keys, fee, gasLimit, storageLimit) {
+    registerDelegate(keys: KeyPair, fee: string, gasLimit: string, storageLimit: string) {
         if (typeof gasLimit == "undefined") gasLimit = "10000";
         if (typeof storageLimit == "undefined") storageLimit = "0";
         const operation: Operation = {
@@ -402,7 +404,7 @@ export default {
     },
 
     activate: function (pkh, secret) {
-        const operation: Operation = {
+        const operation:  = {
             kind: "activate_account",
             pkh: pkh,
             secret: secret
@@ -410,7 +412,7 @@ export default {
         return this.sendOperation(pkh, operation, false);
     },
 
-    typecheckCode(code) {
+    typecheckCode(code: string) {
         const _code = utility.ml2mic(code);
         return node.query(
             "/chains/main/blocks/head/helpers/scripts/typecheck_code",
@@ -429,7 +431,7 @@ export default {
         );
     },
     typecheckData(data, type) {
-        const check = {
+        const check: TypeCheckData = {
             data: utility.sexp2mic(data),
             type: utility.sexp2mic(type),
             gas: "400000"
@@ -439,7 +441,7 @@ export default {
             check
         );
     },
-    runCode(code, amount, input, storage, trace) {
+    runCode(code: string, amount: string, input: string, storage: string, trace: string) {
         const ep = typeof trace != "undefined" && trace ? "trace_code" : "run_code";
         return node.query("/chains/main/blocks/head/helpers/scripts/" + ep, {
             script: utility.ml2mic(code),

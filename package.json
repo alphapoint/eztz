@@ -18,6 +18,7 @@
     "build": "tsc"
   },
   "devDependencies": {
+    "@types/libsodium-wrappers": "^0.7.5",
     "codecov": "^3.4.0",
     "eslint": "^5.16.0",
     "eslint-config-google": "^0.13.0",
