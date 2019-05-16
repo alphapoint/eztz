@@ -120,7 +120,8 @@ interface ContractScript {
 interface KeyPair {
     pk: any,
     sk: any,
-    pkh: any
+    // public key hash
+    pkh: string
 }
 
 interface TypeCheckData {

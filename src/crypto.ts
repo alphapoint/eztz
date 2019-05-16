@@ -9,11 +9,11 @@ const crypto = new Crypto();
 
 //TODO: Add p256 and secp256k1 cryptographay
 export default {
-    extractEncryptedKeys(esk: Uint8Array, password: string) {
+    extractEncryptedKeys(esk: string, password: string) {
         if (typeof esk == "undefined")
-            return false;
+            throw new Error("ES parameter must be provided.");
         if (typeof password == "undefined")
-            return false;
+            throw new Error("Password parameter must be provided.");
 
         const esb = utility.b58cdecode(esk, prefix.edesk);
         const salt = esb.slice(0, 8);
@@ -66,7 +66,7 @@ export default {
                 };
             });
     },
-    extractKeys(sk: string) {
+    extractKeys(sk: string): KeyPair | false {
         const pref = sk.substr(0, 4);
         switch (pref) {
             case "edsk":
@@ -83,7 +83,7 @@ export default {
                             ),
                             prefix.tz1
                         ),
-                        sk: sk
+                        sk
                     };
                 } else if (sk.length == 54) {
                     //seed
@@ -99,10 +99,8 @@ export default {
                     };
                 }
                 break;
-            default:
-                return false;
-                break;
         }
+        return false;
     },
     generateMnemonic() {
         return library.bip39.generateMnemonic(160)
@@ -130,7 +128,7 @@ export default {
             )
         };
     },
-    sign(bytes: string, sk: string | Uint8Array, wm: Uint8Array | number[]) {
+    sign(bytes: string, sk: string, wm: Uint8Array | number[]) {
         var bb = utility.hex2buf(bytes);
         if (typeof wm != "undefined") bb = utility.mergebuf(wm, bb);
         const sig = library.sodium.crypto_sign_detached(
@@ -147,7 +145,7 @@ export default {
             sbytes: sbytes
         };
     },
-    verify(bytes: string, sig: any, pk: string | Uint8Array) {
+    verify(bytes: string, sig: any, pk: string) {
         return library.sodium.crypto_sign_verify_detached(
             sig,
             utility.hex2buf(bytes),
