@@ -7,7 +7,7 @@ export default {
         return this.buf2hex(this.toBytesInt32(num));
     },
     toBytesInt32(num: string | number): ArrayBuffer {
-        if(typeof num === "string")
+        if (typeof num === "string")
             num = parseInt(num);
         const arr = new Uint8Array([
             (num & 0xff000000) >> 24,
@@ -44,10 +44,10 @@ export default {
     },
     hex2buf(hex: string): Uint8Array {
         const hexPairs = hex.match(/[\da-f]{2}/gi);
-        if(hexPairs == null)
+        if (hexPairs == null)
             throw new Error("Not a hex string");
         return new Uint8Array(
-                hexPairs
+            hexPairs
                 .map(function (h) {
                     return parseInt(h, 16);
                 })
@@ -126,15 +126,15 @@ export default {
         }
         return ret;
     },
-    mic2arr(s: OperationParameter):  any  {
+    mic2arr(s: OperationParameter): any {
         let ret: any = [];
         if (s.hasOwnProperty("prim")) {
             if (s.prim === "Pair") {
-                if(!s.args) throw new Error("Prim is pair but args is empty");
+                if (!s.args) throw new Error("Prim is pair but args is empty");
                 ret.push(this.mic2arr(s.args[0]));
                 ret = ret.concat(this.mic2arr(s.args[1]));
             } else if (s.prim === "Elt") {
-                if(!s.args) throw new Error("Prim is Elt but args is empty");
+                if (!s.args) throw new Error("Prim is Elt but args is empty");
                 ret = {
                     key: this.mic2arr(s.args[0]),
                     val: this.mic2arr(s.args[1])
@@ -165,7 +165,7 @@ export default {
             } else if (s.hasOwnProperty("string")) {
                 ret = s.string;
             } else if (s.hasOwnProperty("int") && typeof s.int !== 'undefined') {
-                if(typeof s.int === 'string')
+                if (typeof s.int === 'string')
                     ret = parseInt(s.int);
                 else
                     ret = s.int;
@@ -175,7 +175,7 @@ export default {
         }
         return ret;
     },
-    ml2mic(mi: string | string[]): any {
+    ml2mic(mi: string | string[]): OperationParameter[] {
         let inseq = false,
             seq = "",
             val = "",
@@ -183,7 +183,7 @@ export default {
             bl = 0,
             sopen = false,
             escaped = false;
-        const ret = [];
+        const ret: OperationParameter[] = [];
         for (let i = 0; i < mi.length; i++) {
             if (val === "}" || val === ";") {
                 val = "";
@@ -198,6 +198,8 @@ export default {
                     let st = this.ml2mic(val);
                     ret.push({
                         prim: seq.trim(),
+                        // TODO: should this really be OperationParameter[][] ?
+                        // @ts-ignore
                         args: [st]
                     });
                     val = "";
@@ -215,8 +217,8 @@ export default {
                 escaped = false;
                 continue;
             } else if (
-                (i === mi.length - 1 && sopen === false) ||
-                (mi[i] === ";" && pl === 0 && sopen === false)
+                (i === mi.length - 1 && !sopen) ||
+                (mi[i] === ";" && pl === 0 && !sopen)
             ) {
                 if (i === mi.length - 1) val += mi[i];
                 if (val.trim() === "" || val.trim() === "}" || val.trim() === ";") {
@@ -235,12 +237,12 @@ export default {
         }
         return ret;
     },
-    formatMoney(n: any | string | number, c: number, d: string , t: string) {
+    formatMoney(n: any | string | number, c: number, d: string, t: string): string {
         if (isNaN((c = Math.abs(c)))) c = 2;
         if (d === undefined) d = ".";
         if (t === undefined) t = ",";
         const s = n < 0 ? "-" : "";
-        const i : any | string | number = String(parseInt((n = Math.abs(Number(n) || 0).toFixed(c))));
+        const i: any | string | number = String(parseInt((n = Math.abs(Number(n) || 0).toFixed(c))));
         const j = i.length > 3 ? i.length % 3 : 0;
         return (
             s +
