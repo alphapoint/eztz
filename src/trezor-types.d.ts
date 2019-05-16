@@ -1,4 +1,4 @@
-interface Source{  
-    tag: number 
-    hash: Uint8Array 
+interface Source {
+    tag: number
+    hash: Uint8Array
 }

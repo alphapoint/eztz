@@ -1,14 +1,13 @@
+// @ts-ignore
 import sodium from "libsodium-wrappers"
 import rpc from "./rpc";
 import prefix from "./prefix";
-import utility from "./Utility";
+import utility from "./utility";
 import node from "./node"
-
-const {b58cencode, b58cdecode} = utility;
 
 export default {
     hash(operationHash, ind) {
-        var ob = b58cdecode(operationHash, prefix.o),
+        var ob = utility.b58cdecode(operationHash, prefix.o),
             tt = [],
             i = 0;
         for (; i < ob.length; i++) {
@@ -20,7 +19,7 @@ export default {
             (ind & 0x0000ff00) >> 8,
             ind & 0x000000ff
         ]);
-        return b58cencode(
+        return utility.b58cencode(
             sodium.crypto_generichash(20, new Uint8Array(tt)),
             prefix.KT
         );

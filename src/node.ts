@@ -10,17 +10,17 @@ export default {
     debugMode: false,
     async: true,
     isZeronet: false,
-    setDebugMode(t: boolean) : void {
+    setDebugMode(t: boolean): void {
         this.debugMode = t;
     },
-    setProvider(u: string, z?: boolean) : void {
+    setProvider(u: string, z?: boolean): void {
         if (typeof z != "undefined") this.isZeronet = z;
         this.activeProvider = u;
     },
-    resetProvider() : void {
+    resetProvider(): void {
         this.activeProvider = defaultProvider;
     },
-    query(e: string, o?: object, t?: any) : Promise<any> {
+    query(e: string, o?: object, t?: any): Promise<any> {
         if (typeof o === "undefined") {
             if (typeof t === "undefined") {
                 t = "GET";

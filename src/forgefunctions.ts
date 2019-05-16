@@ -5,7 +5,7 @@ import prefix from "./prefix";
 const {b58cdecode, buf2hex, toBytesInt32, toBytesInt32Hex} = utility;
 
 //Forge functions
-const forgeOpTags = <{ [key: string]: number }> {
+const forgeOpTags = <{ [key: string]: number }>{
     endorsement: 0,
     seed_nonce_revelation: 1,
     double_endorsement_evidence: 2,
@@ -136,7 +136,7 @@ function forgeAddress(a: string) {
 
 function forgeZarith(n: string) {
     var fn = "";
-    let num : number | bigint = parseInt(n);
+    let num: number | bigint = parseInt(n);
     while (true) {
         if (num < 128) {
             if (num < 16) fn += "0";

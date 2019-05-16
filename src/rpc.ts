@@ -1,10 +1,10 @@
-import watermark from "./watermark"
-import node from "./node"
-import utility from "./utility"
-import crypto from "./crypto"
+import watermark from "./watermark";
+import node from "./node";
+import utility from "./utility";
+import crypto from "./crypto";
+import tezos from "./tezos";
 
-const {sexp2mic, mutez, ml2mic} = utility;
-const counters = {};
+const counters: { [key: string]: number } = {};
 
 export default {
     call(e: string, d?: any): Promise<any> {
@@ -75,6 +75,7 @@ export default {
         if (interval <= 0) throw "Interval must be more than 0";
         const at = Math.ceil(timeout / interval) + 1;
         let c = 0;
+        let found = false;
         return new Promise((resolve, reject) => {
             const repeater = () => {
                 this.getHead().then((h) => {
@@ -265,7 +266,7 @@ export default {
         if (typeof storageLimit == "undefined") storageLimit = "257";
         const operation: Operation = {
             kind: "origination",
-            balance: mutez(amount).toString(),
+            balance: utility.mutez(amount).toString(),
             fee: fee.toString(),
             gas_limit: gasLimit,
             storage_limit: storageLimit
@@ -309,7 +310,7 @@ export default {
         };
         if (typeof parameter == "undefined") parameter = false;
         if (parameter) {
-            operation.parameters = sexp2mic(parameter);
+            operation.parameters = utility.sexp2mic(parameter);
         }
         return this.sendOperation(from, operation, keys, true, newAccount);
     },
@@ -327,14 +328,14 @@ export default {
     ) {
         if (typeof gasLimit == "undefined") gasLimit = "10000";
         if (typeof storageLimit == "undefined") storageLimit = "257";
-        const _code = ml2mic(code),
+        const _code = utility.ml2mic(code),
             script: OperationScript = {
                 code: _code,
-                storage: sexp2mic(init)
+                storage: utility.sexp2mic(init)
             },
             operation: Operation = {
                 kind: "origination",
-                balance: mutez(amount).toString(),
+                balance: utility.mutez(amount).toString(),
                 storage_limit: storageLimit,
                 gas_limit: gasLimit,
                 fee: fee.toString(),
@@ -410,7 +411,7 @@ export default {
     },
 
     typecheckCode(code) {
-        const _code = ml2mic(code);
+        const _code = utility.ml2mic(code);
         return node.query(
             "/chains/main/blocks/head/helpers/scripts/typecheck_code",
             {program: _code, gas: "10000"}
@@ -418,8 +419,8 @@ export default {
     },
     packData(data, type) {
         const check = {
-            data: sexp2mic(data),
-            type: sexp2mic(type),
+            data: utility.sexp2mic(data),
+            type: utility.sexp2mic(type),
             gas: "400000"
         };
         return node.query(
@@ -429,8 +430,8 @@ export default {
     },
     typecheckData(data, type) {
         const check = {
-            data: sexp2mic(data),
-            type: sexp2mic(type),
+            data: utility.sexp2mic(data),
+            type: utility.sexp2mic(type),
             gas: "400000"
         };
         return node.query(
@@ -441,10 +442,10 @@ export default {
     runCode(code, amount, input, storage, trace) {
         const ep = typeof trace != "undefined" && trace ? "trace_code" : "run_code";
         return node.query("/chains/main/blocks/head/helpers/scripts/" + ep, {
-            script: ml2mic(code),
-            amount: mutez(amount).toString(),
-            input: sexp2mic(input),
-            storage: sexp2mic(storage)
+            script: utility.ml2mic(code),
+            amount: utility.mutez(amount).toString(),
+            input: utility.sexp2mic(input),
+            storage: utility.sexp2mic(storage)
         });
     }
 };

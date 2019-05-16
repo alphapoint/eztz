@@ -52,7 +52,7 @@ export default {
             const len = bytes.length / 2;
             result.push(len.toString(16).padStart(8, "0"));
             result.push(bytes);
-        } else if (input instanceof Object) {
+        } else if (typeof input === "object") {
             if (input.prim) {
                 const args_len = input.args ? input.args.length : 0;
                 result.push(prim_mapping_reverse[args_len][input.annots ? 'true' : 'false']);
@@ -122,7 +122,7 @@ export default {
 
         return result.join("");
     },
-    decodeRawBytes(bytes : string) {
+    decodeRawBytes(bytes: string) {
         bytes = bytes.toUpperCase();
 
         let index = 0;
@@ -141,7 +141,7 @@ export default {
                 index += 2;
 
                 const args = Array.apply(null, new Array(prim.len));
-                const result : OperationParameter = {
+                const result: OperationParameter = {
                     prim: op,
                     args: args.map(function () {
                         return rec();

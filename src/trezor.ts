@@ -2,47 +2,45 @@ import utility from "./utility";
 import node from "./node";
 import prefix from "./prefix";
 
-const {b58cdecode, mergebuf, buf2hex, hex2buf} = utility;
-
 export default {
-    source: function (address: any) : Source {
+    source(address: any): Source {
         const tag = address[0] === "t" ? 0 : 1;
         const curve = parseInt(address[2]) - 1;
         const pp = tag === 1 ? prefix.KT : prefix["tz" + (curve + 1)];
-        let bytes = b58cdecode(address, pp);
+        let bytes = utility.b58cdecode(address, pp);
         if (tag === 1) {
-            bytes = mergebuf(bytes, [0]);
+            bytes = utility.mergebuf(bytes, [0]);
         } else {
-            bytes = mergebuf([curve], bytes);
+            bytes = utility.mergebuf([curve], bytes);
         }
         return {
             tag: tag,
             hash: bytes
         };
     },
-    parameter: function (address: any, opbytes: string) {
+    parameter(address: any, opbytes: string) {
         const tag = address[0] === "t" ? 0 : 1;
         const curve = parseInt(address[2]) - 1;
         const pp = tag === 1 ? prefix.KT : prefix["tz" + (curve + 1)];
-        let bytes = b58cdecode(address, pp);
+        let bytes = utility.b58cdecode(address, pp);
         if (tag === 1) {
-            bytes = mergebuf(bytes, [0]);
+            bytes = utility.mergebuf(bytes, [0]);
         } else {
-            bytes = mergebuf([curve], bytes);
+            bytes = utility.mergebuf([curve], bytes);
         }
-        const hex = buf2hex(mergebuf([tag], bytes));
+        const hex = utility.buf2hex(utility.mergebuf([tag], bytes));
         return opbytes.substr(-46) === hex + "00"
             ? false
-            : hex2buf(
+            : utility.hex2buf(
                 opbytes.substr(opbytes.indexOf(hex) + hex.length + 2)
             );
     },
     operation(d: { opOb: { contents: any[]; }; opbytes: string }) {
         const operations = [];
-        let revealOp : any = false;
+        let revealOp: any = false;
         let op;
         let op2: Operation;
-        let p : boolean | Uint8Array;
+        let p: boolean | Uint8Array;
         for (let i = 0; i < d.opOb.contents.length; i++) {
             op = d.opOb.contents[i];
             if (op.kind === "reveal") {
@@ -53,9 +51,9 @@ export default {
                     counter: parseInt(op.counter),
                     gasLimit: parseInt(op.gas_limit),
                     storageLimit: parseInt(op.storage_limit),
-                    publicKey: mergebuf(
+                    publicKey: utility.mergebuf(
                         [0],
-                        b58cdecode(op.public_key, prefix.edpk)
+                        utility.b58cdecode(op.public_key, prefix.edpk)
                     )
                 };
             } else {

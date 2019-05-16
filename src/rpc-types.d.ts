@@ -56,7 +56,8 @@ interface OperationMetadata {
             kind: string
         }[]
         consumed_gas: string
-        status: string
+        status: string,
+        errors?: any // TODO: string[]? {...}[]?
     }
     source: string
     storage_limit: string
@@ -79,7 +80,7 @@ interface Operation {
     delegatable?: string
     delegate?: string | Uint8Array
     spendable?: string
-    managerPubkey?: string | Uint8Array 
+    managerPubkey?: string | Uint8Array
     manager_pubkey?: string | Uint8Array
     parameters?: OperationParameter | Uint8Array
     signature?: string
