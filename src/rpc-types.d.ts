@@ -77,9 +77,9 @@ interface Operation {
     storage_limit: string | number
     amount?: string | number
     destination?: Source
-    delegatable?: string
+    delegatable?: boolean
     delegate?: string | Uint8Array
-    spendable?: string
+    spendable?: boolean
     managerPubkey?: string | Uint8Array
     manager_pubkey?: string | Uint8Array
     parameters?: OperationParameter | Uint8Array
@@ -101,4 +101,30 @@ interface OperationParameter {
     bytes?: string | Uint8Array,
     int?: number,
     string?: string
+}
+
+interface ContractInfo {
+    balance: string
+    counter: string
+    delegate: { setable: boolean }
+    manager: string
+    script: OperationScript[]
+    spendable: boolean
+}
+
+interface ContractScript {
+    code: OperationParameter[]
+    storage: {string: string}
+}
+
+interface KeyPair {
+    pk: any,
+    sk: any,
+    pkh: any
+}
+
+interface TypeCheckData {
+    data: OperationParameter
+    type: OperationParameter
+    gas?: string
 }
