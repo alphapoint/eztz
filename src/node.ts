@@ -20,7 +20,7 @@ export default {
     resetProvider(): void {
         this.activeProvider = defaultProvider;
     },
-    query(e: string, o?: object, t?: any): Promise<any> {
+    query(e: string, o?: object | string, t?: any): Promise<any> {
         if (typeof o === "undefined") {
             if (typeof t === "undefined") {
                 t = "GET";

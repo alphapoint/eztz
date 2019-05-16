@@ -3,7 +3,6 @@ import node from "./node"
 import utility from "./utility"
 import crypto from "./crypto"
 import tezos from "./tezos";
-import { KeyPair, Block, Operation, OperationScript, TypeCheckData } from "./rpc-types";
 
 const counters: { [key: string]: number } = {};
 
@@ -408,7 +407,7 @@ export default {
             {program: _code, gas: "10000"}
         );
     },
-    packData(data: any, type: any) {
+    packData(data: string, type: string) {
         const check = {
             data: utility.sexp2mic(data),
             type: utility.sexp2mic(type),
@@ -419,7 +418,7 @@ export default {
             check
         );
     },
-    typecheckData(data: any, type: any) {
+    typecheckData(data: string, type: string) {
         const check: TypeCheckData = {
             data: utility.sexp2mic(data),
             type: utility.sexp2mic(type),
