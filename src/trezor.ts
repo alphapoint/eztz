@@ -61,7 +61,7 @@ export default {
                 };
             } else {
                 if (["origination", "transaction", "delegation"].indexOf(op.kind) < 0)
-                    return console.log("err2");
+                    throw new Error("err2");
                 op2 = {
                     kind: op.kind,
                     source: this.source(op.source),

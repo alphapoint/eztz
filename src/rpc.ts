@@ -72,8 +72,8 @@ export default {
             interval = 30;
         if (typeof timeout === "undefined")
             timeout = 180;
-        if (timeout <= 0) throw "Timeout must be more than 0";
-        if (interval <= 0) throw "Interval must be more than 0";
+        if (timeout <= 0) throw new Error("Timeout must be more than 0");
+        if (interval <= 0) throw new Error("Interval must be more than 0");
         const at = Math.ceil(timeout / interval) + 1;
         let c = 0;
         let found = false;

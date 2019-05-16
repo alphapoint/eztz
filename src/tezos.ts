@@ -31,7 +31,7 @@ export default {
                 opOb: opOb
             };
         else
-            throw "Forge validation error - local and remote bytes don't match";
+            throw new Error("Forge validation error - local and remote bytes don't match");
     },
     encodeRawBytes(input: OperationParameter | OperationParameter[]): string {
         return this._encodeRawBytes(input).toUpperCase();
@@ -193,7 +193,7 @@ export default {
                         );
                         return {string: new TextDecoder("utf-8").decode(string_raw)};
                     } else {
-                        throw "Input bytes error";
+                        throw new Error("Input bytes error");
                     }
                 } else if (b === "00") {
                     index += 2;

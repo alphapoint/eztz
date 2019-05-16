@@ -33,7 +33,7 @@ function forgeOp(op: any) {
         case 3:
             if (forgeOpTags[op.kind] == 2) break;
             if (forgeOpTags[op.kind] == 3) break;
-            throw "Double bake and double endorse forging is not complete";
+            throw new Error("Double bake and double endorse forging is not complete");
         case 4:
             fop += buf2hex(
                 b58cdecode(op.pkh, prefix.tz1)
@@ -45,7 +45,7 @@ function forgeOp(op: any) {
             fop += forgePublicKeyHash(op.source);
             fop += buf2hex(toBytesInt32(op.period));
             if (forgeOpTags[op.kind] == 5) {
-                throw "Proposal forging is not complete";
+                throw new Error("Proposal forging is not complete");
                 break;
             } else if (forgeOpTags[op.kind] == 6) {
                 fop += buf2hex(
