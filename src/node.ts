@@ -10,17 +10,17 @@ export default {
     debugMode: false,
     async: true,
     isZeronet: false,
-    setDebugMode(t: boolean) {
+    setDebugMode(t: boolean) : void {
         this.debugMode = t;
     },
-    setProvider(u: string, z?: boolean) {
+    setProvider(u: string, z?: boolean) : void {
         if (typeof z != "undefined") this.isZeronet = z;
         this.activeProvider = u;
     },
-    resetProvider() {
+    resetProvider() : void {
         this.activeProvider = defaultProvider;
     },
-    query(e: string, o?: object, t?: any) {
+    query(e: string, o?: object, t?: any) : Promise<any> {
         if (typeof o === "undefined") {
             if (typeof t === "undefined") {
                 t = "GET";
@@ -30,13 +30,13 @@ export default {
         }
         return new Promise((resolve, reject) => {
             try {
-                const http = this.xhrFactory();
-                http.open(t, this.activeProvider + e, this.async);
+                const xhr = this.xhrFactory();
+                xhr.open(t, this.activeProvider + e, this.async);
                 if (this.debugMode) console.log("Node call", e, o);
-                http.onload = () => {
-                    if (http.status === 200) {
-                        if (http.responseText) {
-                            let r = JSON.parse(http.responseText);
+                xhr.onload = () => {
+                    if (xhr.status === 200) {
+                        if (xhr.responseText) {
+                            let r = JSON.parse(xhr.responseText);
                             if (this.debugMode) console.log("Node response", e, o, r);
                             if (typeof r.error !== "undefined") {
                                 reject(r.error);
@@ -48,24 +48,24 @@ export default {
                             reject("Empty response returned");
                         }
                     } else {
-                        if (http.responseText) {
-                            if (this.debugMode) console.log(e, o, http.responseText);
-                            reject(http.responseText);
+                        if (xhr.responseText) {
+                            if (this.debugMode) console.log(e, o, xhr.responseText);
+                            reject(xhr.responseText);
                         } else {
-                            if (this.debugMode) console.log(e, o, http.statusText);
-                            reject(http.statusText);
+                            if (this.debugMode) console.log(e, o, xhr.statusText);
+                            reject(xhr.statusText);
                         }
                     }
                 };
-                http.onerror = () => {
-                    if (this.debugMode) console.log(e, o, http.responseText);
-                    reject(http.statusText);
+                xhr.onerror = () => {
+                    if (this.debugMode) console.log(e, o, xhr.responseText);
+                    reject(xhr.statusText);
                 };
                 if (t === "POST") {
-                    http.setRequestHeader("Content-Type", "application/json");
-                    http.send(JSON.stringify(o));
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                    xhr.send(JSON.stringify(o));
                 } else {
-                    http.send();
+                    xhr.send();
                 }
             } catch (e) {
                 reject(e);

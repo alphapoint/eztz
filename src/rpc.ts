@@ -7,70 +7,63 @@ const {sexp2mic, mutez, ml2mic} = utility;
 const counters = {};
 
 export default {
-    call(e: string, d: any): any {
+    call(e: string, d?: any): Promise<any> {
         return node.query(e, d);
     },
-    getBalance(a: string): any {
+    getBalance(a: string): Promise<any> {
         return node
-            .query("/chains/main/blocks/head/context/contracts/" + a + "/balance")
-            .then(function (r) {
-                return r;
-            });
+            .query("/chains/main/blocks/head/context/contracts/" + a + "/balance");
     },
-    getDelegate(a: string): any {
+    getDelegate(a: string): Promise<any> {
         return node
             .query("/chains/main/blocks/head/context/contracts/" + a + "/delegate")
             .then(function (r) {
                 if (r) return r;
                 return false;
             })
-            .catch(function () {
-                return false;
-            });
+            .catch(() => false);
     },
-    getManager(a: string): any {
+    getManager(a: string): Promise<any> {
         return node.query(
             "/chains/main/blocks/head/context/contracts/" + a + "/manager_key"
         );
     },
-    getCounter(a: string): any {
-        return node.query(
-            "/chains/main/blocks/head/context/contracts/" + a + "/counter"
-        );
+    getCounter(a: string): Promise<any> {
+        return node.query("/chains/main/blocks/head/context/contracts/" + a + "/counter");
     },
-    getBaker(tz1: string): any {
+    getBaker(tz1: string): Promise<any> {
         return node.query("/chains/main/blocks/head/context/delegates/" + tz1);
     },
-    getHead(): any {
+    getHead(): Promise<any> {
         return node.query("/chains/main/blocks/head");
     },
-    getHeader(): any {
+    getHeader(): Promise<any> {
         return node.query("/chains/main/blocks/head/header");
     },
-    getHeadHash(): any {
+    getHeadHash(): Promise<any> {
         return node.query("/chains/main/blocks/head/hash");
     },
 
-    getBallotList(): any {
+    getBallotList(): Promise<any> {
         return node.query("/chains/main/blocks/head/votes/ballot_list");
     },
-    getProposals(): any {
-        return node.query("/chains/main/blocks/head/votes/proposals ");
+    getProposals(): Promise<any> {
+        return node.query("/chains/main/blocks/head/votes/proposals");
     },
-    getBallots(): any {
-        return node.query("/chains/main/blocks/head/votes/ballots ");
+    getBallots(): Promise<any> {
+        return node.query("/chains/main/blocks/head/votes/ballots");
     },
-    getListings(): any {
-        return node.query("/chains/main/blocks/head/votes/listings ");
+    getListings(): Promise<any> {
+        return node.query("/chains/main/blocks/head/votes/listings");
     },
-    getCurrentProposal(): any {
-        return node.query("/chains/main/blocks/head/votes/current_proposal ");
+    getCurrentProposal(): Promise<any> {
+        return node.query("/chains/main/blocks/head/votes/current_proposal");
     },
-    getCurrentPeriod(): any {
-        return node.query("/chains/main/blocks/head/votes/current_period_kind ");
+    getCurrentPeriod(): Promise<any> {
+        return node.query("/chains/main/blocks/head/votes/current_period_kind");
     },
-    getCurrentQuorum(): any {
-        return node.query("/chains/main/blocks/head/votes/current_quorum ");
+    getCurrentQuorum(): Promise<any> {
+        return node.query("/chains/main/blocks/head/votes/current_quorum");
     },
 
     awaitOperation(hash: string, interval: number, timeout: number): any {
@@ -270,7 +263,7 @@ export default {
     ) {
         if (typeof gasLimit == "undefined") gasLimit = "10000";
         if (typeof storageLimit == "undefined") storageLimit = "257";
-        const operation : Operation = {
+        const operation: Operation = {
             kind: "origination",
             balance: mutez(amount).toString(),
             fee: fee.toString(),
@@ -306,7 +299,7 @@ export default {
     ) {
         if (typeof gasLimit == "undefined") gasLimit = "10100";
         if (typeof storageLimit == "undefined") storageLimit = "0";
-        const operation : Operation = {
+        const operation: Operation = {
             kind: "transaction",
             fee: fee.toString(),
             gas_limit: gasLimit,
@@ -335,11 +328,11 @@ export default {
         if (typeof gasLimit == "undefined") gasLimit = "10000";
         if (typeof storageLimit == "undefined") storageLimit = "257";
         const _code = ml2mic(code),
-            script : OperationScript = {
+            script: OperationScript = {
                 code: _code,
                 storage: sexp2mic(init)
             },
-            operation : Operation = {
+            operation: Operation = {
                 kind: "origination",
                 balance: mutez(amount).toString(),
                 storage_limit: storageLimit,
@@ -376,7 +369,7 @@ export default {
     ) {
         if (typeof gasLimit == "undefined") gasLimit = "10000";
         if (typeof storageLimit == "undefined") storageLimit = "0";
-        const operation : Operation = {
+        const operation: Operation = {
             kind: "delegation",
             fee: fee.toString(),
             gas_limit: gasLimit,

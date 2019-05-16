@@ -1,4 +1,4 @@
-import utility from "./Utility";
+import utility from "./utility";
 import library from "./library"
 import prefix from "./prefix";
 // @ts-ignore
