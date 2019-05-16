@@ -1,10 +1,13 @@
 import {forgeOp} from "./forgefunctions";
 import node from "./node";
 import utility from "./utility";
+// @ts-ignore
 import BN from "bignumber.js";
 import library from "./library";
 import prefix from "./prefix";
+// @ts-ignore
 import {TextEncoder, TextDecoder} from "text-encoding";
+//import {Block, OperationParameter} from "./rpc-types";
 
 const {b58cdecode, buf2hex} = utility;
 const {prim_mapping_reverse, op_mapping_reverse, op_mapping, prim_mapping} = library;
@@ -31,7 +34,7 @@ export default {
                 opOb: opOb
             };
         else
-            throw new Error("Forge validation error - local and remote bytes don't match");
+            throw "Forge validation error - local and remote bytes don't match";
     },
     encodeRawBytes(input: OperationParameter | OperationParameter[]): string {
         return this._encodeRawBytes(input).toUpperCase();
@@ -62,7 +65,9 @@ export default {
 
                 if (input.annots) {
                     const annots_bytes = input.annots
-                        .map((x: any) => parseInt(buf2hex(new TextEncoder().encode(x))))
+                        .map(x => {
+                            return parseInt(buf2hex(new TextEncoder().encode(x)));
+                        })
                         .join("20");
                     result.push(
                         (annots_bytes.length / 2).toString(16).padStart(8, "0")
@@ -193,7 +198,7 @@ export default {
                         );
                         return {string: new TextDecoder("utf-8").decode(string_raw)};
                     } else {
-                        throw new Error("Input bytes error");
+                        throw "Input bytes error";
                     }
                 } else if (b === "00") {
                     index += 2;

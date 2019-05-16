@@ -1,4 +1,4 @@
-import { newServer } from 'mock-xmlhttprequest';
+const MockXHR = require('mock-xmlhttprequest');
 
 describe('eztz', () => {
     describe('utility', () => {
@@ -172,7 +172,7 @@ describe('eztz', () => {
             });
 
             test('query on error', async () => {
-                var mockXhrProvider = newServer({
+                var mockXhrProvider = MockXHR.newServer({
                     post: ['https://mainnet.tezrpc.me/test',
                         {
                             status: 500,
@@ -191,7 +191,7 @@ describe('eztz', () => {
             });
 
             test('query on 200 error', async () => {
-                var mockXhrProvider = newServer({
+                var mockXhrProvider = MockXHR.newServer({
                     get: ['https://mainnet.tezrpc.me/test',
                         {
                             status: 200,
@@ -210,7 +210,7 @@ describe('eztz', () => {
             });
 
             test('query on 200 empty response', async () => {
-                var mockXhrProvider = newServer({
+                var mockXhrProvider = MockXHR.newServer({
                     get: ['https://mainnet.tezrpc.me/test',
                         {
                             status: 200,
@@ -229,7 +229,7 @@ describe('eztz', () => {
             });
 
             test('query on 200 empty response without', async () => {
-                var mockXhrProvider = newServer({
+                var mockXhrProvider = MockXHR.newServer({
                     get: ['https://mainnet.tezrpc.me/test',
                         {
                             status: 200,
@@ -250,7 +250,7 @@ describe('eztz', () => {
             });
 
             test('query on 200 ok', async () => {
-                var mockXhrProvider = newServer({
+                var mockXhrProvider = MockXHR.newServer({
                     get: ['https://mainnet.tezrpc.me/test',
                         {
                             status: 200,
@@ -269,7 +269,7 @@ describe('eztz', () => {
             });
 
             test('query non 200', async () => {
-                var mockXhrProvider = newServer({
+                var mockXhrProvider = MockXHR.newServer({
                     get: ['https://mainnet.tezrpc.me/test',
                         {
                             status: 400,
