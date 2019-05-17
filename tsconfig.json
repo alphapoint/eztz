@@ -19,7 +19,7 @@
       "es6",
       "es7",
       "esnext",
-      "webworker"
+      "dom"
     ],
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,

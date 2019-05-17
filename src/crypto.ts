@@ -24,7 +24,7 @@ export default {
             .importKey(
                 "raw",
                 new TextEncoder("utf-8").encode(password),
-                {name: "PBKDF2"},
+                "PBKDF2",
                 false,
                 ["deriveBits"]
             )
@@ -41,7 +41,7 @@ export default {
                     256
                 );
             })
-            .then(function (key: Iterable<number>) {
+            .then(function (key: ArrayBuffer) {
                 console.log(key);
                 console.log(
                     library.sodium.crypto_secretbox_open_easy(
