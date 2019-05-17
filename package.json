@@ -1,6 +1,6 @@
 {
   "name": "@ap/eztz",
-  "version": "0.0.5",
+  "version": "0.1.1",
   "dependencies": {
     "@peculiar/webcrypto": "^1.0.10",
     "bignumber.js": "^7.2.1",
