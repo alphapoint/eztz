@@ -3,7 +3,6 @@
 *.iml
 *.ipr
 *.iws
-.idea/
 .idea/**/contentModel.xml
 .idea/**/dataSources.ids
 .idea/**/dataSources.local.xml
