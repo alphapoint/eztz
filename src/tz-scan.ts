@@ -57,5 +57,8 @@ export default {
     },
     getOperationByHash(h: string): Promise<TzScanOperation> {
         return this.query(`/operation/${h}`);
+    },
+    getOperations(h: string, type: OperationType | string, page: number = 0, perPage: number = 50): Promise<TzScanOperation[]> {
+        return this.query(`/operation/${h}?type=${type}&p=${page}&number=${perPage}`);
     }
 }
