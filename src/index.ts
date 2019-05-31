@@ -22,3 +22,18 @@ export {
     trezor,
     tezos
 };
+
+export const eztz = {
+    library,
+    prefix,
+    watermark,
+    utility,
+    crypto,
+    node,
+    rpc,
+    contract,
+    trezor,
+    tezos
+};
+
+export default eztz;

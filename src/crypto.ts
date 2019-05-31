@@ -72,16 +72,14 @@ export const crypto = {
         switch (pref) {
             case "edsk":
                 if (sk.length == 98) {
+                    let pkPayload = utility.b58cdecode(sk, prefix.edsk).slice(32);
                     return {
                         pk: utility.b58cencode(
-                            utility.b58cdecode(sk, prefix.edsk).slice(32),
+                            pkPayload,
                             prefix.edpk
                         ),
                         pkh: utility.b58cencode(
-                            library.sodium.crypto_generichash(
-                                20,
-                                utility.b58cdecode(sk, prefix.edsk).slice(32)
-                            ),
+                            library.sodium.crypto_generichash(20, pkPayload),
                             prefix.tz1
                         ),
                         sk
