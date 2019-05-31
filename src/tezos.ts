@@ -8,7 +8,7 @@ import prefix from "./prefix";
 // @ts-ignore
 import {TextDecoder, TextEncoder} from "text-encoding";
 
-export default {
+export const tezos = {
     async forge(head: Block, opOb: any, validateLocalForge?: boolean)
         : Promise<{ opbytes: string, opOb: any }> {
         if (typeof validateLocalForge == "undefined") validateLocalForge = true;
@@ -243,3 +243,5 @@ export default {
         return rec();
     }
 };
+
+export default tezos;

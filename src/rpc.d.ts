@@ -1,3 +1,5 @@
+/// <reference path="trezor.d.ts"/>
+
 interface Block {
     protocol: string
     chain_id: string

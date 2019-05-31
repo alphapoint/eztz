@@ -2,7 +2,7 @@ import utility from "./utility";
 import node from "./node";
 import prefix from "./prefix";
 
-export default {
+export const trezor = {
     source(address: string): Source | any {
         if(address === undefined)
             throw new Error("Source cannot be undefined or empty");
@@ -113,3 +113,5 @@ export default {
         return [operation, revealOp];
     }
 };
+
+export default trezor;

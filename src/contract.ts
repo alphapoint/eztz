@@ -5,7 +5,7 @@ import prefix from "./prefix";
 import utility from "./utility";
 import node from "./node"
 
-export default {
+export const contract = {
     hash(operationHash: any, ind: any) {
         var ob = utility.b58cdecode(operationHash, prefix.o),
             tt = [],
@@ -78,3 +78,5 @@ export default {
         return setInterval(ct, interval * 1000);
     }
 };
+
+export default contract;

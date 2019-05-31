@@ -1,9 +1,12 @@
+/// <reference path="tz-scan.d.ts"/>
+/// <reference path="rpc.d.ts"/>
+
 // @ts-ignore
 import {XMLHttpRequest} from "w3c-xmlhttprequest"
 
 var baseUrl = "https://api.alphanet.tzscan.io/v3";
 
-export default {
+export const tzScan = {
     baseUrl,
     xhrFactory: () => new XMLHttpRequest(),
     activeProvider: baseUrl,
@@ -61,4 +64,6 @@ export default {
     getOperations(h: string, type: OperationType | string, page: number = 0, perPage: number = 50): Promise<TzScanOperation[]> {
         return this.query(`/operation/${h}?type=${type}&p=${page}&number=${perPage}`);
     }
-}
+};
+
+export default tzScan;

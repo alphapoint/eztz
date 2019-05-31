@@ -1,8 +1,10 @@
+/// <reference path="rpc.d.ts"/>
+
 import BN from "bignumber.js";
 // @ts-ignore
 import bs58check from "bs58check";
 
-export default {
+export const utility  = {
     toBytesInt32Hex(num: string | number) {
         return this.buf2hex(this.toBytesInt32(num));
     },
@@ -258,3 +260,4 @@ export default {
     }
 };
 
+export default utility;

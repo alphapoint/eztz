@@ -6,7 +6,7 @@ import tezos from "./tezos";
 
 const counters: { [key: string]: number } = {};
 
-export default {
+export const rpc = {
     call(e: string, d?: any): Promise<any> {
         return node.query(e, d);
     },
@@ -439,3 +439,5 @@ export default {
         });
     }
 };
+
+export default rpc;

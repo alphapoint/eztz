@@ -6,10 +6,10 @@ import {TextEncoder} from "text-encoding";
 // @ts-ignore
 import {Crypto} from "@peculiar/webcrypto";
 
-const crypto = new Crypto();
+const _crypto = new Crypto();
 
 //TODO: Add p256 and secp256k1 cryptographay
-export default {
+export const crypto = {
     extractEncryptedKeys(esk: string, password: string) {
         if (typeof esk == "undefined")
             throw new Error("ES parameter must be provided.");
@@ -20,7 +20,7 @@ export default {
         const salt = esb.slice(0, 8);
         const esm = esb.slice(8);
 
-        return crypto.subtle
+        return _crypto.subtle
             .importKey(
                 "raw",
                 new TextEncoder("utf-8").encode(password),
@@ -30,7 +30,7 @@ export default {
             )
             .then(function (key: any) {
                 console.log(key);
-                return crypto.subtle.deriveBits(
+                return _crypto.subtle.deriveBits(
                     {
                         name: "PBKDF2",
                         salt: salt,
@@ -154,3 +154,5 @@ export default {
         );
     }
 };
+
+export default crypto;
