@@ -1,10 +1,10 @@
 import {forgeOp} from "./forgefunctions";
-import node from "./node";
-import utility from "./utility";
+import {node} from "./node";
+import {utility} from "./utility";
+import {library} from "./library";
+import {prefix} from "./prefix";
 // @ts-ignore
 import BN from "bignumber.js";
-import library from "./library";
-import prefix from "./prefix";
 // @ts-ignore
 import {TextDecoder, TextEncoder} from "text-encoding";
 
@@ -244,4 +244,3 @@ export const tezos = {
     }
 };
 
-export default tezos;

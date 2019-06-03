@@ -97,8 +97,8 @@ export const utility  = {
                     let valInt = parseInt(val);
                     if (val === valInt.toString()) {
                         if (!ret.prim)
-                            return {int: valInt};
-                        else ret.args.push({int: valInt});
+                            return {int: val};
+                        else ret.args.push({int: val});
                     } else if (val[0] === "0") {
                         if (!ret.prim)
                             return {bytes: val};
@@ -260,4 +260,3 @@ export const utility  = {
     }
 };
 
-export default utility;

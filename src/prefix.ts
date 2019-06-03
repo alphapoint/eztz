@@ -1,4 +1,4 @@
-export default <{ [key: string]: Uint8Array }>{
+export const prefix: { [key: string]: Uint8Array } = {
     tz1: new Uint8Array([6, 161, 159]),
     tz2: new Uint8Array([6, 161, 161]),
     tz3: new Uint8Array([6, 161, 164]),

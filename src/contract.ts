@@ -1,9 +1,9 @@
 // @ts-ignore
-import sodium from "libsodium-wrappers"
-import rpc from "./rpc";
-import prefix from "./prefix";
-import utility from "./utility";
-import node from "./node"
+import sodium from "libsodium-wrappers";
+import {rpc} from "./rpc";
+import {prefix} from "./prefix";
+import {utility} from "./utility";
+import {node} from "./node";
 
 export const contract = {
     hash(operationHash: any, ind: any) {
@@ -79,4 +79,3 @@ export const contract = {
     }
 };
 
-export default contract;

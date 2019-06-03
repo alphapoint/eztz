@@ -1,6 +1,6 @@
-import utility from "./utility";
-import library from "./library"
-import prefix from "./prefix";
+import {utility} from "./utility";
+import {library} from "./library";
+import {prefix} from "./prefix";
 // @ts-ignore
 import {TextEncoder} from "text-encoding";
 // @ts-ignore
@@ -153,4 +153,3 @@ export const crypto = {
     }
 };
 
-export default crypto;

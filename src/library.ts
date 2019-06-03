@@ -1,9 +1,9 @@
+import sodium from "libsodium-wrappers";
+import pbkdf2 from "pbkdf2";
 // @ts-ignore
 import bs58check from "bs58check";
-import sodium from "libsodium-wrappers";
 // @ts-ignore
 import bip39 from "bip39";
-import pbkdf2 from "pbkdf2";
 
 const op_mapping: { [key: string]: string } = {
     "00": "parameter",
@@ -120,7 +120,7 @@ const op_mapping: { [key: string]: string } = {
     "6F": "SLICE"
 };
 
-export default {
+export const library = {
     bs58check,
     sodium,
     bip39,

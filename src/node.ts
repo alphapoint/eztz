@@ -3,7 +3,7 @@ import {XMLHttpRequest} from "w3c-xmlhttprequest"
 
 const defaultProvider = "https://mainnet.tezrpc.me";
 
-export default {
+export const node = {
     defaultProvider,
     xhrFactory: () => new XMLHttpRequest(),
     activeProvider: defaultProvider,

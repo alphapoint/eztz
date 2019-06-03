@@ -4,4 +4,3 @@ export const watermark =  <{ [key: string]: Uint8Array }>{
     generic: new Uint8Array([3])
 };
 
-export default watermark;

@@ -66,4 +66,3 @@ export const tzScan = {
     }
 };
 
-export default tzScan;

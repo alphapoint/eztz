@@ -1,9 +1,9 @@
-import utility from "./utility";
-import tezos from "./tezos"
-import prefix from "./prefix";
+import {utility} from "./utility";
+import {tezos} from "./tezos"
+import {prefix} from "./prefix";
 
 //Forge functions
-const forgeOpTags = <{ [key: string]: number }>{
+const forgeOpTags: { [key: string]: number } = {
     endorsement: 0,
     seed_nonce_revelation: 1,
     double_endorsement_evidence: 2,

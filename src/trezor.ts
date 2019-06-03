@@ -1,6 +1,6 @@
-import utility from "./utility";
-import node from "./node";
-import prefix from "./prefix";
+import {utility} from "./utility";
+import {node} from "./node";
+import {prefix} from "./prefix";
 
 export const trezor = {
     source(address: string): Source | any {
@@ -114,4 +114,3 @@ export const trezor = {
     }
 };
 
-export default trezor;

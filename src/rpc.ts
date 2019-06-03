@@ -1,8 +1,8 @@
-import watermark from "./watermark"
-import node from "./node"
-import utility from "./utility"
-import crypto from "./crypto"
-import tezos from "./tezos";
+import {watermark} from "./watermark";
+import {node} from "./node";
+import {utility} from "./utility";
+import {crypto} from "./crypto";
+import {tezos} from "./tezos";
 
 const counters: { [key: string]: number } = {};
 
@@ -440,4 +440,3 @@ export const rpc = {
     }
 };
 
-export default rpc;
