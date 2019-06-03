@@ -8,6 +8,7 @@ import {rpc} from "./rpc";
 import {contract} from "./contract";
 import {trezor} from "./trezor";
 import {tezos} from "./tezos";
+import {tzScan} from "./tz-scan"
 
 //Expose library
 export {
@@ -20,5 +21,6 @@ export {
     rpc,
     contract,
     trezor,
-    tezos
+    tezos,
+    tzScan
 };
