@@ -1,4 +1,6 @@
+// @ts-ignore
 import sodium from "libsodium-wrappers";
+// @ts-ignore
 import pbkdf2 from "pbkdf2";
 // @ts-ignore
 import bs58check from "bs58check";

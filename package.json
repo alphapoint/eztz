@@ -22,7 +22,8 @@
   "scripts": {
     "test": "jest",
     "coverage": "jest --coverage && codecov",
-    "build": "tsc"
+    "build": "tsc",
+    "prepare": "npm run build"
   },
   "devDependencies": {
     "@types/libsodium-wrappers": "^0.7.5",
