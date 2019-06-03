@@ -1,12 +1,3 @@
-// @ts-ignore
-import sodium from "libsodium-wrappers";
-// @ts-ignore
-import pbkdf2 from "pbkdf2";
-// @ts-ignore
-import bs58check from "bs58check";
-// @ts-ignore
-import bip39 from "bip39";
-
 const op_mapping: { [key: string]: string } = {
     "00": "parameter",
     "01": "storage",
@@ -123,10 +114,12 @@ const op_mapping: { [key: string]: string } = {
 };
 
 export const library = {
-    bs58check,
-    sodium,
-    bip39,
-    pbkdf2,
+    sodium: import("libsodium-wrappers"),
+    pbkdf2: import("pbkdf2"),
+    // @ts-ignore
+    bs58check: import("bs58check"),
+    // @ts-ignore
+    bip39: import("bip39"),
     op_mapping_reverse: <{ [key: string]: string }>(function () {
         const result: { [key: string]: string } = {};
         for (const key in op_mapping) {

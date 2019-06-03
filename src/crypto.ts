@@ -10,7 +10,7 @@ const _crypto = new Crypto();
 
 //TODO: Add p256 and secp256k1 cryptographay
 export const crypto = {
-    extractEncryptedKeys(esk: string, password: string) {
+    async extractEncryptedKeys(esk: string, password: string): Promise<KeyPair> {
         if (typeof esk == "undefined")
             throw new Error("ES parameter must be provided.");
         if (typeof password == "undefined")
@@ -20,91 +20,88 @@ export const crypto = {
         const salt = esb.slice(0, 8);
         const esm = esb.slice(8);
 
-        return _crypto.subtle
+        const sodium = await library.sodium;
+
+        const key = await _crypto.subtle
             .importKey(
                 "raw",
                 new TextEncoder("utf-8").encode(password),
                 "PBKDF2",
                 false,
                 ["deriveBits"]
+            );
+        console.log(key);
+        const derivedBits = await _crypto.subtle.deriveBits(
+            {
+                name: "PBKDF2",
+                salt: salt,
+                iterations: 32768,
+                hash: {name: "SHA-512"}
+            },
+            key,
+            256
+        );
+
+        console.log(derivedBits);
+        const openSecretBox = sodium.crypto_secretbox_open_easy(
+            esm,
+            new Uint8Array(24),
+            new Uint8Array(derivedBits)
+        );
+        console.log(openSecretBox);
+        const kp = sodium.crypto_sign_seed_keypair(
+            openSecretBox
+        );
+        return {
+            sk: utility.b58cencode(kp.privateKey, prefix.edsk),
+            pk: utility.b58cencode(kp.publicKey, prefix.edpk),
+            pkh: utility.b58cencode(
+                sodium.crypto_generichash(20, kp.publicKey),
+                prefix.tz1
             )
-            .then(function (key: any) {
-                console.log(key);
-                return _crypto.subtle.deriveBits(
-                    {
-                        name: "PBKDF2",
-                        salt: salt,
-                        iterations: 32768,
-                        hash: {name: "SHA-512"}
-                    },
-                    key,
-                    256
-                );
-            })
-            .then(function (key: ArrayBuffer) {
-                console.log(key);
-                console.log(
-                    library.sodium.crypto_secretbox_open_easy(
-                        esm,
-                        new Uint8Array(24),
-                        new Uint8Array(key)
-                    )
-                );
-                const kp = library.sodium.crypto_sign_seed_keypair(
-                    library.sodium.crypto_secretbox_open_easy(
-                        esm,
-                        new Uint8Array(24),
-                        new Uint8Array(key)
-                    )
-                );
-                return {
-                    sk: utility.b58cencode(kp.privateKey, prefix.edsk),
-                    pk: utility.b58cencode(kp.publicKey, prefix.edpk),
-                    pkh: utility.b58cencode(
-                        library.sodium.crypto_generichash(20, kp.publicKey),
-                        prefix.tz1
-                    )
-                };
-            });
+        };
     },
-    extractKeys(sk: string): KeyPair | false {
+    async extractKeys(sk: string): Promise<KeyPair | false> {
         const pref = sk.substr(0, 4);
-        switch (pref) {
-            case "edsk":
-                if (sk.length == 98) {
-                    let pkPayload = utility.b58cdecode(sk, prefix.edsk).slice(32);
-                    return {
-                        pk: utility.b58cencode(
-                            pkPayload,
-                            prefix.edpk
-                        ),
-                        pkh: utility.b58cencode(
-                            library.sodium.crypto_generichash(20, pkPayload),
-                            prefix.tz1
-                        ),
-                        sk
-                    };
-                } else if (sk.length == 54) {
-                    //seed
-                    const s = utility.b58cdecode(sk, prefix.edsk2);
-                    const kp = library.sodium.crypto_sign_seed_keypair(s);
-                    return {
-                        sk: utility.b58cencode(kp.privateKey, prefix.edsk),
-                        pk: utility.b58cencode(kp.publicKey, prefix.edpk),
-                        pkh: utility.b58cencode(
-                            library.sodium.crypto_generichash(20, kp.publicKey),
-                            prefix.tz1
-                        )
-                    };
-                }
-                break;
+        if (pref !== "edsk") {
+            return false;
         }
+
+        const sodium = await library.sodium;
+        if (sk.length == 98) {
+            let pkPayload = utility.b58cdecode(sk, prefix.edsk).slice(32);
+            return {
+                pk: utility.b58cencode(
+                    pkPayload,
+                    prefix.edpk
+                ),
+                pkh: utility.b58cencode(
+                    sodium.crypto_generichash(20, pkPayload),
+                    prefix.tz1
+                ),
+                sk
+            };
+        } else if (sk.length == 54) {
+            //seed
+            const s = utility.b58cdecode(sk, prefix.edsk2);
+            const kp = sodium.crypto_sign_seed_keypair(s);
+            return {
+                sk: utility.b58cencode(kp.privateKey, prefix.edsk),
+                pk: utility.b58cencode(kp.publicKey, prefix.edpk),
+                pkh: utility.b58cencode(
+                    sodium.crypto_generichash(20, kp.publicKey),
+                    prefix.tz1
+                )
+            };
+        }
+
         return false;
     },
-    generateMnemonic() {
-        return library.bip39.generateMnemonic(160)
+    async generateMnemonic(): Promise<string> {
+        return (await library.bip39 as { generateMnemonic: (bits: number) => string })
+            .generateMnemonic(160)
     },
-    checkAddress(a: string) {
+    checkAddress(a: string): boolean {
         try {
             utility.b58cdecode(a, prefix.tz1);
             return true;
@@ -112,26 +109,29 @@ export const crypto = {
             return false;
         }
     },
-    async generateKeys(m: string, p: string) {
-        const s: Buffer = await library.bip39.mnemonicToSeed(m, p);
+    async generateKeys(m: string, p: string): Promise<{ mnemonic: string, passphrase: string } & KeyPair> {
+        const bip39 = await library.bip39;
+        const s: Buffer = await bip39.mnemonicToSeed(m, p);
         let seed: Buffer = s.slice(0, 32);
-        const kp = library.sodium.crypto_sign_seed_keypair(seed);
+        const sodium = await library.sodium;
+        const kp = sodium.crypto_sign_seed_keypair(seed);
         return {
             mnemonic: m,
             passphrase: p,
             sk: utility.b58cencode(kp.privateKey, prefix.edsk),
             pk: utility.b58cencode(kp.publicKey, prefix.edpk),
             pkh: utility.b58cencode(
-                library.sodium.crypto_generichash(20, kp.publicKey),
+                sodium.crypto_generichash(20, kp.publicKey),
                 prefix.tz1
             )
         };
     },
-    sign(bytes: string, sk: string, wm: Uint8Array | number[]) {
-        var bb = utility.hex2buf(bytes);
-        if (typeof wm != "undefined") bb = utility.mergebuf(wm, bb);
-        const sig = library.sodium.crypto_sign_detached(
-            library.sodium.crypto_generichash(32, bb),
+    async sign(bytes: string, sk: string, wm: Uint8Array | number[]) {
+        const preBb = utility.hex2buf(bytes);
+        const bb: Uint8Array = typeof wm !== "undefined" ? utility.mergebuf(wm, preBb) : preBb;
+        const sodium = await library.sodium;
+        const sig = sodium.crypto_sign_detached(
+            sodium.crypto_generichash(32, bb),
             utility.b58cdecode(sk, prefix.edsk),
             "uint8array"
         );
@@ -144,8 +144,8 @@ export const crypto = {
             sbytes: sbytes
         };
     },
-    verify(bytes: string, sig: any, pk: string) {
-        return library.sodium.crypto_sign_verify_detached(
+    async verify(bytes: string, sig: any, pk: string) {
+        return (await library.sodium).crypto_sign_verify_detached(
             sig,
             utility.hex2buf(bytes),
             utility.b58cdecode(pk, prefix.edpk)

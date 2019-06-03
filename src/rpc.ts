@@ -201,7 +201,7 @@ export const rpc = {
                 fullOp.opOb.signature =
                     "edsigtXomBKi5CTRf5cjATJWSyaRvhfYNHqSUGrn4SdbYRcGwQrUGjzEfQDTuqHhuA8b2d8NarZjz8TRf65WkpQmo423BtomS8Q";
             } else {
-                const signed = crypto.sign(fullOp.opbytes, keys.sk, watermark.generic);
+                const signed = await crypto.sign(fullOp.opbytes, keys.sk, watermark.generic);
                 fullOp.opbytes = signed.sbytes;
                 fullOp.opOb.signature = signed.edsig;
             }
