@@ -13,6 +13,7 @@ interface BlockHeader {
     context: string
     level: number
     priority: number
+    hash: string
     proof_of_work_nonce: string
     operations_hash: string
     fitness: string[]

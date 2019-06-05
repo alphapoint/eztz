@@ -37,8 +37,14 @@ export const rpc = {
     getHead(): Promise<Block> {
         return node.query("/chains/main/blocks/head");
     },
-    getHeader(): Promise<BlockHeader> {
-        return node.query("/chains/main/blocks/head/header");
+    getBlock(a: string): Promise<Block>{
+        return node.query(`/chains/main/blocks/${a}`);
+    },
+    getHeader(a?: string): Promise<BlockHeader> {
+        if(a == undefined)
+            return node.query("/chains/main/blocks/head/header");
+        else
+            return node.query(`/chains/main/blocks/${a}/header`);
     },
     getHeadHash(): Promise<string> {
         return node.query("/chains/main/blocks/head/hash");
