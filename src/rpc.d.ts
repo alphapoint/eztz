@@ -35,7 +35,7 @@ interface BlockOperation {
 }
 
 interface OperationContent {
-    mount: string
+    amount: string
     counter: string
     destination: string
     fee: string
