@@ -72,7 +72,7 @@ function forgeOp(op: any) {
                     fop += forgeBool(false);
                 }
             } else if (forgeOpTags[op.kind] == 9) {
-                fop += forgePublicKeyHash(op.managerPubkey);
+                fop += forgePublicKeyHash(op.manager_pubkey);
                 fop += forgeZarith(op.balance);
                 fop += forgeBool(op.spendable);
                 fop += forgeBool(op.delegatable);

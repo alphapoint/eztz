@@ -83,7 +83,6 @@ interface Operation {
     delegatable?: boolean
     delegate?: string
     spendable?: boolean
-    managerPubkey?: string | any
     manager_pubkey?: string | any
     parameters?: OperationParameter | Uint8Array
     signature?: string

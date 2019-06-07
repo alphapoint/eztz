@@ -268,10 +268,8 @@ export const rpc = {
             gas_limit: gasLimit,
             storage_limit: storageLimit
         };
-        if (node.isZeronet)
-            operation["manager_pubkey"] = keys.pkh;
-        else
-            operation["managerPubkey"] = keys.pkh;
+
+        operation['manager_pubkey'] = keys.pkh;
 
         if (typeof spendable != "undefined")
             operation.spendable = spendable;
@@ -339,10 +337,7 @@ export const rpc = {
                 script: script
             };
 
-        if (node.isZeronet)
-            operation["manager_pubkey"] = keys.pkh;
-        else
-            operation["managerPubkey"] = keys.pkh;
+        operation['manager_pubkey'] = keys.pkh;
 
         if (typeof spendable != "undefined")
             operation.spendable = spendable;

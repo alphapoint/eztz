@@ -108,7 +108,7 @@ export const crypto = {
             return false;
         }
     },
-    async generateKeys(m: string, p: string): Promise<{ mnemonic: string, passphrase: string } & KeyPair> {
+    async generateKeys(m: string, p: string): Promise<{ mnemonic: string, passphrase: string, seed: Uint8Array } & KeyPair> {
         const bip39 = await library.bip39;
         const s: Buffer = await bip39.mnemonicToSeed(m, p);
         let seed: Buffer = s.slice(0, 32);
@@ -117,10 +117,48 @@ export const crypto = {
         return {
             mnemonic: m,
             passphrase: p,
+            seed: s,
             sk: utility.b58cencode(kp.privateKey, prefix.edsk),
             pk: utility.b58cencode(kp.publicKey, prefix.edpk),
             pkh: utility.b58cencode(
                 sodium.crypto_generichash(20, kp.publicKey),
+                prefix.tz1
+            )
+        };
+    },
+    async deriveKey({mnemonic, passphrase, seed}: { mnemonic?: string, passphrase?: string, seed?: Uint8Array }, subPath: string) {
+        const bip32 = await library.bip32;
+        const bip39 = await library.bip39;
+        let s: Buffer;
+        if (seed instanceof Buffer) {
+            s = seed;
+        } else {
+            // noinspection SuspiciousTypeOfGuard
+            if (seed instanceof Uint8Array) {
+                s = Buffer.from(seed);
+            } else {
+                if (mnemonic) {
+                    s = await bip39.mnemonicToSeed(mnemonic, passphrase);
+                } else {
+                    throw new Error("No mnemonic or seed provided");
+                }
+            }
+        }
+        const derived = bip32.fromSeed(s)
+            .derivePath(`m/44'/1729'/0'/${subPath}`);
+
+        if (!derived.privateKey)
+            throw new Error("No private key generated in derivation action");
+
+        const sodium = await library.sodium;
+
+        return {
+            mnemonic,
+            passphrase,
+            sk: utility.b58cencode(derived.privateKey, prefix.edsk),
+            pk: utility.b58cencode(derived.publicKey, prefix.edpk),
+            pkh: utility.b58cencode(
+                sodium.crypto_generichash(20, derived.publicKey),
                 prefix.tz1
             )
         };

@@ -126,10 +126,6 @@ export const library = {
     get bip39(): Promise<typeof import("bip39")> {
         return import("bip39");
     },
-    get bs58check(): Promise<{ encode: (buf: Buffer) => string, decode: (str: string) => Buffer, decodeUnsafe: (str: string) => Buffer }> {
-        // @ts-ignore
-        return import("bs58check");
-    },
     op_mapping_reverse: <{ [key: string]: string }>(function () {
         const result: { [key: string]: string } = {};
         for (const key in op_mapping) {

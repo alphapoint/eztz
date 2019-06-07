@@ -84,9 +84,7 @@ export const trezor = {
                             op2.parameters = p;
                         break;
                     case "origination":
-                        if (node.isZeronet)
-                            op2.manager_pubkey = this.source(op.manager_pubkey).hash;
-                        else op2.managerPubkey = this.source(op.managerPubkey).hash;
+                        op2.manager_pubkey = this.source(op.manager_pubkey).hash;
                         // TODO: these parseInt calls are subject to overflow, maybe use native BigInt?
                         op2.balance = typeof op.balance === 'string' ? parseInt(op.balance) : op.balance;
                         op2.spendable = op.spendable;
