@@ -1,7 +1,7 @@
 {
   "name": "@ap/eztz",
   "version": "0.1.12",
-  "main": "dist/index.ts",
+  "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist/**/*",
@@ -11,6 +11,7 @@
   "dependencies": {
     "@peculiar/webcrypto": "^1.0.12",
     "bignumber.js": "^7.2.1",
+    "bip32": "^2.0.3",
     "bip39": "^2.6.0",
     "bs58check": "^2.1.2",
     "buffer": "^5.2.1",
@@ -26,6 +27,7 @@
     "prepare": "npm run build"
   },
   "devDependencies": {
+    "@types/bip32": "^1.0.2",
     "@types/bip39": "^2.4.2",
     "@types/libsodium-wrappers": "^0.7.5",
     "@types/pbkdf2": "^3.0.0",
@@ -35,7 +37,7 @@
     "eslint": "^5.16.0",
     "eslint-config-google": "^0.13.0",
     "jest": "^24.8.0",
-    "mock-xmlhttprequest": "^4.4.0",
+    "mock-xmlhttprequest": "^4.4.1",
     "typescript": "^3.5.1"
   },
   "publishConfig": {

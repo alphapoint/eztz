@@ -114,12 +114,22 @@ const op_mapping: { [key: string]: string } = {
 };
 
 export const library = {
-    sodium: import("libsodium-wrappers"),
-    pbkdf2: import("pbkdf2"),
-    // @ts-ignore
-    bs58check: import("bs58check"),
-    // @ts-ignore
-    bip39: import("bip39"),
+    get sodium(): Promise<typeof import("libsodium-wrappers")> {
+        return import("libsodium-wrappers");
+    },
+    get pbkdf2(): Promise<typeof import("pbkdf2")> {
+        return import("pbkdf2");
+    },
+    get bip32(): Promise<typeof import("bip32")> {
+        return import("bip32");
+    },
+    get bip39(): Promise<typeof import("bip39")> {
+        return import("bip39");
+    },
+    get bs58check(): Promise<{ encode: (buf: Buffer) => string, decode: (str: string) => Buffer, decodeUnsafe: (str: string) => Buffer }> {
+        // @ts-ignore
+        return import("bs58check");
+    },
     op_mapping_reverse: <{ [key: string]: string }>(function () {
         const result: { [key: string]: string } = {};
         for (const key in op_mapping) {

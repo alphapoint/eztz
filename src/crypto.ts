@@ -98,8 +98,7 @@ export const crypto = {
         return false;
     },
     async generateMnemonic(): Promise<string> {
-        return (await library.bip39 as { generateMnemonic: (bits: number) => string })
-            .generateMnemonic(160)
+        return (await library.bip39).generateMnemonic(160)
     },
     checkAddress(a: string): boolean {
         try {
