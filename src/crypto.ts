@@ -126,11 +126,14 @@ export const crypto = {
             )
         };
     },
-    async deriveKey({mnemonic, passphrase, seed}: { mnemonic?: string, passphrase?: string, seed?: Uint8Array }, subPath: string) {
+    async deriveKey({mnemonic, passphrase, seed}: { mnemonic?: string, passphrase?: string, seed?: string | Uint8Array }, subPath: string) {
         const bip32 = await library.bip32;
         const bip39 = await library.bip39;
         let s: Buffer;
-        if (seed instanceof Buffer) {
+        if (typeof seed === 'string') {
+            s = Buffer.from(seed,'hex');
+        }
+        else if (seed instanceof Buffer) {
             s = seed;
         } else {
             // noinspection SuspiciousTypeOfGuard
