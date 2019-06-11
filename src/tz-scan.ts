@@ -3,6 +3,7 @@
 
 // @ts-ignore
 import {XMLHttpRequest} from "w3c-xmlhttprequest"
+import fetch from 'cross-fetch';
 
 var baseUrl = "https://api.alphanet.tzscan.io/v3";
 
@@ -12,56 +13,51 @@ export const tzScan = {
     activeProvider: baseUrl,
     debugMode: false,
     async: true,
-    query(e: string, o?: object | string, t?: any): Promise<any> {
-        if (typeof o === "undefined") {
-            if (typeof t === "undefined") {
+    async query(e: string, o?: object | string, t?: any): Promise<any> {
+        if (o === undefined) {
+            if (t === undefined) {
                 t = "GET";
-            } else o = {};
-        } else {
-            if (typeof t === "undefined") t = "POST";
-        }
-        return new Promise((resolve, reject) => {
-            try {
-                const xhr = this.xhrFactory();
-                xhr.open(t, this.activeProvider + e, this.async);
-                if (this.debugMode) console.log("TzScan call", e, o);
-                xhr.onload = () => {
-                    if (xhr.status === 200) {
-                        if (xhr.responseText) {
-                            let r = JSON.parse(xhr.responseText);
-                            if (this.debugMode) console.log("Node response", e, o, r);
-                            if (typeof r.error !== "undefined") {
-                                reject(r.error);
-                            } else {
-                                if (typeof r.ok !== "undefined") r = r.ok;
-                                resolve(r);
-                            }
-                        } else {
-                            reject("Empty response returned");
-                        }
-                    } else {
-                        if (xhr.responseText) {
-                            if (this.debugMode) console.log(e, o, xhr.responseText);
-                            reject(xhr.responseText);
-                        } else {
-                            if (this.debugMode) console.log(e, o, xhr.statusText);
-                            reject(xhr.statusText);
-                        }
-                    }
-                };
-                xhr.onerror = () => {
-                    if (this.debugMode) console.log(e, o, xhr.responseText);
-                    reject(xhr.statusText);
-                };
-            } catch (e) {
-                reject(e)
+            } else {
+                o = {};
             }
-        })
+        } else {
+            if (t === undefined)
+                t = "POST";
+        }
+
+        const options: RequestInit = {
+            method: t
+        };
+
+        if (this.debugMode)
+            console.debug("TzScan request:", e, o);
+
+        if (t === "POST") {
+            options.headers = {'Content-Type': 'application/json'};
+            if (o !== undefined)
+                options.body = JSON.stringify(o);
+        }
+
+        const fetched = await fetch(this.activeProvider + e, options);
+
+        if (fetched.status !== 200) {
+            console.error("TzScan error:", e, o, fetched.status, fetched.statusText);
+            if (this.debugMode)
+                console.error("TzScan error body:", await fetched.text());
+
+            throw new Error(fetched.statusText);
+        }
+
+        const r = await fetched.json();
+        if (this.debugMode)
+            console.debug("TzScan response:", e, o, r);
+
+        return r;
     },
-    getOperation(h: string): Promise<TzScanOperation> {
+    getOperation(h: string): Promise<TzScanOperationEnvelope> {
         return this.query(`/operation/${h}`);
     },
-    getOperations(h: string, type: OperationType | string, page: number = 0, perPage: number = 50): Promise<TzScanOperation[]> {
+    getOperations(h: string, type: OperationType | string, page: number = 0, perPage: number = 50): Promise<TzScanOperationEnvelope[]> {
         return this.query(`/operations/${h}?type=${type}&p=${page}&number=${perPage}`);
     }
 };

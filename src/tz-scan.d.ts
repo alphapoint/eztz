@@ -7,18 +7,24 @@ declare const enum OperationType {
     Reveal = "Reveal",
 }
 
+declare const enum OperationKind {
+    Endorsement = "endorsement",
+    Transaction = "transaction",
+    Origination = "origination",
+    Delegation = "delegation",
+    Activation = "activation",
+    Reveal = "reveal",
+}
+
 interface TzScanAddress {
     tz: string;
 }
 
-interface TzScanOperationsEntity {
-    kind: string;
+interface TzScanOperation {
+    kind: OperationKind;
     src: TzScanAddress;
-    amount: number | string;
-    destination: TzScanAddress;
     failed: boolean;
     internal: boolean;
-    burn: number | string;
     counter: string | number;
     fee: number | string;
     gas_limit: string | number;
@@ -27,15 +33,27 @@ interface TzScanOperationsEntity {
     timestamp: string;
 }
 
-interface TzScanOperation {
+interface TzScanOperationTransaction extends TzScanOperation {
+    kind: OperationKind.Transaction;
+    amount: number | string;
+    destination: TzScanAddress;
+}
+
+interface TzScanOperationReveal extends TzScanOperation {
+    kind: OperationKind.Reveal;
+    public_key: string;
+}
+
+interface TzScanOperationEnvelope {
     hash: string;
     block_hash: string;
     network_hash: string;
     type: {
         kind: string;
         source: TzScanAddress;
-        operations?: TzScanOperationsEntity[] | null;
+        operations?: TzScanOperation[] | null;
     };
 }
+
 
 
