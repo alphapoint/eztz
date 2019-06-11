@@ -58,7 +58,7 @@ export const tzScan = {
             }
         })
     },
-    getOperationByHash(h: string): Promise<TzScanOperation> {
+    getOperation(h: string): Promise<TzScanOperation> {
         return this.query(`/operation/${h}`);
     },
     getOperations(h: string, type: OperationType | string, page: number = 0, perPage: number = 50): Promise<TzScanOperation[]> {
