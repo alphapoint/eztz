@@ -21,6 +21,7 @@ interface TzScanAddress {
 }
 
 interface TzScanOperationBase {
+
     kind: OperationKind;
     src: TzScanAddress;
     failed: boolean;
@@ -44,7 +45,7 @@ interface TzScanOperationReveal extends TzScanOperationBase {
     public_key: string;
 }
 
-declare type TzScanOperation = TzScanOperationBase | TzScanOperationTransaction | TzScanOperationReveal;
+declare type TzScanOperation = TzScanOperationTransaction | TzScanOperationReveal;
 
 interface TzScanOperationEnvelope {
     hash: string;
