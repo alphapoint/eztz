@@ -20,7 +20,7 @@ interface TzScanAddress {
     tz: string;
 }
 
-interface TzScanOperation {
+interface TzScanOperationBase {
     kind: OperationKind;
     src: TzScanAddress;
     failed: boolean;
@@ -33,16 +33,18 @@ interface TzScanOperation {
     timestamp: string;
 }
 
-interface TzScanOperationTransaction extends TzScanOperation {
+interface TzScanOperationTransaction extends TzScanOperationBase {
     kind: OperationKind.Transaction;
     amount: number | string;
     destination: TzScanAddress;
 }
 
-interface TzScanOperationReveal extends TzScanOperation {
+interface TzScanOperationReveal extends TzScanOperationBase {
     kind: OperationKind.Reveal;
     public_key: string;
 }
+
+declare type TzScanOperation = TzScanOperationBase | TzScanOperationTransaction | TzScanOperationReveal;
 
 interface TzScanOperationEnvelope {
     hash: string;
