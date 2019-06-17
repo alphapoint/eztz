@@ -1,7 +1,2 @@
 language: node_js
-node_js:
-  - "lts/*"
-  - "8"
-
-after_success:
-  - yarn coverage
+node_js: '12'
