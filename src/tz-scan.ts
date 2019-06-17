@@ -57,8 +57,8 @@ export const tzScan = {
     getOperation(h: string): Promise<TzScanOperationEnvelope> {
         return this.query(`/operation/${h}`);
     },
-    getOperations(h: string, type: OperationType | string, page: number = 0, perPage: number = 50): Promise<TzScanOperationEnvelope[]> {
-        return this.query(`/operations/${h}?type=${type}&p=${page}&number=${perPage}`);
+    getOperations<T extends OperationKind>(h: string, type: T, page: number = 0, perPage: number = 50): Promise<TzScanOperationEnvelopeOf<T>[]> {
+        return this.query(`/operations/${h}?type=${OperationKindToType[type]}&p=${page}&number=${perPage}`);
     }
 };
 

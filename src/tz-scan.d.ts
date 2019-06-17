@@ -16,12 +16,20 @@ declare const enum OperationKind {
     Reveal = "reveal",
 }
 
+declare enum OperationKindToType {
+    endorsement = "Endorsement",
+    transaction = "Transaction",
+    origination = "Origination",
+    delegation = "Delegation",
+    activation = "Activation",
+    reveal = "Reveal"
+}
+
 interface TzScanAddress {
     tz: string;
 }
 
 interface TzScanOperationBase {
-
     kind: OperationKind;
     src: TzScanAddress;
     failed: boolean;
@@ -47,6 +55,18 @@ interface TzScanOperationReveal extends TzScanOperationBase {
 
 declare type TzScanOperation = TzScanOperationTransaction | TzScanOperationReveal;
 
+declare type TzScanOperations = {
+    [K in OperationKind]: TzScanOperationMap[K];
+}
+declare type TzScanOperationMap = {
+    [OperationKind.Transaction]: TzScanOperationTransaction,
+    [OperationKind.Reveal]: TzScanOperationReveal,
+    [OperationKind.Activation]: TzScanOperationBase,
+    [OperationKind.Delegation]: TzScanOperationBase,
+    [OperationKind.Endorsement]: TzScanOperationBase,
+    [OperationKind.Origination]: TzScanOperationBase,
+}
+
 interface TzScanOperationEnvelope {
     hash: string;
     block_hash: string;
@@ -54,7 +74,19 @@ interface TzScanOperationEnvelope {
     type: {
         kind: string;
         source: TzScanAddress;
-        operations?: TzScanOperation[] | null;
+        operations?: TzScanOperationBase[] | null;
+    };
+}
+
+
+interface TzScanOperationEnvelopeOf<Kind extends OperationKind> extends TzScanOperationEnvelope {
+    hash: string;
+    block_hash: string;
+    network_hash: string;
+    type: {
+        kind: string;
+        source: TzScanAddress;
+        operations?: TzScanOperations[Kind][] | null;
     };
 }
 
