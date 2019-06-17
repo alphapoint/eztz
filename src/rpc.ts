@@ -296,12 +296,11 @@ export const rpc = {
         to: string,
         amount: string,
         fee: string,
-        parameter: string,
+        parameter?: string,
         gasLimit?: string,
         storageLimit?: string,
         newAccount?: boolean
     ) {
-        if (typeof parameter == "undefined") throw new Error("transfer() received invalid parameter");
         const operation: Operation = {
             kind: "transaction",
             fee: fee.toString(),
