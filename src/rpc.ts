@@ -71,7 +71,7 @@ export const rpc = {
         return node.query("/chains/main/blocks/head/votes/current_quorum");
     },
 
-    awaitOperation(hash: string, interval: number, timeout: number): any {
+    awaitOperation(hash: string, interval?: number, timeout?: number): any {
         if (typeof interval === "undefined")
             interval = 30;
         if (typeof timeout === "undefined")
@@ -106,8 +106,7 @@ export const rpc = {
             repeater();
         });
     },
-    async prepareOperation(from: string, operation: Operation, keys: KeyPair | boolean | any, newAccount?: boolean, manager?: string) {
-        if (typeof keys == "undefined") keys = false;
+    async prepareOperation(from: string, operation: Operation, keys?: KeyPair, newAccount?: boolean, manager?: string) {
         let counter, opOb;
         const promises = [];
         let requiresReveal = false;
@@ -182,7 +181,7 @@ export const rpc = {
         };
         return tezos.forge(head, opOb);
     },
-    async simulateOperation(from: string, operation: Operation, keys: KeyPair | boolean) {
+    async simulateOperation(from: string, operation: Operation, keys?: KeyPair) {
         const fullOp = await this.prepareOperation(from, operation, keys);
         return node.query("/chains/main/blocks/head/helpers/scripts/run_operation", fullOp.opOb);
     },
@@ -190,12 +189,10 @@ export const rpc = {
         from: string,
         operation: Operation,
         keys: KeyPair | boolean | any,
-        skipPrevalidation?: boolean,
+        skipPrevalidation: boolean = false,
         newAccount?: boolean,
         manager?: string
     ) {
-        if (typeof skipPrevalidation == "undefined")
-            skipPrevalidation = false;
         const fullOp = await this
             .prepareOperation(from, operation, keys, newAccount, manager);
         if (keys.sk === false) {
@@ -249,16 +246,14 @@ export const rpc = {
         };
     },
 
-    reveal(
-        keys: KeyPair
-    ) {
+    reveal(keys: KeyPair, gasLimit?: string, storageLimit?: string) {
         const operation: Operation = {
             kind: "reveal",
             public_key: keys.pk,
-            fee: node.isZeronet ? 100000 : 1269,
+            fee: node.isZeronet ? "100000" : "1269",
             source: keys.pkh,
-            gas_limit: 10000,
-            storage_limit: 0
+            gas_limit: gasLimit || "10000",
+            storage_limit: storageLimit || "0"
         };
 
         return this.sendOperation(keys.pkh, operation, keys, false, false);
@@ -271,17 +266,15 @@ export const rpc = {
         delegatable: boolean,
         delegate: string,
         fee: string,
-        gasLimit: string,
-        storageLimit: string
+        gasLimit?: string,
+        storageLimit?: string
     ) {
-        if (typeof gasLimit == "undefined") gasLimit = "10000";
-        if (typeof storageLimit == "undefined") storageLimit = "257";
         const operation: Operation = {
             kind: "origination",
             balance: utility.mutez(amount).toString(),
             fee: fee.toString(),
-            gas_limit: gasLimit,
-            storage_limit: storageLimit
+            gas_limit: gasLimit || "10000",
+            storage_limit: storageLimit || "257"
         };
 
         operation['manager_pubkey'] = keys.pkh;

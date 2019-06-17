@@ -134,7 +134,7 @@ export const utility = {
         }
         return ret;
     },
-    mic2arr(s: OperationParameter): any {
+    mic2arr(s: OperationParameter) {
         let ret: any = [];
         if (s.hasOwnProperty("prim")) {
             if (s.prim === "Pair") {

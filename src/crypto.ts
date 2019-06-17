@@ -10,7 +10,7 @@ const _crypto = new Crypto();
 
 //TODO: Add p256 and secp256k1 cryptographay
 export const crypto = {
-    async extractEncryptedKeys(esk: string, password: string): Promise<KeyPair> {
+    async extractEncryptedKeys(esk?: string, password?: string): Promise<KeyPair> {
         if (typeof esk == "undefined")
             throw new Error("ES parameter must be provided.");
         if (typeof password == "undefined")
@@ -164,7 +164,7 @@ export const crypto = {
             )
         };
     },
-    async sign(bytes: string, sk: string, wm: Uint8Array | number[]) {
+    async sign(bytes: string, sk: string, wm?: Uint8Array | number[]) {
         const preBb = utility.hex2buf(bytes);
         const bb: Uint8Array = typeof wm !== "undefined" ? utility.mergebuf(wm, preBb) : preBb;
         const sodium = await library.sodium;

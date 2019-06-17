@@ -24,7 +24,7 @@ export const contract = {
             prefix.KT
         );
     },
-    originate(keys: KeyPair, amount: string, code: any, init: string, spendable: boolean, delegatable: boolean, delegate: string, fee: string, gasLimit: string, storageLimit: string) {
+    originate(keys: KeyPair, amount: string, code: any, init: string, spendable: boolean, delegatable: boolean, delegate: string, fee: string, gasLimit?: string, storageLimit?: string) {
         if (typeof gasLimit == "undefined") gasLimit = "10000";
         if (typeof storageLimit == "undefined") storageLimit = "10000";
         return rpc.originate(
@@ -40,7 +40,7 @@ export const contract = {
             storageLimit
         );
     },
-    send(contract: string, from: string, keys: KeyPair, amount: string, parameter: any, fee: string, gasLimit: string, storageLimit: string) {
+    send(contract: string, from: string, keys: KeyPair, amount: string, parameter: any, fee: string, gasLimit?: string, storageLimit?: string) {
         if (typeof gasLimit == "undefined") gasLimit = "2000";
         if (typeof storageLimit == "undefined") storageLimit = "0";
         return rpc.transfer(
