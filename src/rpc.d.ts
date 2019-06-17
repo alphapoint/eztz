@@ -126,6 +126,12 @@ interface KeyPair {
     pkh: string
 }
 
+interface GeneratedKeyPair extends KeyPair {
+    mnemonic: string,
+    passphrase: string,
+    seed: Uint8Array
+}
+
 interface TypeCheckData {
     data: OperationParameter
     type: OperationParameter

@@ -108,7 +108,7 @@ export const crypto = {
             return false;
         }
     },
-    async generateKeys(m: string, p: string): Promise<{ mnemonic: string, passphrase: string, seed: Uint8Array } & KeyPair> {
+    async generateKeys(m: string, p: string): Promise<GeneratedKeyPair> {
         const bip39 = await library.bip39;
         const s: Buffer = await bip39.mnemonicToSeed(m, p);
         let seed: Buffer = s.slice(0, 32);
@@ -126,7 +126,7 @@ export const crypto = {
             )
         };
     },
-    async deriveKey({mnemonic, passphrase, seed}: { mnemonic?: string, passphrase?: string, seed?: string | Uint8Array }, subPath: string) {
+    async deriveKey({mnemonic, passphrase, seed}: { mnemonic?: string, passphrase?: string, seed?: string | Uint8Array }, subPath: string) : Promise<KeyPair> {
         const bip32 = await library.bip32;
         const bip39 = await library.bip39;
         let s: Buffer;
@@ -156,8 +156,6 @@ export const crypto = {
         const sodium = await library.sodium;
 
         return {
-            mnemonic,
-            passphrase,
             sk: utility.b58cencode(derived.privateKey, prefix.edsk),
             pk: utility.b58cencode(derived.publicKey, prefix.edpk),
             pkh: utility.b58cencode(
