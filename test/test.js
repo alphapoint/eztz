@@ -64,8 +64,8 @@ describe('eztz', () => {
     const eztz = require('../index');
     const crypto = eztz.crypto;
 
-    test('generateMnemonic', () => {
-      const string = crypto.generateMnemonic();
+    test('generateMnemonic', async () => {
+      const string = await crypto.generateMnemonic();
       expect(string.split(' ')).toHaveLength(15);
     });
 
