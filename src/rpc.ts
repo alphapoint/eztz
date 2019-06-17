@@ -192,7 +192,10 @@ export const rpc = {
         skipPrevalidation: boolean = false,
         newAccount?: boolean,
         manager?: string
-    ) {
+    ): Promise<{
+        hash: any,
+        operations: Operation[] | []
+    } | any> {
         const fullOp = await this
             .prepareOperation(from, operation, keys, newAccount, manager);
         if (keys.sk === false) {
@@ -215,7 +218,10 @@ export const rpc = {
                 return this.inject(fullOp.opOb, fullOp.opbytes);
         }
     },
-    async inject(opOb: any, sopbytes: any) {
+    async inject(opOb: any, sopbytes: any): Promise<{
+        hash: any,
+        operations: Operation[] | []
+    }> {
         const opResponse: Operation[] = [];
         let errors: Operation[] = [];
         const f = await node
@@ -300,7 +306,10 @@ export const rpc = {
         gasLimit?: string,
         storageLimit?: string,
         newAccount?: boolean
-    ) {
+    ): Promise<{
+        hash: any,
+        operations: Operation[] | []
+    } | any> {
         const operation: Operation = {
             kind: "transaction",
             fee: fee.toString(),
