@@ -59,6 +59,9 @@ export const tzScan = {
     },
     getOperations<T extends OperationKind>(h: string, type: T, page: number = 0, perPage: number = 50): Promise<TzScanOperationEnvelopeOf<T>[]> {
         return this.query(`/operations/${h}?type=${OperationKindToType[type]}&p=${page}&number=${perPage}`);
+    },
+    getAccountStatus(h: string): Promise<TzScanAccountStatus> {
+        return this.query(`/account_status/${h}`);
     }
 };
 

@@ -90,5 +90,10 @@ interface TzScanOperationEnvelopeOf<Kind extends OperationKind> extends TzScanOp
     };
 }
 
+interface TzScanAccountStatus {
+    hash: TzScanAddress & { alias?: string },
+    revelation?: string,
+    origination?: string
+}
 
 
