@@ -37,11 +37,11 @@ export const rpc = {
     getHead(): Promise<Block> {
         return node.query("/chains/main/blocks/head");
     },
-    getBlock(a: string): Promise<Block>{
+    getBlock(a: string): Promise<Block> {
         return node.query(`/chains/main/blocks/${a}`);
     },
     getHeader(a?: string): Promise<BlockHeader> {
-        if(a == undefined)
+        if (a == undefined)
             return node.query("/chains/main/blocks/head/header");
         else
             return node.query(`/chains/main/blocks/${a}/header`);
@@ -219,12 +219,12 @@ export const rpc = {
         }
     },
     async inject(opOb: any, sopbytes: any) {
-        const opResponse : Operation[] = [];
+        const opResponse: Operation[] = [];
         let errors: Operation[] = [];
         const f = await node
             .query("/chains/main/blocks/head/helpers/preapply/operations", [opOb]);
         if (!Array.isArray(f))
-            throw { error: "RPC Fail", errors: [] };
+            throw {error: "RPC Fail", errors: []};
         for (let i = 0; i < f.length; i++) {
             for (let j = 0; j < f[i].contents.length; j++) {
                 opResponse.push(f[i].contents[j]);
@@ -235,18 +235,33 @@ export const rpc = {
             }
         }
         if (errors.length)
-            throw { error: "ForgeOperation Failed", errors: errors };
+            throw {error: "ForgeOperation Failed", errors: errors};
         const f_1 = await node.query("/injection/operation", sopbytes);
         return {
             hash: f_1,
             operations: opResponse
         };
     },
-    async silentInject(sopbytes:any) {
+    async silentInject(sopbytes: any) {
         const f = await node.query("/injection/operation", sopbytes);
         return {
             hash: f
         };
+    },
+
+    reveal(
+        keys: KeyPair
+    ) {
+        const operation: Operation = {
+            kind: "reveal",
+            public_key: keys.pk,
+            fee: node.isZeronet ? 100000 : 1269,
+            source: keys.pkh,
+            gas_limit: 10000,
+            storage_limit: 0
+        };
+
+        return this.sendOperation(keys.pkh, operation, keys, false, false);
     },
 
     account(
@@ -303,7 +318,7 @@ export const rpc = {
             amount: amount.toString(),
             destination: to
         };
-        if (typeof parameter == "undefined")throw new Error("transfer() received invalid parameter");//sets parameter to boolean???
+        if (typeof parameter == "undefined") throw new Error("transfer() received invalid parameter");//sets parameter to boolean???
         if (parameter) {
             operation.parameters = utility.sexp2mic(parameter);
         }
