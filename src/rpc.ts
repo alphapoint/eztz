@@ -297,21 +297,19 @@ export const rpc = {
         amount: string,
         fee: string,
         parameter: string,
-        gasLimit: string,
-        storageLimit: string,
+        gasLimit?: string,
+        storageLimit?: string,
         newAccount?: boolean
     ) {
-        if (typeof gasLimit == "undefined") gasLimit = "10100";
-        if (typeof storageLimit == "undefined") storageLimit = "0";
+        if (typeof parameter == "undefined") throw new Error("transfer() received invalid parameter");
         const operation: Operation = {
             kind: "transaction",
             fee: fee.toString(),
-            gas_limit: gasLimit,
-            storage_limit: storageLimit,
+            gas_limit: gasLimit || "10100",
+            storage_limit: storageLimit || "0",
             amount: amount.toString(),
             destination: to
         };
-        if (typeof parameter == "undefined") throw new Error("transfer() received invalid parameter");//sets parameter to boolean???
         if (parameter) {
             operation.parameters = utility.sexp2mic(parameter);
         }
