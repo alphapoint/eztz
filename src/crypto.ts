@@ -148,7 +148,7 @@ export const crypto = {
             }
         }
         const derived = bip32.fromSeed(s)
-            .derivePath(`m/44'/1729'/0'/${subPath}`);
+            .derivePath(`m/44'/1729'/${subPath}`);
 
         if (!derived.privateKey)
             throw new Error("No private key generated in derivation action");
