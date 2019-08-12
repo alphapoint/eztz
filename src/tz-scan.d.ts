@@ -16,15 +16,6 @@ declare const enum OperationKind {
     Reveal = "reveal",
 }
 
-declare enum OperationKindToType {
-    endorsement = "Endorsement",
-    transaction = "Transaction",
-    origination = "Origination",
-    delegation = "Delegation",
-    activation = "Activation",
-    reveal = "Reveal"
-}
-
 interface TzScanAddress {
     tz: string;
 }
