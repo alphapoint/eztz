@@ -15,7 +15,11 @@ export const tzScan = {
     async: true,
 
     getOperationType(kind : OperationKind) : OperationType {
-        return <OperationType> kind.toLowerCase();
+        return <OperationType> (kind.charAt(0).toUpperCase() + kind.substr(1));
+    },
+
+    getOperationKind(type : OperationType) : OperationKind {
+        return <OperationKind> type.toLowerCase();
     },
 
     async query(e: string, o?: object | string, t?: any): Promise<any> {
@@ -63,7 +67,7 @@ export const tzScan = {
         return this.query(`/operation/${h}`);
     },
     getOperations<T extends OperationKind>(h: string, type: T, page: number = 0, perPage: number = 50): Promise<TzScanOperationEnvelopeOf<T>[]> {
-        return this.query(`/operations/${h}?type=${type}&p=${page}&number=${perPage}`);
+        return this.query(`/operations/${h}?type=${this.getOperationType(type)}&p=${page}&number=${perPage}`);
     },
     getAccountStatus(h: string): Promise<TzScanAccountStatus> {
         return this.query(`/account_status/${h}`);
