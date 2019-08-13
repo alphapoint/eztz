@@ -156,11 +156,11 @@ export const crypto = {
         const sodium = await library.sodium;
 
         return {
-            sk: utility.b58cencode(derived.privateKey, prefix.edsk),
-            pk: utility.b58cencode(derived.publicKey, prefix.edpk),
+            sk: utility.b58cencode(derived.privateKey, prefix.spsk),
+            pk: utility.b58cencode(derived.publicKey, prefix.sppk),
             pkh: utility.b58cencode(
                 sodium.crypto_generichash(20, derived.publicKey),
-                prefix.tz1
+                prefix.tz2
             )
         };
     },
