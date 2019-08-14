@@ -148,7 +148,7 @@ export const crypto = {
             }
         }
         const { key: privateKey } = edHd.derivePath(`m/44'/1729'/${subPath}`, s.toString('hex'));
-        const publicKey = edHd.getPublicKey(privateKey)
+        const publicKey = await edHd.getPublicKey(privateKey);
         if (!privateKey)
             throw new Error("No private key generated in derivation action");
 
