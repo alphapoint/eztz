@@ -113,18 +113,24 @@ export const rpc = {
         promises.push(node.query("/chains/main/blocks/head/header"));
         const ops = Array.isArray(operation) ? operation : [operation];
         for (let i = 0; i < ops.length; i++) {
-            if (
-                ["transaction", "origination", "delegation"].indexOf(ops[i].kind) >= 0
-            ) {
-                requiresReveal = true;
-                if (!newAccount || operation.kind === "transaction") {
-                    promises.push(this.getCounter(from));
-                    promises.push(this.getManager(from));
-                } else {
-                    promises.push(new Promise((resolve, reject) => resolve(0)));
-                    promises.push(new Promise((resolve, reject) => resolve({})));
-                }
-                break;
+            const kind = ops[i].kind as OperationKind;
+            switch (kind) {
+                case OperationKind.Transaction:
+                case OperationKind.Origination:
+                case OperationKind.Delegation:
+                    requiresReveal = true;
+                    if (!newAccount || operation.kind === "transaction")
+                        newAccount = false;
+                    // fall through
+                case OperationKind.Reveal:
+                    if (!newAccount) {
+                        promises.push(this.getCounter(from));
+                        promises.push(this.getManager(from));
+                    } else {
+                        promises.push(new Promise((resolve, reject) => resolve(0)));
+                        promises.push(new Promise((resolve, reject) => resolve({})));
+                    }
+                    break;
             }
         }
         const f = await Promise.all(promises);
@@ -146,33 +152,33 @@ export const rpc = {
             counters[from] = counter;
         //fix reset bug temp
         counters[from] = counter;
-        for (let i_1 = 0; i_1 < ops.length; i_1++) {
+        for (let i = 0; i < ops.length; i++) {
             if ([
                 "proposals",
                 "ballot",
                 "transaction",
                 "origination",
                 "delegation"
-            ].indexOf(ops[i_1].kind) >= 0) {
-                if (typeof ops[i_1].source == "undefined")
-                    ops[i_1].source = from;
+            ].indexOf(ops[i].kind) >= 0) {
+                if (typeof ops[i].source == "undefined")
+                    ops[i].source = from;
             }
-            if (["reveal", "transaction", "origination", "delegation"].indexOf(ops[i_1].kind) >= 0) {
-                if (typeof ops[i_1].gas_limit == "undefined")
-                    ops[i_1].gas_limit = "0";
-                if (typeof ops[i_1].storage_limit == "undefined")
-                    ops[i_1].storage_limit = "0";
+            if (["reveal", "transaction", "origination", "delegation"].indexOf(ops[i].kind) >= 0) {
+                if (typeof ops[i].gas_limit == "undefined")
+                    ops[i].gas_limit = "0";
+                if (typeof ops[i].storage_limit == "undefined")
+                    ops[i].storage_limit = "0";
                 let newCounter = counters[from] + 1;
                 if (newAccount && ops[0].kind === "transaction") {
-                    ops[i_1].counter = newCounter;
+                    ops[i].counter = newCounter;
                     // counters[from]++;
                 } else {
-                    ops[i_1].counter = counters[from]++;
+                    ops[i].counter = counters[from]++;
                 }
-                ops[i_1].fee = ops[i_1].fee.toString();
-                ops[i_1].gas_limit = ops[i_1].gas_limit.toString();
-                ops[i_1].storage_limit = ops[i_1].storage_limit.toString();
-                ops[i_1].counter = ops[i_1].counter.toString();
+                ops[i].fee = ops[i].fee.toString();
+                ops[i].gas_limit = ops[i].gas_limit.toString();
+                ops[i].storage_limit = ops[i].storage_limit.toString();
+                ops[i].counter = ops[i].counter.toString();
             }
         }
         opOb = {
