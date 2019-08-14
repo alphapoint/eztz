@@ -131,19 +131,19 @@ function forgeAddress(a: string) {
     return fa;
 }
 
-function forgeZarith(n: string) {
-    var fn = "";
-    let num: number | bigint = parseInt(n);
+function forgeZarith(n: string | number) {
+    let fn = '';
+    n = typeof n === 'string' ? parseInt(n) : n;
     while (true) {
-        if (num < 128) {
-            if (num < 16) fn += "0";
-            fn += num.toString(16);
+        if (n < 128) {
+            if (n < 16) fn += "0";
+            fn += n.toString(16);
             break;
         } else {
-            var b = num % 128;
-            num -= b;
-            num /= 128;
-            num += 128;
+            let b = (n % 128);
+            n -= b;
+            n /= 128;
+            b += 128;
             fn += b.toString(16);
         }
     }

@@ -127,7 +127,7 @@ export const crypto = {
         };
     },
     async deriveKey({mnemonic, passphrase, seed}: { mnemonic?: string, passphrase?: string, seed?: string | Uint8Array }, subPath: string) : Promise<KeyPair> {
-        const bip32 = await library.bip32;
+        const edHd = await library.edHd;
         const bip39 = await library.bip39;
         let s: Buffer;
         if (typeof seed === 'string') {
@@ -147,19 +147,17 @@ export const crypto = {
                 }
             }
         }
-        const derived = bip32.fromSeed(s)
-            .derivePath(`m/44'/1729'/${subPath}`);
-
-        if (!derived.privateKey)
+        const { key: privateKey } = edHd.derivePath(`m/44'/1729'/${subPath}`, s.toString('hex'));
+        const publicKey = edHd.getPublicKey(privateKey)
+        if (!privateKey)
             throw new Error("No private key generated in derivation action");
 
         const sodium = await library.sodium;
-
         return {
-            sk: utility.b58cencode(derived.privateKey, prefix.edsk),
-            pk: utility.b58cencode(derived.publicKey, prefix.edpk),
+            sk: utility.b58cencode(privateKey, prefix.edsk),
+            pk: utility.b58cencode(publicKey, prefix.edpk),
             pkh: utility.b58cencode(
-                sodium.crypto_generichash(20, derived.publicKey),
+                sodium.crypto_generichash(20, publicKey),
                 prefix.tz1
             )
         };
