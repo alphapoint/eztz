@@ -1,6 +1,6 @@
 {
   "name": "@ap/eztz",
-  "version": "0.1.31",
+  "version": "0.1.32",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -16,7 +16,6 @@
     "buffer": "^5.2.1",
     "create-hmac": "^1.1.7",
     "cross-fetch": "^3.0.4",
-    "ed25519-hd-key": "^1.0.0",
     "libsodium-wrappers": "^0.5.4",
     "pbkdf2": "^3.0.17",
     "text-encoding": "^0.7.0",

@@ -5,6 +5,8 @@ import {prefix} from "./prefix";
 import {TextEncoder} from "text-encoding";
 // @ts-ignore
 import {Crypto} from "@peculiar/webcrypto";
+import * as edHd from "./ed25519-kd-key";
+
 
 const _crypto = new Crypto();
 
@@ -127,7 +129,6 @@ export const crypto = {
         };
     },
     async deriveKey({mnemonic, passphrase, seed}: { mnemonic?: string, passphrase?: string, seed?: string | Uint8Array }, subPath: string) : Promise<KeyPair> {
-        const edHd = await library.edHd;
         const bip39 = await library.bip39;
         let s: Buffer;
         if (typeof seed === 'string') {

@@ -120,9 +120,6 @@ export const library = {
     get pbkdf2(): Promise<typeof import("pbkdf2")> {
         return import("pbkdf2");
     },
-    get edHd(): Promise<typeof import("ed25519-hd-key")> {
-        return import("ed25519-hd-key");
-    },
     get bip39(): Promise<typeof import("bip39")> {
         return import("bip39");
     },
