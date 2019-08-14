@@ -1,6 +1,6 @@
 {
   "name": "@ap/eztz",
-  "version": "0.1.32",
+  "version": "0.1.33",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -22,8 +22,8 @@
     "w3c-xmlhttprequest": "^2.1.3"
   },
   "scripts": {
-    "test": "jest",
-    "coverage": "jest --coverage && codecov",
+    "test": "tsc && jest",
+    "coverage": "tsc && jest --coverage && codecov",
     "build": "tsc",
     "prepare": "npm run build"
   },

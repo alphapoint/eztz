@@ -32,7 +32,6 @@ export const crypto = {
                 false,
                 ["deriveBits"]
             );
-        console.log(key);
         const derivedBits = await _crypto.subtle.deriveBits(
             {
                 name: "PBKDF2",
@@ -44,13 +43,11 @@ export const crypto = {
             256
         );
 
-        console.log(derivedBits);
         const openSecretBox = sodium.crypto_secretbox_open_easy(
             esm,
             new Uint8Array(24),
             new Uint8Array(derivedBits)
         );
-        console.log(openSecretBox);
         const kp = sodium.crypto_sign_seed_keypair(
             openSecretBox
         );
@@ -116,6 +113,7 @@ export const crypto = {
         let seed: Buffer = s.slice(0, 32);
         const sodium = await library.sodium;
         const kp = sodium.crypto_sign_seed_keypair(seed);
+
         return {
             mnemonic: m,
             passphrase: p,
@@ -148,11 +146,11 @@ export const crypto = {
                 }
             }
         }
-        const { key: privateKey } = edHd.derivePath(`m/44'/1729'/${subPath}`, s.toString('hex'));
-        const publicKey = await edHd.getPublicKey(privateKey);
+        const { key, chainCode } = edHd.derivePath(`m/44'/1729'/${subPath}`, s.toString('hex'));
+        const privateKey = Buffer.concat([key, chainCode]);
+        const publicKey = await edHd.getPublicKey(key);
         if (!privateKey)
             throw new Error("No private key generated in derivation action");
-
         const sodium = await library.sodium;
         return {
             sk: utility.b58cencode(privateKey, prefix.edsk),
@@ -183,7 +181,7 @@ export const crypto = {
     },
     async verify(bytes: string, sig: any, pk: string) {
         return (await library.sodium).crypto_sign_verify_detached(
-            sig,
+            utility.b58cdecode(sig, prefix.edsig),
             utility.hex2buf(bytes),
             utility.b58cdecode(pk, prefix.edpk)
         );

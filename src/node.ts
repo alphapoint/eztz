@@ -1,7 +1,7 @@
 // @ts-ignore
 import {XMLHttpRequest} from "w3c-xmlhttprequest"
 
-const defaultProvider = "https://mainnet.tezrpc.me";
+const defaultProvider = "https://alphanet.tezrpc.me";
 
 export const node = {
     defaultProvider,
