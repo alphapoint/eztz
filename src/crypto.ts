@@ -114,10 +114,9 @@ export const crypto = {
         }
       }
     }
-    const { key, chainCode } = edHd.derivePath(`m/44'/1729'/${subPath}`, s.toString('hex'));
-    const privateKey = Buffer.concat([key, chainCode]);
-    const publicKey = await edHd.getPublicKey(key);
-    if (!privateKey) throw new Error('No private key generated in derivation action');
+    const { key: privateKey } = edHd.derivePath(`m/44'/1729'/${subPath}`, s.toString('hex'));
+    const { publicKey, fullKey } = await edHd.getKeyPair(privateKey)
+    if (!fullKey) throw new Error('No private key generated in derivation action');
     const sodium = await library.sodium;
     return {
       sk: utility.b58cencode(privateKey, prefix.edsk),
@@ -140,9 +139,11 @@ export const crypto = {
     };
   },
   async verify(bytes: string | Uint8Array, sig: string | Uint8Array, pk: string | Uint8Array) {
-    return (await library.sodium).crypto_sign_verify_detached(
+    const sodium = await library.sodium;
+    const prepBuff = bytes instanceof Uint8Array ? bytes : utility.hex2buf(bytes)
+    return sodium.crypto_sign_verify_detached(
       sig instanceof Uint8Array ? sig : utility.b58cdecode(sig, prefix.edsig),
-      bytes instanceof Uint8Array ? bytes : utility.hex2buf(bytes),
+      sodium.crypto_generichash(32, prepBuff),
       pk instanceof Uint8Array ? pk : utility.b58cdecode(pk, prefix.edpk)
     );
   }
