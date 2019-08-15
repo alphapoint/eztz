@@ -47,13 +47,12 @@ const CKDPriv = ({ key, chainCode }: Keys, index: number): Keys => {
 };
 
 export const getKeyPair = async (privateKey: Buffer, withZeroByte = false): Promise<any> => {
-    const naclInstance = await library.sodium;
-    const { publicKey, privateKey: fullKey } = naclInstance.crypto_sign_seed_keypair(privateKey);
-    const zero = Buffer.alloc(1, 0);
-    const newPubKey = withZeroByte ?
-        Buffer.concat([zero, Buffer.from(publicKey)]) :
-        Buffer.from(publicKey);
-    return { publicKey: newPubKey, fullKey, privateKey }
+  const naclInstance = await library.sodium;
+  console.info('privatekey: ', privateKey.toString('hex'));
+  const { publicKey, privateKey: fullKey } = naclInstance.crypto_sign_seed_keypair(new Uint8Array(privateKey));
+  const zero = Buffer.alloc(1, 0);
+  const newPubKey = withZeroByte ? Buffer.concat([zero, Buffer.from(publicKey)]) : Buffer.from(publicKey);
+  return { publicKey: newPubKey, fullKey, privateKey };
 };
 
 export const isValidPath = (path: string): boolean => {

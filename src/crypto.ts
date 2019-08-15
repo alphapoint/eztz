@@ -114,21 +114,22 @@ export const crypto = {
         }
       }
     }
-    const { key: privateKey } = edHd.derivePath(`m/44'/1729'/${subPath}`, s.toString('hex'));
-    const { publicKey, fullKey } = await edHd.getKeyPair(privateKey)
+    const { key } = edHd.derivePath(`m/44'/1729'/${subPath}`, s.toString('hex'));
+    const { publicKey, fullKey } = await edHd.getKeyPair(key);
     if (!fullKey) throw new Error('No private key generated in derivation action');
     const sodium = await library.sodium;
     return {
-      sk: utility.b58cencode(privateKey, prefix.edsk),
+      sk: utility.b58cencode(fullKey, prefix.edsk),
       pk: utility.b58cencode(publicKey, prefix.edpk),
-      pkh: utility.b58cencode(sodium.crypto_generichash(20, publicKey), prefix.tz1)
+      pkh: utility.b58cencode(sodium.crypto_generichash(20, new Uint8Array(publicKey)), prefix.tz1)
     };
   },
   async sign(bytes: string | Uint8Array, sk: string | Uint8Array, wm?: Uint8Array | number[]) {
     const preBb = bytes instanceof Uint8Array ? bytes : utility.hex2buf(bytes);
     const bb: Uint8Array = typeof wm !== 'undefined' ? utility.mergebuf(wm, preBb) : preBb;
     const sodium = await library.sodium;
-    const sig = sodium.crypto_sign_detached(sodium.crypto_generichash(32, bb), sk instanceof Uint8Array ? sk : utility.b58cdecode(sk, prefix.edsk), 'uint8array');
+    const prepSk = sk instanceof Uint8Array ? sk : utility.b58cdecode(sk, prefix.edsk);
+    const sig = sodium.crypto_sign_detached(sodium.crypto_generichash(32, bb), new Uint8Array(prepSk), 'uint8array');
     const edsig = utility.b58cencode(sig, prefix.edsig);
     const sbytes = bytes + utility.buf2hex(sig);
     return {
@@ -140,11 +141,11 @@ export const crypto = {
   },
   async verify(bytes: string | Uint8Array, sig: string | Uint8Array, pk: string | Uint8Array) {
     const sodium = await library.sodium;
-    const prepBuff = bytes instanceof Uint8Array ? bytes : utility.hex2buf(bytes)
+    const prepBuff = bytes instanceof Uint8Array ? bytes : utility.hex2buf(bytes);
     return sodium.crypto_sign_verify_detached(
-      sig instanceof Uint8Array ? sig : utility.b58cdecode(sig, prefix.edsig),
+      new Uint8Array(sig instanceof Uint8Array ? sig : utility.b58cdecode(sig, prefix.edsig)),
       sodium.crypto_generichash(32, prepBuff),
-      pk instanceof Uint8Array ? pk : utility.b58cdecode(pk, prefix.edpk)
+      new Uint8Array(pk instanceof Uint8Array ? pk : utility.b58cdecode(pk, prefix.edpk))
     );
   }
 };
