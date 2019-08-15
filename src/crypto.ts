@@ -11,14 +11,9 @@ const _crypto = new Crypto();
 
 //TODO: Add p256 and secp256k1 cryptographay
 export const crypto = {
-  async extractEncryptedKeys(
-    esk?: string,
-    password?: string
-  ): Promise<KeyPair> {
-    if (typeof esk == 'undefined')
-      throw new Error('ES parameter must be provided.');
-    if (typeof password == 'undefined')
-      throw new Error('Password parameter must be provided.');
+  async extractEncryptedKeys(esk?: string, password?: string): Promise<KeyPair> {
+    if (typeof esk == 'undefined') throw new Error('ES parameter must be provided.');
+    if (typeof password == 'undefined') throw new Error('Password parameter must be provided.');
 
     const esb = utility.b58cdecode(esk, prefix.edesk);
     const salt = esb.slice(0, 8);
@@ -26,13 +21,7 @@ export const crypto = {
 
     const sodium = await library.sodium;
 
-    const key = await _crypto.subtle.importKey(
-      'raw',
-      new TextEncoder('utf-8').encode(password),
-      'PBKDF2',
-      false,
-      ['deriveBits']
-    );
+    const key = await _crypto.subtle.importKey('raw', new TextEncoder('utf-8').encode(password), 'PBKDF2', false, ['deriveBits']);
     const derivedBits = await _crypto.subtle.deriveBits(
       {
         name: 'PBKDF2',
@@ -44,19 +33,12 @@ export const crypto = {
       256
     );
 
-    const openSecretBox = sodium.crypto_secretbox_open_easy(
-      esm,
-      new Uint8Array(24),
-      new Uint8Array(derivedBits)
-    );
+    const openSecretBox = sodium.crypto_secretbox_open_easy(esm, new Uint8Array(24), new Uint8Array(derivedBits));
     const kp = sodium.crypto_sign_seed_keypair(openSecretBox);
     return {
       sk: utility.b58cencode(kp.privateKey, prefix.edsk),
       pk: utility.b58cencode(kp.publicKey, prefix.edpk),
-      pkh: utility.b58cencode(
-        sodium.crypto_generichash(20, kp.publicKey),
-        prefix.tz1
-      )
+      pkh: utility.b58cencode(sodium.crypto_generichash(20, kp.publicKey), prefix.tz1)
     };
   },
   async extractKeys(sk: string): Promise<KeyPair | false> {
@@ -70,10 +52,7 @@ export const crypto = {
       let pkPayload = utility.b58cdecode(sk, prefix.edsk).slice(32);
       return {
         pk: utility.b58cencode(pkPayload, prefix.edpk),
-        pkh: utility.b58cencode(
-          sodium.crypto_generichash(20, pkPayload),
-          prefix.tz1
-        ),
+        pkh: utility.b58cencode(sodium.crypto_generichash(20, pkPayload), prefix.tz1),
         sk
       };
     } else if (sk.length == 54) {
@@ -83,10 +62,7 @@ export const crypto = {
       return {
         sk: utility.b58cencode(kp.privateKey, prefix.edsk),
         pk: utility.b58cencode(kp.publicKey, prefix.edpk),
-        pkh: utility.b58cencode(
-          sodium.crypto_generichash(20, kp.publicKey),
-          prefix.tz1
-        )
+        pkh: utility.b58cencode(sodium.crypto_generichash(20, kp.publicKey), prefix.tz1)
       };
     }
 
@@ -116,20 +92,10 @@ export const crypto = {
       seed: s,
       sk: utility.b58cencode(kp.privateKey, prefix.edsk),
       pk: utility.b58cencode(kp.publicKey, prefix.edpk),
-      pkh: utility.b58cencode(
-        sodium.crypto_generichash(20, kp.publicKey),
-        prefix.tz1
-      )
+      pkh: utility.b58cencode(sodium.crypto_generichash(20, kp.publicKey), prefix.tz1)
     };
   },
-  async deriveKey(
-    {
-      mnemonic,
-      passphrase,
-      seed
-    }: { mnemonic?: string; passphrase?: string; seed?: string | Uint8Array },
-    subPath: string
-  ): Promise<KeyPair> {
+  async deriveKey({ mnemonic, passphrase, seed }: { mnemonic?: string; passphrase?: string; seed?: string | Uint8Array }, subPath: string): Promise<KeyPair> {
     const bip39 = await library.bip39;
     let s: Buffer;
     if (typeof seed === 'string') {
@@ -148,38 +114,22 @@ export const crypto = {
         }
       }
     }
-    const { key, chainCode } = edHd.derivePath(
-      `m/44'/1729'/${subPath}`,
-      s.toString('hex')
-    );
+    const { key, chainCode } = edHd.derivePath(`m/44'/1729'/${subPath}`, s.toString('hex'));
     const privateKey = Buffer.concat([key, chainCode]);
     const publicKey = await edHd.getPublicKey(key);
-    if (!privateKey)
-      throw new Error('No private key generated in derivation action');
+    if (!privateKey) throw new Error('No private key generated in derivation action');
     const sodium = await library.sodium;
     return {
       sk: utility.b58cencode(privateKey, prefix.edsk),
       pk: utility.b58cencode(publicKey, prefix.edpk),
-      pkh: utility.b58cencode(
-        sodium.crypto_generichash(20, publicKey),
-        prefix.tz1
-      )
+      pkh: utility.b58cencode(sodium.crypto_generichash(20, publicKey), prefix.tz1)
     };
   },
-  async sign(
-    bytes: string | Uint8Array,
-    sk: string | Uint8Array,
-    wm?: Uint8Array | number[]
-  ) {
+  async sign(bytes: string | Uint8Array, sk: string | Uint8Array, wm?: Uint8Array | number[]) {
     const preBb = bytes instanceof Uint8Array ? bytes : utility.hex2buf(bytes);
-    const bb: Uint8Array =
-      typeof wm !== 'undefined' ? utility.mergebuf(wm, preBb) : preBb;
+    const bb: Uint8Array = typeof wm !== 'undefined' ? utility.mergebuf(wm, preBb) : preBb;
     const sodium = await library.sodium;
-    const sig = sodium.crypto_sign_detached(
-      sodium.crypto_generichash(32, bb),
-      sk instanceof Uint8Array ? sk : utility.b58cdecode(sk, prefix.edsk),
-      'uint8array'
-    );
+    const sig = sodium.crypto_sign_detached(sodium.crypto_generichash(32, bb), sk instanceof Uint8Array ? sk : utility.b58cdecode(sk, prefix.edsk), 'uint8array');
     const edsig = utility.b58cencode(sig, prefix.edsig);
     const sbytes = bytes + utility.buf2hex(sig);
     return {
@@ -189,11 +139,7 @@ export const crypto = {
       sbytes: sbytes
     };
   },
-  async verify(
-    bytes: string | Uint8Array,
-    sig: string | Uint8Array,
-    pk: string | Uint8Array
-  ) {
+  async verify(bytes: string | Uint8Array, sig: string | Uint8Array, pk: string | Uint8Array) {
     return (await library.sodium).crypto_sign_verify_detached(
       sig instanceof Uint8Array ? sig : utility.b58cdecode(sig, prefix.edsig),
       bytes instanceof Uint8Array ? bytes : utility.hex2buf(bytes),

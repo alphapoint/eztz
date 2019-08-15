@@ -16,12 +16,7 @@ export const utility = {
   },
   toBytesInt32(num: string | number): ArrayBuffer {
     if (typeof num === 'string') num = parseInt(num);
-    const arr = new Uint8Array([
-      (num & 0xff000000) >> 24,
-      (num & 0x00ff0000) >> 16,
-      (num & 0x0000ff00) >> 8,
-      num & 0x000000ff
-    ]);
+    const arr = new Uint8Array([(num & 0xff000000) >> 24, (num & 0x00ff0000) >> 16, (num & 0x0000ff00) >> 8, num & 0x000000ff]);
     return arr.buffer;
   },
   totez(m: string): number {
@@ -40,8 +35,7 @@ export const utility = {
     return bs58check.decode(enc).slice(prefix.length);
   },
   buf2hex(buffer: Uint8Array | ArrayBuffer): string {
-    const byteArray =
-        buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer),
+    const byteArray = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer),
       hexParts = [];
     for (let i = 0; i < byteArray.length; i++) {
       let hex = byteArray[i].toString(16);
@@ -90,10 +84,7 @@ export const utility = {
         val += mi[i];
         escaped = false;
         continue;
-      } else if (
-        (i === mi.length - 1 && !sopen) ||
-        (mi[i] === ' ' && pl === 0 && !sopen)
-      ) {
+      } else if ((i === mi.length - 1 && !sopen) || (mi[i] === ' ' && pl === 0 && !sopen)) {
         if (i === mi.length - 1) val += mi[i];
         if (val) {
           let valInt = parseInt(val);
@@ -216,10 +207,7 @@ export const utility = {
         val += mi[i];
         escaped = false;
         continue;
-      } else if (
-        (i === mi.length - 1 && !sopen) ||
-        (mi[i] === ';' && pl === 0 && !sopen)
-      ) {
+      } else if ((i === mi.length - 1 && !sopen) || (mi[i] === ';' && pl === 0 && !sopen)) {
         if (i === mi.length - 1) val += mi[i];
         if (val.trim() === '' || val.trim() === '}' || val.trim() === ';') {
           val = '';
@@ -237,19 +225,12 @@ export const utility = {
     }
     return ret;
   },
-  formatMoney(
-    n: any | string | number,
-    c: number,
-    d: string,
-    t: string
-  ): string {
+  formatMoney(n: any | string | number, c: number, d: string, t: string): string {
     if (isNaN((c = Math.abs(c)))) c = 2;
     if (d === undefined) d = '.';
     if (t === undefined) t = ',';
     const s = n < 0 ? '-' : '';
-    const i: any | string | number = String(
-      parseInt((n = Math.abs(Number(n) || 0).toFixed(c)))
-    );
+    const i: any | string | number = String(parseInt((n = Math.abs(Number(n) || 0).toFixed(c))));
     const j = i.length > 3 ? i.length % 3 : 0;
     return (
       s +

@@ -11,16 +11,4 @@ import { tezos } from './tezos';
 import { tzScan } from './tz-scan';
 
 //Expose library
-export {
-  library,
-  prefix,
-  watermark,
-  utility,
-  crypto,
-  node,
-  rpc,
-  contract,
-  trezor,
-  tezos,
-  tzScan
-};
+export { library, prefix, watermark, utility, crypto, node, rpc, contract, trezor, tezos, tzScan };

@@ -130,9 +130,7 @@ export const library = {
     }
     return result;
   })(),
-  prim_mapping: <
-    { [key: string]: string | { name: string; len: number; annots: boolean } }
-  >{
+  prim_mapping: <{ [key: string]: string | { name: string; len: number; annots: boolean } }>{
     '00': 'int',
     '01': 'string',
     '02': 'seq',

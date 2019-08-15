@@ -48,8 +48,7 @@ export const tzScan = {
 
     if (fetched.status !== 200) {
       console.error('TzScan error:', e, o, fetched.status, fetched.statusText);
-      if (this.debugMode)
-        console.error('TzScan error body:', await fetched.text());
+      if (this.debugMode) console.error('TzScan error body:', await fetched.text());
 
       throw new Error(fetched.statusText);
     }
@@ -62,17 +61,8 @@ export const tzScan = {
   getOperation(h: string): Promise<TzScanOperationEnvelope> {
     return this.query(`/operation/${h}`);
   },
-  getOperations<T extends OperationKind>(
-    h: string,
-    type: T,
-    page: number = 0,
-    perPage: number = 50
-  ): Promise<TzScanOperationEnvelopeOf<T>[]> {
-    return this.query(
-      `/operations/${h}?type=${this.getOperationType(
-        type
-      )}&p=${page}&number=${perPage}`
-    );
+  getOperations<T extends OperationKind>(h: string, type: T, page: number = 0, perPage: number = 50): Promise<TzScanOperationEnvelopeOf<T>[]> {
+    return this.query(`/operations/${h}?type=${this.getOperationType(type)}&p=${page}&number=${perPage}`);
   },
   getAccountStatus(h: string): Promise<TzScanAccountStatus> {
     return this.query(`/account_status/${h}`);

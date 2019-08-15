@@ -104,12 +104,7 @@ function forgeBool(b: string | boolean) {
 function forgeScript(s: OperationScript) {
   var t1 = tezos.encodeRawBytes(s.code).toLowerCase();
   var t2 = tezos.encodeRawBytes(s.storage).toLowerCase();
-  return (
-    utility.toBytesInt32Hex(t1.length / 2) +
-    t1 +
-    utility.toBytesInt32Hex(t2.length / 2) +
-    t2
-  );
+  return utility.toBytesInt32Hex(t1.length / 2) + t1 + utility.toBytesInt32Hex(t2.length / 2) + t2;
 }
 
 function forgeParameters(p: OperationParameter | OperationParameter[]) {

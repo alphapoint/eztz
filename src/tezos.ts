@@ -9,25 +9,11 @@ import BN from 'bignumber.js';
 import { TextDecoder, TextEncoder } from 'text-encoding';
 
 export const tezos = {
-  async forge(
-    head: Block,
-    opOb: any,
-    validateLocalForge?: boolean
-  ): Promise<{ opbytes: string; opOb: any }> {
+  async forge(head: Block, opOb: any, validateLocalForge?: boolean): Promise<{ opbytes: string; opOb: any }> {
     if (typeof validateLocalForge == 'undefined') validateLocalForge = true;
 
-    const remoteForgedBytes = await node.query(
-      '/chains/' +
-        head.chain_id +
-        '/blocks/' +
-        head.hash +
-        '/helpers/forge/operations',
-      opOb,
-      undefined
-    );
-    let localForgedBytes = utility.buf2hex(
-      utility.b58cdecode(opOb.branch, prefix.b)
-    );
+    const remoteForgedBytes = await node.query('/chains/' + head.chain_id + '/blocks/' + head.hash + '/helpers/forge/operations', opOb, undefined);
+    let localForgedBytes = utility.buf2hex(utility.b58cdecode(opOb.branch, prefix.b));
     for (let i = 0; i < opOb.contents.length; i++) {
       localForgedBytes += forgeOp(opOb.contents[i]);
     }
@@ -58,11 +44,7 @@ export const tezos = {
     } else if (typeof input === 'object') {
       if (input.prim) {
         const args_len = input.args ? input.args.length : 0;
-        result.push(
-          library.prim_mapping_reverse[args_len][
-            input.annots ? 'true' : 'false'
-          ]
-        );
+        result.push(library.prim_mapping_reverse[args_len][input.annots ? 'true' : 'false']);
         result.push(library.op_mapping_reverse[input.prim]);
         if (input.args) {
           input.args.forEach(arg => {
@@ -88,17 +70,9 @@ export const tezos = {
         const num = new BN(input.int, 10);
         const positive_mark = num.toString(2)[0] === '-' ? '1' : '0';
         const binary = num.toString(2).replace('-', '');
-        const pad =
-          binary.length <= 6
-            ? 6
-            : (binary.length - 6) % 7
-            ? binary.length + 7 - ((binary.length - 6) % 7)
-            : binary.length;
+        const pad = binary.length <= 6 ? 6 : (binary.length - 6) % 7 ? binary.length + 7 - ((binary.length - 6) % 7) : binary.length;
         const split = binary.padStart(pad, '0').match(/\d{6,7}/g);
-        if (!split)
-          throw new Error(
-            'Splitting every 6 to 7 decimal characters matched no result'
-          );
+        if (!split) throw new Error('Splitting every 6 to 7 decimal characters matched no result');
         const reversed = split.reverse();
 
         reversed[0] = positive_mark + reversed[0];

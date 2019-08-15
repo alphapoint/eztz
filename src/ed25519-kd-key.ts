@@ -46,16 +46,11 @@ const CKDPriv = ({ key, chainCode }: Keys, index: number): Keys => {
   };
 };
 
-export const getPublicKey = async (
-  privateKey: Buffer,
-  withZeroByte = false
-): Promise<Buffer> => {
+export const getPublicKey = async (privateKey: Buffer, withZeroByte = false): Promise<Buffer> => {
   const naclInstance = await library.sodium;
   const { publicKey } = naclInstance.crypto_sign_seed_keypair(privateKey);
   const zero = Buffer.alloc(1, 0);
-  return withZeroByte
-    ? Buffer.concat([zero, Buffer.from(publicKey)])
-    : Buffer.from(publicKey);
+  return withZeroByte ? Buffer.concat([zero, Buffer.from(publicKey)]) : Buffer.from(publicKey);
 };
 
 export const isValidPath = (path: string): boolean => {
@@ -81,8 +76,5 @@ export const derivePath = (path: Path, seed: Hex): Keys => {
     .map(replaceDerive)
     .map(el => parseInt(el, 10));
 
-  return segments.reduce(
-    (parentKeys, segment) => CKDPriv(parentKeys, segment + HARDENED_OFFSET),
-    { key, chainCode }
-  );
+  return segments.reduce((parentKeys, segment) => CKDPriv(parentKeys, segment + HARDENED_OFFSET), { key, chainCode });
 };

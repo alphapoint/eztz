@@ -11,9 +11,7 @@ export const rpc = {
     return node.query(e, d);
   },
   getBalance(a: string): Promise<string> {
-    return node.query(
-      '/chains/main/blocks/head/context/contracts/' + a + '/balance'
-    );
+    return node.query('/chains/main/blocks/head/context/contracts/' + a + '/balance');
   },
   getDelegate(a: string): Promise<string | false> {
     return node
@@ -25,14 +23,10 @@ export const rpc = {
       .catch(() => false);
   },
   getManager(a: string): Promise<string> {
-    return node.query(
-      '/chains/main/blocks/head/context/contracts/' + a + '/manager_key'
-    );
+    return node.query('/chains/main/blocks/head/context/contracts/' + a + '/manager_key');
   },
   getCounter(a: string): Promise<string> {
-    return node.query(
-      '/chains/main/blocks/head/context/contracts/' + a + '/counter'
-    );
+    return node.query('/chains/main/blocks/head/context/contracts/' + a + '/counter');
   },
   getBaker(tz1: string): Promise<string> {
     return node.query('/chains/main/blocks/head/context/delegates/' + tz1);
@@ -105,13 +99,7 @@ export const rpc = {
       repeater();
     });
   },
-  async prepareOperation(
-    from: string,
-    operation: Operation,
-    keys?: KeyPair,
-    newAccount?: boolean,
-    manager?: string
-  ) {
+  async prepareOperation(from: string, operation: Operation, keys?: KeyPair, newAccount?: boolean, manager?: string) {
     let counter, opOb;
     const promises = [];
     let requiresReveal = false;
@@ -124,8 +112,7 @@ export const rpc = {
         case OperationKind.Origination:
         case OperationKind.Delegation:
           requiresReveal = true;
-          if (!newAccount || operation.kind === 'transaction')
-            newAccount = false;
+          if (!newAccount || operation.kind === 'transaction') newAccount = false;
         // fall through
         case OperationKind.Reveal:
           if (!newAccount) {
@@ -156,25 +143,12 @@ export const rpc = {
     //fix reset bug temp
     counters[from] = counter;
     for (let i = 0; i < ops.length; i++) {
-      if (
-        [
-          'proposals',
-          'ballot',
-          'transaction',
-          'origination',
-          'delegation'
-        ].indexOf(ops[i].kind) >= 0
-      ) {
+      if (['proposals', 'ballot', 'transaction', 'origination', 'delegation'].indexOf(ops[i].kind) >= 0) {
         if (typeof ops[i].source == 'undefined') ops[i].source = from;
       }
-      if (
-        ['reveal', 'transaction', 'origination', 'delegation'].indexOf(
-          ops[i].kind
-        ) >= 0
-      ) {
+      if (['reveal', 'transaction', 'origination', 'delegation'].indexOf(ops[i].kind) >= 0) {
         if (typeof ops[i].gas_limit == 'undefined') ops[i].gas_limit = '0';
-        if (typeof ops[i].storage_limit == 'undefined')
-          ops[i].storage_limit = '0';
+        if (typeof ops[i].storage_limit == 'undefined') ops[i].storage_limit = '0';
         let newCounter = counters[from] + 1;
         if (newAccount && ops[0].kind === 'transaction') {
           ops[i].counter = newCounter;
@@ -196,10 +170,7 @@ export const rpc = {
   },
   async simulateOperation(from: string, operation: Operation, keys?: KeyPair) {
     const fullOp = await this.prepareOperation(from, operation, keys);
-    return node.query(
-      '/chains/main/blocks/head/helpers/scripts/run_operation',
-      fullOp.opOb
-    );
+    return node.query('/chains/main/blocks/head/helpers/scripts/run_operation', fullOp.opOb);
   },
   async sendOperation(
     from: string,
@@ -215,27 +186,15 @@ export const rpc = {
       }
     | any
   > {
-    const fullOp = await this.prepareOperation(
-      from,
-      operation,
-      keys,
-      newAccount,
-      manager
-    );
+    const fullOp = await this.prepareOperation(from, operation, keys, newAccount, manager);
     if (keys.sk === false) {
       return fullOp;
     } else {
       if (!keys) {
-        fullOp.opbytes +=
-          '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
-        fullOp.opOb.signature =
-          'edsigtXomBKi5CTRf5cjATJWSyaRvhfYNHqSUGrn4SdbYRcGwQrUGjzEfQDTuqHhuA8b2d8NarZjz8TRf65WkpQmo423BtomS8Q';
+        fullOp.opbytes += '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
+        fullOp.opOb.signature = 'edsigtXomBKi5CTRf5cjATJWSyaRvhfYNHqSUGrn4SdbYRcGwQrUGjzEfQDTuqHhuA8b2d8NarZjz8TRf65WkpQmo423BtomS8Q';
       } else {
-        const signed = await crypto.sign(
-          fullOp.opbytes,
-          keys.sk,
-          watermark.generic
-        );
+        const signed = await crypto.sign(fullOp.opbytes, keys.sk, watermark.generic);
         fullOp.opbytes = signed.sbytes;
         fullOp.opOb.signature = signed.edsig;
       }
@@ -253,21 +212,13 @@ export const rpc = {
   }> {
     const opResponse: Operation[] = [];
     let errors: Operation[] = [];
-    const f = await node.query(
-      '/chains/main/blocks/head/helpers/preapply/operations',
-      [opOb]
-    );
+    const f = await node.query('/chains/main/blocks/head/helpers/preapply/operations', [opOb]);
     if (!Array.isArray(f)) throw { error: 'RPC Fail', errors: [] };
     for (let i = 0; i < f.length; i++) {
       for (let j = 0; j < f[i].contents.length; j++) {
         opResponse.push(f[i].contents[j]);
-        if (
-          typeof f[i].contents[j].metadata.operation_result != 'undefined' &&
-          f[i].contents[j].metadata.operation_result.status === 'failed'
-        )
-          errors = errors.concat(
-            f[i].contents[j].metadata.operation_result.errors
-          );
+        if (typeof f[i].contents[j].metadata.operation_result != 'undefined' && f[i].contents[j].metadata.operation_result.status === 'failed')
+          errors = errors.concat(f[i].contents[j].metadata.operation_result.errors);
       }
     }
     if (errors.length) throw { error: 'ForgeOperation Failed', errors: errors };
@@ -297,16 +248,7 @@ export const rpc = {
     return this.sendOperation(keys.pkh, operation, keys, false, false);
   },
 
-  account(
-    keys: KeyPair,
-    amount: string,
-    spendable: boolean,
-    delegatable: boolean,
-    delegate: string,
-    fee: string,
-    gasLimit?: string,
-    storageLimit?: string
-  ) {
+  account(keys: KeyPair, amount: string, spendable: boolean, delegatable: boolean, delegate: string, fee: string, gasLimit?: string, storageLimit?: string) {
     const operation: Operation = {
       kind: 'origination',
       balance: utility.mutez(amount).toString(),
@@ -321,8 +263,7 @@ export const rpc = {
 
     if (typeof delegatable != 'undefined') operation.delegatable = delegatable;
 
-    if (typeof delegate != 'undefined' && delegate)
-      operation.delegate = delegate;
+    if (typeof delegate != 'undefined' && delegate) operation.delegate = delegate;
 
     return this.sendOperation(keys.pkh, operation, keys, false, false);
   },
@@ -356,18 +297,7 @@ export const rpc = {
     }
     return this.sendOperation(from, operation, keys, true, newAccount);
   },
-  originate(
-    keys: KeyPair,
-    amount: string,
-    code: string,
-    init: string,
-    spendable: boolean,
-    delegatable: boolean,
-    delegate: string,
-    fee: string,
-    gasLimit: string,
-    storageLimit: string
-  ) {
+  originate(keys: KeyPair, amount: string, code: string, init: string, spendable: boolean, delegatable: boolean, delegate: string, fee: string, gasLimit: string, storageLimit: string) {
     if (typeof gasLimit == 'undefined') gasLimit = '10000';
     if (typeof storageLimit == 'undefined') storageLimit = '257';
     const _code = utility.ml2mic(code),
@@ -390,21 +320,11 @@ export const rpc = {
 
     if (typeof delegatable != 'undefined') operation.delegatable = delegatable;
 
-    if (typeof delegate != 'undefined' && delegate)
-      operation.delegate = delegate;
+    if (typeof delegate != 'undefined' && delegate) operation.delegate = delegate;
 
     return this.sendOperation(keys.pkh, operation, keys);
   },
-  setDelegate(
-    from: string,
-    keys: KeyPair,
-    delegate: string,
-    fee: string,
-    gasLimit: string,
-    storageLimit: string,
-    newAccount?: boolean,
-    manager?: string
-  ) {
+  setDelegate(from: string, keys: KeyPair, delegate: string, fee: string, gasLimit: string, storageLimit: string, newAccount?: boolean, manager?: string) {
     if (typeof gasLimit == 'undefined') gasLimit = '10000';
     if (typeof storageLimit == 'undefined') storageLimit = '0';
     const operation: Operation = {
@@ -416,21 +336,9 @@ export const rpc = {
     if (typeof delegate != 'undefined' && delegate) {
       operation.delegate = delegate;
     }
-    return this.sendOperation(
-      from,
-      operation,
-      keys,
-      false,
-      newAccount,
-      manager
-    );
+    return this.sendOperation(from, operation, keys, false, newAccount, manager);
   },
-  registerDelegate(
-    keys: KeyPair,
-    fee: string,
-    gasLimit: string,
-    storageLimit: string
-  ) {
+  registerDelegate(keys: KeyPair, fee: string, gasLimit: string, storageLimit: string) {
     if (typeof gasLimit == 'undefined') gasLimit = '10000';
     if (typeof storageLimit == 'undefined') storageLimit = '0';
     const operation: Operation = {
@@ -453,10 +361,7 @@ export const rpc = {
 
   typecheckCode(code: string) {
     const _code = utility.ml2mic(code);
-    return node.query(
-      '/chains/main/blocks/head/helpers/scripts/typecheck_code',
-      { program: _code, gas: '10000' }
-    );
+    return node.query('/chains/main/blocks/head/helpers/scripts/typecheck_code', { program: _code, gas: '10000' });
   },
   packData(data: string, type: string) {
     const check = {
@@ -464,10 +369,7 @@ export const rpc = {
       type: utility.sexp2mic(type),
       gas: '400000'
     };
-    return node.query(
-      '/chains/main/blocks/head/helpers/scripts/pack_data',
-      check
-    );
+    return node.query('/chains/main/blocks/head/helpers/scripts/pack_data', check);
   },
   typecheckData(data: string, type: string) {
     const check: TypeCheckData = {
@@ -475,18 +377,9 @@ export const rpc = {
       type: utility.sexp2mic(type),
       gas: '400000'
     };
-    return node.query(
-      '/chains/main/blocks/head/helpers/scripts/typecheck_data',
-      check
-    );
+    return node.query('/chains/main/blocks/head/helpers/scripts/typecheck_data', check);
   },
-  runCode(
-    code: string,
-    amount: string,
-    input: string,
-    storage: string,
-    trace: string
-  ) {
+  runCode(code: string, amount: string, input: string, storage: string, trace: string) {
     const ep = typeof trace != 'undefined' && trace ? 'trace_code' : 'run_code';
     return node.query('/chains/main/blocks/head/helpers/scripts/' + ep, {
       script: utility.ml2mic(code),

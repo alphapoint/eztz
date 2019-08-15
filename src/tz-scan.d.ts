@@ -44,9 +44,7 @@ interface TzScanOperationReveal extends TzScanOperationBase {
   public_key: string;
 }
 
-declare type TzScanOperation =
-  | TzScanOperationTransaction
-  | TzScanOperationReveal;
+declare type TzScanOperation = TzScanOperationTransaction | TzScanOperationReveal;
 
 declare type TzScanOperations = {
   [K in OperationKind]: TzScanOperationMap[K];
@@ -71,8 +69,7 @@ interface TzScanOperationEnvelope {
   };
 }
 
-interface TzScanOperationEnvelopeOf<Kind extends OperationKind>
-  extends TzScanOperationEnvelope {
+interface TzScanOperationEnvelopeOf<Kind extends OperationKind> extends TzScanOperationEnvelope {
   hash: string;
   block_hash: string;
   network_hash: string;
