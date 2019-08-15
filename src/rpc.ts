@@ -1,463 +1,498 @@
-import {watermark} from "./watermark";
-import {node} from "./node";
-import {utility} from "./utility";
-import {crypto} from "./crypto";
-import {tezos} from "./tezos";
+import { watermark } from './watermark';
+import { node } from './node';
+import { utility } from './utility';
+import { crypto } from './crypto';
+import { tezos } from './tezos';
 
 const counters: { [key: string]: number } = {};
 
 export const rpc = {
-    call(e: string, d?: any): Promise<any> {
-        return node.query(e, d);
-    },
-    getBalance(a: string): Promise<string> {
-        return node
-            .query("/chains/main/blocks/head/context/contracts/" + a + "/balance");
-    },
-    getDelegate(a: string): Promise<string | false> {
-        return node
-            .query("/chains/main/blocks/head/context/contracts/" + a + "/delegate")
-            .then(function (r) {
-                if (r) return r;
-                return false;
-            })
-            .catch(() => false);
-    },
-    getManager(a: string): Promise<string> {
-        return node.query(
-            "/chains/main/blocks/head/context/contracts/" + a + "/manager_key"
-        );
-    },
-    getCounter(a: string): Promise<string> {
-        return node.query("/chains/main/blocks/head/context/contracts/" + a + "/counter");
-    },
-    getBaker(tz1: string): Promise<string> {
-        return node.query("/chains/main/blocks/head/context/delegates/" + tz1);
-    },
-    getHead(): Promise<Block> {
-        return node.query("/chains/main/blocks/head");
-    },
-    getBlock(a: string): Promise<Block> {
-        return node.query(`/chains/main/blocks/${a}`);
-    },
-    getHeader(a?: string): Promise<BlockHeader> {
-        if (a == undefined)
-            return node.query("/chains/main/blocks/head/header");
-        else
-            return node.query(`/chains/main/blocks/${a}/header`);
-    },
-    getHeadHash(): Promise<string> {
-        return node.query("/chains/main/blocks/head/hash");
-    },
-    getBallotList(): Promise<any> {
-        return node.query("/chains/main/blocks/head/votes/ballot_list");
-    },
-    getProposals(): Promise<any> {
-        return node.query("/chains/main/blocks/head/votes/proposals");
-    },
-    getBallots(): Promise<any> {
-        return node.query("/chains/main/blocks/head/votes/ballots");
-    },
-    getListings(): Promise<any> {
-        return node.query("/chains/main/blocks/head/votes/listings");
-    },
-    getCurrentProposal(): Promise<any> {
-        return node.query("/chains/main/blocks/head/votes/current_proposal");
-    },
-    getCurrentPeriod(): Promise<any> {
-        return node.query("/chains/main/blocks/head/votes/current_period_kind");
-    },
-    getCurrentQuorum(): Promise<any> {
-        return node.query("/chains/main/blocks/head/votes/current_quorum");
-    },
+  call(e: string, d?: any): Promise<any> {
+    return node.query(e, d);
+  },
+  getBalance(a: string): Promise<string> {
+    return node.query(
+      '/chains/main/blocks/head/context/contracts/' + a + '/balance'
+    );
+  },
+  getDelegate(a: string): Promise<string | false> {
+    return node
+      .query('/chains/main/blocks/head/context/contracts/' + a + '/delegate')
+      .then(function(r) {
+        if (r) return r;
+        return false;
+      })
+      .catch(() => false);
+  },
+  getManager(a: string): Promise<string> {
+    return node.query(
+      '/chains/main/blocks/head/context/contracts/' + a + '/manager_key'
+    );
+  },
+  getCounter(a: string): Promise<string> {
+    return node.query(
+      '/chains/main/blocks/head/context/contracts/' + a + '/counter'
+    );
+  },
+  getBaker(tz1: string): Promise<string> {
+    return node.query('/chains/main/blocks/head/context/delegates/' + tz1);
+  },
+  getHead(): Promise<Block> {
+    return node.query('/chains/main/blocks/head');
+  },
+  getBlock(a: string): Promise<Block> {
+    return node.query(`/chains/main/blocks/${a}`);
+  },
+  getHeader(a?: string): Promise<BlockHeader> {
+    if (a == undefined) return node.query('/chains/main/blocks/head/header');
+    else return node.query(`/chains/main/blocks/${a}/header`);
+  },
+  getHeadHash(): Promise<string> {
+    return node.query('/chains/main/blocks/head/hash');
+  },
+  getBallotList(): Promise<any> {
+    return node.query('/chains/main/blocks/head/votes/ballot_list');
+  },
+  getProposals(): Promise<any> {
+    return node.query('/chains/main/blocks/head/votes/proposals');
+  },
+  getBallots(): Promise<any> {
+    return node.query('/chains/main/blocks/head/votes/ballots');
+  },
+  getListings(): Promise<any> {
+    return node.query('/chains/main/blocks/head/votes/listings');
+  },
+  getCurrentProposal(): Promise<any> {
+    return node.query('/chains/main/blocks/head/votes/current_proposal');
+  },
+  getCurrentPeriod(): Promise<any> {
+    return node.query('/chains/main/blocks/head/votes/current_period_kind');
+  },
+  getCurrentQuorum(): Promise<any> {
+    return node.query('/chains/main/blocks/head/votes/current_quorum');
+  },
 
-    awaitOperation(hash: string, interval?: number, timeout?: number): any {
-        if (typeof interval === "undefined")
-            interval = 30;
-        if (typeof timeout === "undefined")
-            timeout = 180;
-        if (timeout <= 0) throw new Error("Timeout must be more than 0");
-        if (interval <= 0) throw Error("Interval must be more than 0");
-        const at = Math.ceil(timeout / interval) + 1;
-        let c = 0;
-        let found = false;
-        return new Promise((resolve, reject) => {
-            const repeater = () => {
-                this.getHead().then((h) => {
-                    c++;
-                    outer: for (let i = 3, found = false; i >= 0; i--) {
-                        for (let j = 0; j < h.operations[i].length; j++) {
-                            if (h.operations[i][j].hash === hash) {
-                                found = true;
-                                break outer;
-                            }
-                        }
-                    }
-                    if (found) resolve(h.hash);
-                    else {
-                        if (c >= at) {
-                            reject("Timeout");
-                        } else {
-                            setTimeout(repeater, interval);
-                        }
-                    }
-                });
-            };
-            repeater();
-        });
-    },
-    async prepareOperation(from: string, operation: Operation, keys?: KeyPair, newAccount?: boolean, manager?: string) {
-        let counter, opOb;
-        const promises = [];
-        let requiresReveal = false;
-        promises.push(node.query("/chains/main/blocks/head/header"));
-        const ops = Array.isArray(operation) ? operation : [operation];
-        for (let i = 0; i < ops.length; i++) {
-            const kind = ops[i].kind as OperationKind;
-            switch (kind) {
-                case OperationKind.Transaction:
-                case OperationKind.Origination:
-                case OperationKind.Delegation:
-                    requiresReveal = true;
-                    if (!newAccount || operation.kind === "transaction")
-                        newAccount = false;
-                    // fall through
-                case OperationKind.Reveal:
-                    if (!newAccount) {
-                        promises.push(this.getCounter(from));
-                        promises.push(this.getManager(from));
-                    } else {
-                        promises.push(new Promise((resolve, reject) => resolve(0)));
-                        promises.push(new Promise((resolve, reject) => resolve({})));
-                    }
-                    break;
+  awaitOperation(hash: string, interval?: number, timeout?: number): any {
+    if (typeof interval === 'undefined') interval = 30;
+    if (typeof timeout === 'undefined') timeout = 180;
+    if (timeout <= 0) throw new Error('Timeout must be more than 0');
+    if (interval <= 0) throw Error('Interval must be more than 0');
+    const at = Math.ceil(timeout / interval) + 1;
+    let c = 0;
+    let found = false;
+    return new Promise((resolve, reject) => {
+      const repeater = () => {
+        this.getHead().then(h => {
+          c++;
+          outer: for (let i = 3, found = false; i >= 0; i--) {
+            for (let j = 0; j < h.operations[i].length; j++) {
+              if (h.operations[i][j].hash === hash) {
+                found = true;
+                break outer;
+              }
             }
-        }
-        const f = await Promise.all(promises);
-        const head = f[0];
-        if (requiresReveal && keys && typeof f[2].key == "undefined") {
-            ops.unshift({
-                kind: "reveal",
-                fee: node.isZeronet ? "100000" : "1269",
-                public_key: keys.pk,
-                source: from,
-                gas_limit: 10000,
-                storage_limit: 0
-            });
-        }
-        counter = parseInt(f[1]) + 1;
-        if (typeof counters[from] == "undefined")
-            counters[from] = counter;
-        if (counter > counters[from])
-            counters[from] = counter;
-        //fix reset bug temp
-        counters[from] = counter;
-        for (let i = 0; i < ops.length; i++) {
-            if ([
-                "proposals",
-                "ballot",
-                "transaction",
-                "origination",
-                "delegation"
-            ].indexOf(ops[i].kind) >= 0) {
-                if (typeof ops[i].source == "undefined")
-                    ops[i].source = from;
-            }
-            if (["reveal", "transaction", "origination", "delegation"].indexOf(ops[i].kind) >= 0) {
-                if (typeof ops[i].gas_limit == "undefined")
-                    ops[i].gas_limit = "0";
-                if (typeof ops[i].storage_limit == "undefined")
-                    ops[i].storage_limit = "0";
-                let newCounter = counters[from] + 1;
-                if (newAccount && ops[0].kind === "transaction") {
-                    ops[i].counter = newCounter;
-                    // counters[from]++;
-                } else {
-                    ops[i].counter = counters[from]++;
-                }
-                ops[i].fee = ops[i].fee.toString();
-                ops[i].gas_limit = ops[i].gas_limit.toString();
-                ops[i].storage_limit = ops[i].storage_limit.toString();
-                ops[i].counter = ops[i].counter.toString();
-            }
-        }
-        opOb = {
-            branch: head.hash,
-            contents: ops
-        };
-        return tezos.forge(head, opOb);
-    },
-    async simulateOperation(from: string, operation: Operation, keys?: KeyPair) {
-        const fullOp = await this.prepareOperation(from, operation, keys);
-        return node.query("/chains/main/blocks/head/helpers/scripts/run_operation", fullOp.opOb);
-    },
-    async sendOperation(
-        from: string,
-        operation: Operation,
-        keys: KeyPair | boolean | any,
-        skipPrevalidation: boolean = false,
-        newAccount?: boolean,
-        manager?: string
-    ): Promise<{
-        hash: any,
-        operations: Operation[] | []
-    } | any> {
-        const fullOp = await this
-            .prepareOperation(from, operation, keys, newAccount, manager);
-        if (keys.sk === false) {
-            return fullOp;
-        } else {
-            if (!keys) {
-                fullOp.opbytes +=
-                    "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
-                fullOp.opOb.signature =
-                    "edsigtXomBKi5CTRf5cjATJWSyaRvhfYNHqSUGrn4SdbYRcGwQrUGjzEfQDTuqHhuA8b2d8NarZjz8TRf65WkpQmo423BtomS8Q";
+          }
+          if (found) resolve(h.hash);
+          else {
+            if (c >= at) {
+              reject('Timeout');
             } else {
-                const signed = await crypto.sign(fullOp.opbytes, keys.sk, watermark.generic);
-                fullOp.opbytes = signed.sbytes;
-                fullOp.opOb.signature = signed.edsig;
+              setTimeout(repeater, interval);
             }
-            console.log(fullOp);
-            if (skipPrevalidation)
-                return this.silentInject(fullOp.opbytes);
-            else
-                return this.inject(fullOp.opOb, fullOp.opbytes);
-        }
-    },
-    async inject(opOb: any, sopbytes: any): Promise<{
-        hash: any,
-        operations: Operation[] | []
-    }> {
-        const opResponse: Operation[] = [];
-        let errors: Operation[] = [];
-        const f = await node
-            .query("/chains/main/blocks/head/helpers/preapply/operations", [opOb]);
-        if (!Array.isArray(f))
-            throw {error: "RPC Fail", errors: []};
-        for (let i = 0; i < f.length; i++) {
-            for (let j = 0; j < f[i].contents.length; j++) {
-                opResponse.push(f[i].contents[j]);
-                if (typeof f[i].contents[j].metadata.operation_result !=
-                    "undefined" &&
-                    f[i].contents[j].metadata.operation_result.status === "failed")
-                    errors = errors.concat(f[i].contents[j].metadata.operation_result.errors);
-            }
-        }
-        if (errors.length)
-            throw {error: "ForgeOperation Failed", errors: errors};
-        const f_1 = await node.query("/injection/operation", sopbytes);
-        return {
-            hash: f_1,
-            operations: opResponse
-        };
-    },
-    async silentInject(sopbytes: any) {
-        const f = await node.query("/injection/operation", sopbytes);
-        return {
-            hash: f
-        };
-    },
-
-    reveal(keys: KeyPair, gasLimit?: string, storageLimit?: string) {
-        const operation: Operation = {
-            kind: "reveal",
-            public_key: keys.pk,
-            fee: node.isZeronet ? "100000" : "1269",
-            source: keys.pkh,
-            gas_limit: gasLimit || "10000",
-            storage_limit: storageLimit || "0"
-        };
-
-        return this.sendOperation(keys.pkh, operation, keys, false, false);
-    },
-
-    account(
-        keys: KeyPair,
-        amount: string,
-        spendable: boolean,
-        delegatable: boolean,
-        delegate: string,
-        fee: string,
-        gasLimit?: string,
-        storageLimit?: string
-    ) {
-        const operation: Operation = {
-            kind: "origination",
-            balance: utility.mutez(amount).toString(),
-            fee: fee.toString(),
-            gas_limit: gasLimit || "10000",
-            storage_limit: storageLimit || "257"
-        };
-
-        operation['manager_pubkey'] = keys.pkh;
-
-        if (typeof spendable != "undefined")
-            operation.spendable = spendable;
-
-        if (typeof delegatable != "undefined")
-            operation.delegatable = delegatable;
-
-        if (typeof delegate != "undefined" && delegate)
-            operation.delegate = delegate;
-
-        return this.sendOperation(keys.pkh, operation, keys, false, false);
-    },
-    transfer(
-        from: string,
-        keys: KeyPair,
-        to: string,
-        amount: string,
-        fee: string,
-        parameter?: string,
-        gasLimit?: string,
-        storageLimit?: string,
-        newAccount?: boolean
-    ): Promise<{
-        hash: any,
-        operations: Operation[] | []
-    } | any> {
-        const operation: Operation = {
-            kind: "transaction",
-            fee: fee.toString(),
-            gas_limit: gasLimit || "10100",
-            storage_limit: storageLimit || "0",
-            amount: amount.toString(),
-            destination: to
-        };
-        if (parameter) {
-            operation.parameters = utility.sexp2mic(parameter);
-        }
-        return this.sendOperation(from, operation, keys, true, newAccount);
-    },
-    originate(
-        keys: KeyPair,
-        amount: string,
-        code: string,
-        init: string,
-        spendable: boolean,
-        delegatable: boolean,
-        delegate: string,
-        fee: string,
-        gasLimit: string,
-        storageLimit: string
-    ) {
-        if (typeof gasLimit == "undefined") gasLimit = "10000";
-        if (typeof storageLimit == "undefined") storageLimit = "257";
-        const _code = utility.ml2mic(code),
-            script: OperationScript = {
-                code: _code,
-                storage: utility.sexp2mic(init)
-            },
-            operation: Operation = {
-                kind: "origination",
-                balance: utility.mutez(amount).toString(),
-                storage_limit: storageLimit,
-                gas_limit: gasLimit,
-                fee: fee.toString(),
-                script: script
-            };
-
-        operation['manager_pubkey'] = keys.pkh;
-
-        if (typeof spendable != "undefined")
-            operation.spendable = spendable;
-
-        if (typeof delegatable != "undefined")
-            operation.delegatable = delegatable;
-
-        if (typeof delegate != "undefined" && delegate)
-            operation.delegate = delegate;
-
-        return this.sendOperation(keys.pkh, operation, keys);
-    },
-    setDelegate(
-        from: string,
-        keys: KeyPair,
-        delegate: string,
-        fee: string,
-        gasLimit: string,
-        storageLimit: string,
-        newAccount?: boolean,
-        manager?: string
-    ) {
-        if (typeof gasLimit == "undefined") gasLimit = "10000";
-        if (typeof storageLimit == "undefined") storageLimit = "0";
-        const operation: Operation = {
-            kind: "delegation",
-            fee: fee.toString(),
-            gas_limit: gasLimit,
-            storage_limit: storageLimit
-        };
-        if (typeof delegate != "undefined" && delegate) {
-            operation.delegate = delegate;
-        }
-        return this.sendOperation(
-            from,
-            operation,
-            keys,
-            false,
-            newAccount,
-            manager
-        );
-    },
-    registerDelegate(keys: KeyPair, fee: string, gasLimit: string, storageLimit: string) {
-        if (typeof gasLimit == "undefined") gasLimit = "10000";
-        if (typeof storageLimit == "undefined") storageLimit = "0";
-        const operation: Operation = {
-            kind: "delegation",
-            fee: fee.toString(),
-            gas_limit: gasLimit,
-            storage_limit: storageLimit,
-            delegate: keys.pkh
-        };
-        return this.sendOperation(keys.pkh, operation, keys);
-    },
-
-    activate: function (pkh: any, secret: any) {
-        const operation: Operation = {
-            kind: "activate_account",
-            secret: secret
-        };
-        return this.sendOperation(pkh, operation, false);
-    },
-
-    typecheckCode(code: string) {
-        const _code = utility.ml2mic(code);
-        return node.query(
-            "/chains/main/blocks/head/helpers/scripts/typecheck_code",
-            {program: _code, gas: "10000"}
-        );
-    },
-    packData(data: string, type: string) {
-        const check = {
-            data: utility.sexp2mic(data),
-            type: utility.sexp2mic(type),
-            gas: "400000"
-        };
-        return node.query(
-            "/chains/main/blocks/head/helpers/scripts/pack_data",
-            check
-        );
-    },
-    typecheckData(data: string, type: string) {
-        const check: TypeCheckData = {
-            data: utility.sexp2mic(data),
-            type: utility.sexp2mic(type),
-            gas: "400000"
-        };
-        return node.query(
-            "/chains/main/blocks/head/helpers/scripts/typecheck_data",
-            check
-        );
-    },
-    runCode(code: string, amount: string, input: string, storage: string, trace: string) {
-        const ep = typeof trace != "undefined" && trace ? "trace_code" : "run_code";
-        return node.query("/chains/main/blocks/head/helpers/scripts/" + ep, {
-            script: utility.ml2mic(code),
-            amount: utility.mutez(amount).toString(),
-            input: utility.sexp2mic(input),
-            storage: utility.sexp2mic(storage)
+          }
         });
+      };
+      repeater();
+    });
+  },
+  async prepareOperation(
+    from: string,
+    operation: Operation,
+    keys?: KeyPair,
+    newAccount?: boolean,
+    manager?: string
+  ) {
+    let counter, opOb;
+    const promises = [];
+    let requiresReveal = false;
+    promises.push(node.query('/chains/main/blocks/head/header'));
+    const ops = Array.isArray(operation) ? operation : [operation];
+    for (let i = 0; i < ops.length; i++) {
+      const kind = ops[i].kind as OperationKind;
+      switch (kind) {
+        case OperationKind.Transaction:
+        case OperationKind.Origination:
+        case OperationKind.Delegation:
+          requiresReveal = true;
+          if (!newAccount || operation.kind === 'transaction')
+            newAccount = false;
+        // fall through
+        case OperationKind.Reveal:
+          if (!newAccount) {
+            promises.push(this.getCounter(from));
+            promises.push(this.getManager(from));
+          } else {
+            promises.push(new Promise((resolve, reject) => resolve(0)));
+            promises.push(new Promise((resolve, reject) => resolve({})));
+          }
+          break;
+      }
     }
-};
+    const f = await Promise.all(promises);
+    const head = f[0];
+    if (requiresReveal && keys && typeof f[2].key == 'undefined') {
+      ops.unshift({
+        kind: 'reveal',
+        fee: node.isZeronet ? '100000' : '1269',
+        public_key: keys.pk,
+        source: from,
+        gas_limit: 10000,
+        storage_limit: 0
+      });
+    }
+    counter = parseInt(f[1]) + 1;
+    if (typeof counters[from] == 'undefined') counters[from] = counter;
+    if (counter > counters[from]) counters[from] = counter;
+    //fix reset bug temp
+    counters[from] = counter;
+    for (let i = 0; i < ops.length; i++) {
+      if (
+        [
+          'proposals',
+          'ballot',
+          'transaction',
+          'origination',
+          'delegation'
+        ].indexOf(ops[i].kind) >= 0
+      ) {
+        if (typeof ops[i].source == 'undefined') ops[i].source = from;
+      }
+      if (
+        ['reveal', 'transaction', 'origination', 'delegation'].indexOf(
+          ops[i].kind
+        ) >= 0
+      ) {
+        if (typeof ops[i].gas_limit == 'undefined') ops[i].gas_limit = '0';
+        if (typeof ops[i].storage_limit == 'undefined')
+          ops[i].storage_limit = '0';
+        let newCounter = counters[from] + 1;
+        if (newAccount && ops[0].kind === 'transaction') {
+          ops[i].counter = newCounter;
+          // counters[from]++;
+        } else {
+          ops[i].counter = counters[from]++;
+        }
+        ops[i].fee = ops[i].fee.toString();
+        ops[i].gas_limit = ops[i].gas_limit.toString();
+        ops[i].storage_limit = ops[i].storage_limit.toString();
+        ops[i].counter = ops[i].counter.toString();
+      }
+    }
+    opOb = {
+      branch: head.hash,
+      contents: ops
+    };
+    return tezos.forge(head, opOb);
+  },
+  async simulateOperation(from: string, operation: Operation, keys?: KeyPair) {
+    const fullOp = await this.prepareOperation(from, operation, keys);
+    return node.query(
+      '/chains/main/blocks/head/helpers/scripts/run_operation',
+      fullOp.opOb
+    );
+  },
+  async sendOperation(
+    from: string,
+    operation: Operation,
+    keys: KeyPair | boolean | any,
+    skipPrevalidation: boolean = false,
+    newAccount?: boolean,
+    manager?: string
+  ): Promise<
+    | {
+        hash: any;
+        operations: Operation[] | [];
+      }
+    | any
+  > {
+    const fullOp = await this.prepareOperation(
+      from,
+      operation,
+      keys,
+      newAccount,
+      manager
+    );
+    if (keys.sk === false) {
+      return fullOp;
+    } else {
+      if (!keys) {
+        fullOp.opbytes +=
+          '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
+        fullOp.opOb.signature =
+          'edsigtXomBKi5CTRf5cjATJWSyaRvhfYNHqSUGrn4SdbYRcGwQrUGjzEfQDTuqHhuA8b2d8NarZjz8TRf65WkpQmo423BtomS8Q';
+      } else {
+        const signed = await crypto.sign(
+          fullOp.opbytes,
+          keys.sk,
+          watermark.generic
+        );
+        fullOp.opbytes = signed.sbytes;
+        fullOp.opOb.signature = signed.edsig;
+      }
+      console.log(fullOp);
+      if (skipPrevalidation) return this.silentInject(fullOp.opbytes);
+      else return this.inject(fullOp.opOb, fullOp.opbytes);
+    }
+  },
+  async inject(
+    opOb: any,
+    sopbytes: any
+  ): Promise<{
+    hash: any;
+    operations: Operation[] | [];
+  }> {
+    const opResponse: Operation[] = [];
+    let errors: Operation[] = [];
+    const f = await node.query(
+      '/chains/main/blocks/head/helpers/preapply/operations',
+      [opOb]
+    );
+    if (!Array.isArray(f)) throw { error: 'RPC Fail', errors: [] };
+    for (let i = 0; i < f.length; i++) {
+      for (let j = 0; j < f[i].contents.length; j++) {
+        opResponse.push(f[i].contents[j]);
+        if (
+          typeof f[i].contents[j].metadata.operation_result != 'undefined' &&
+          f[i].contents[j].metadata.operation_result.status === 'failed'
+        )
+          errors = errors.concat(
+            f[i].contents[j].metadata.operation_result.errors
+          );
+      }
+    }
+    if (errors.length) throw { error: 'ForgeOperation Failed', errors: errors };
+    const f_1 = await node.query('/injection/operation', sopbytes);
+    return {
+      hash: f_1,
+      operations: opResponse
+    };
+  },
+  async silentInject(sopbytes: any) {
+    const f = await node.query('/injection/operation', sopbytes);
+    return {
+      hash: f
+    };
+  },
 
+  reveal(keys: KeyPair, gasLimit?: string, storageLimit?: string) {
+    const operation: Operation = {
+      kind: 'reveal',
+      public_key: keys.pk,
+      fee: node.isZeronet ? '100000' : '1269',
+      source: keys.pkh,
+      gas_limit: gasLimit || '10000',
+      storage_limit: storageLimit || '0'
+    };
+
+    return this.sendOperation(keys.pkh, operation, keys, false, false);
+  },
+
+  account(
+    keys: KeyPair,
+    amount: string,
+    spendable: boolean,
+    delegatable: boolean,
+    delegate: string,
+    fee: string,
+    gasLimit?: string,
+    storageLimit?: string
+  ) {
+    const operation: Operation = {
+      kind: 'origination',
+      balance: utility.mutez(amount).toString(),
+      fee: fee.toString(),
+      gas_limit: gasLimit || '10000',
+      storage_limit: storageLimit || '257'
+    };
+
+    operation['manager_pubkey'] = keys.pkh;
+
+    if (typeof spendable != 'undefined') operation.spendable = spendable;
+
+    if (typeof delegatable != 'undefined') operation.delegatable = delegatable;
+
+    if (typeof delegate != 'undefined' && delegate)
+      operation.delegate = delegate;
+
+    return this.sendOperation(keys.pkh, operation, keys, false, false);
+  },
+  transfer(
+    from: string,
+    keys: KeyPair,
+    to: string,
+    amount: string,
+    fee: string,
+    parameter?: string,
+    gasLimit?: string,
+    storageLimit?: string,
+    newAccount?: boolean
+  ): Promise<
+    | {
+        hash: any;
+        operations: Operation[] | [];
+      }
+    | any
+  > {
+    const operation: Operation = {
+      kind: 'transaction',
+      fee: fee.toString(),
+      gas_limit: gasLimit || '10100',
+      storage_limit: storageLimit || '0',
+      amount: amount.toString(),
+      destination: to
+    };
+    if (parameter) {
+      operation.parameters = utility.sexp2mic(parameter);
+    }
+    return this.sendOperation(from, operation, keys, true, newAccount);
+  },
+  originate(
+    keys: KeyPair,
+    amount: string,
+    code: string,
+    init: string,
+    spendable: boolean,
+    delegatable: boolean,
+    delegate: string,
+    fee: string,
+    gasLimit: string,
+    storageLimit: string
+  ) {
+    if (typeof gasLimit == 'undefined') gasLimit = '10000';
+    if (typeof storageLimit == 'undefined') storageLimit = '257';
+    const _code = utility.ml2mic(code),
+      script: OperationScript = {
+        code: _code,
+        storage: utility.sexp2mic(init)
+      },
+      operation: Operation = {
+        kind: 'origination',
+        balance: utility.mutez(amount).toString(),
+        storage_limit: storageLimit,
+        gas_limit: gasLimit,
+        fee: fee.toString(),
+        script: script
+      };
+
+    operation['manager_pubkey'] = keys.pkh;
+
+    if (typeof spendable != 'undefined') operation.spendable = spendable;
+
+    if (typeof delegatable != 'undefined') operation.delegatable = delegatable;
+
+    if (typeof delegate != 'undefined' && delegate)
+      operation.delegate = delegate;
+
+    return this.sendOperation(keys.pkh, operation, keys);
+  },
+  setDelegate(
+    from: string,
+    keys: KeyPair,
+    delegate: string,
+    fee: string,
+    gasLimit: string,
+    storageLimit: string,
+    newAccount?: boolean,
+    manager?: string
+  ) {
+    if (typeof gasLimit == 'undefined') gasLimit = '10000';
+    if (typeof storageLimit == 'undefined') storageLimit = '0';
+    const operation: Operation = {
+      kind: 'delegation',
+      fee: fee.toString(),
+      gas_limit: gasLimit,
+      storage_limit: storageLimit
+    };
+    if (typeof delegate != 'undefined' && delegate) {
+      operation.delegate = delegate;
+    }
+    return this.sendOperation(
+      from,
+      operation,
+      keys,
+      false,
+      newAccount,
+      manager
+    );
+  },
+  registerDelegate(
+    keys: KeyPair,
+    fee: string,
+    gasLimit: string,
+    storageLimit: string
+  ) {
+    if (typeof gasLimit == 'undefined') gasLimit = '10000';
+    if (typeof storageLimit == 'undefined') storageLimit = '0';
+    const operation: Operation = {
+      kind: 'delegation',
+      fee: fee.toString(),
+      gas_limit: gasLimit,
+      storage_limit: storageLimit,
+      delegate: keys.pkh
+    };
+    return this.sendOperation(keys.pkh, operation, keys);
+  },
+
+  activate: function(pkh: any, secret: any) {
+    const operation: Operation = {
+      kind: 'activate_account',
+      secret: secret
+    };
+    return this.sendOperation(pkh, operation, false);
+  },
+
+  typecheckCode(code: string) {
+    const _code = utility.ml2mic(code);
+    return node.query(
+      '/chains/main/blocks/head/helpers/scripts/typecheck_code',
+      { program: _code, gas: '10000' }
+    );
+  },
+  packData(data: string, type: string) {
+    const check = {
+      data: utility.sexp2mic(data),
+      type: utility.sexp2mic(type),
+      gas: '400000'
+    };
+    return node.query(
+      '/chains/main/blocks/head/helpers/scripts/pack_data',
+      check
+    );
+  },
+  typecheckData(data: string, type: string) {
+    const check: TypeCheckData = {
+      data: utility.sexp2mic(data),
+      type: utility.sexp2mic(type),
+      gas: '400000'
+    };
+    return node.query(
+      '/chains/main/blocks/head/helpers/scripts/typecheck_data',
+      check
+    );
+  },
+  runCode(
+    code: string,
+    amount: string,
+    input: string,
+    storage: string,
+    trace: string
+  ) {
+    const ep = typeof trace != 'undefined' && trace ? 'trace_code' : 'run_code';
+    return node.query('/chains/main/blocks/head/helpers/scripts/' + ep, {
+      script: utility.ml2mic(code),
+      amount: utility.mutez(amount).toString(),
+      input: utility.sexp2mic(input),
+      storage: utility.sexp2mic(storage)
+    });
+  }
+};

@@ -1,4 +1,4 @@
 declare interface Source {
-    tag: number
-    hash: Uint8Array
+  tag: number;
+  hash: Uint8Array;
 }

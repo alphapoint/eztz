@@ -27,8 +27,9 @@
     "build": "npm run prettier:write && tsc",
     "prepare": "npm run build",
     "prettier:base": "prettier --parser typescript",
-    "prettier:check": "npm run prettier:base -- --list-different \"{src,test}/**/*.{ts,tsx}\"",
-    "prettier:write": "npm run prettier:base -- --write \"{src,test}/**/*.{ts,tsx}\""
+    "prettier:scope": "prettier --parser typescript \"{src,test}/**/*.{ts,tsx}\"",
+    "prettier:check": "npm run prettier:scope -- --list-different",
+    "prettier:write": "npm run prettier:scope -- --write"
   },
   "devDependencies": {
     "@types/bip39": "^2.4.2",
