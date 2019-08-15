@@ -37,14 +37,14 @@
         expect(typeof keys.salt).toBe('string');
       });*/
 
-      test('generateKeys', async () => {
-        const keys = await crypto.generateKeys('test', 'p');
-        expect(typeof keys.mnemonic).toBe('string');
-        expect(typeof keys.passphrase).toBe('string');
-        expect(typeof keys.pk).toBe('string');
-        expect(typeof keys.sk).toBe('string');
-        expect(typeof keys.pkh).toBe('string');
-      });
+      // test('generateKeys', async () => {
+      //   const keys = await crypto.generateKeys('test', 'p');
+      //   expect(typeof keys.mnemonic).toBe('string');
+      //   expect(typeof keys.passphrase).toBe('string');
+      //   expect(typeof keys.pk).toBe('string');
+      //   expect(typeof keys.sk).toBe('string');
+      //   expect(typeof keys.pkh).toBe('string');
+      // });
 
       //TODO
       /*test('generateKeysFromSeedMulti', () => {
