@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig",
+  "compilerOptions": {
+    "declarationDir": ".",
+    "outDir": ".",
+    "rootDir": ".",
+    "listEmittedFiles": true
+  },
+  "include": [
+    "*.ts"
+  ]
+}
