@@ -1,6 +1,6 @@
 {
   // non-file scope variable names
-  const { getPublicKey, derivePath, getMasterKeyFromSeed } = require('../dist/ed25519-kd-key');
+  const { getKeyPair, derivePath, getMasterKeyFromSeed } = require('../dist/ed25519-kd-key');
 
   const vector_1_seed = '000102030405060708090a0b0c0d0e0f';
   const vector_1 = [
@@ -85,7 +85,7 @@
             path: vector.path,
             key: key.toString('hex'),
             chainCode: chainCode.toString('hex'),
-            publicKey: (await getPublicKey(key, true)).toString('hex')
+            publicKey: (await getKeyPair(key, true)).publicKey.toString('hex')
           }).toEqual(vector);
         });
       });
@@ -104,7 +104,7 @@
             path: vector.path,
             key: key.toString('hex'),
             chainCode: chainCode.toString('hex'),
-            publicKey: (await getPublicKey(key, true)).toString('hex')
+            publicKey: (await getKeyPair(key, true)).publicKey.toString('hex')
           }).toEqual(vector);
         });
       });
