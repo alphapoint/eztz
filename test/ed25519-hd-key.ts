@@ -85,7 +85,7 @@
             path: vector.path,
             key: key.toString('hex'),
             chainCode: chainCode.toString('hex'),
-            publicKey: (await getKeyPair(key, true)).toString('hex')
+            publicKey: (await getKeyPair(key, true)).publicKey.toString('hex')
           }).toEqual(vector);
         });
       });
@@ -104,7 +104,7 @@
             path: vector.path,
             key: key.toString('hex'),
             chainCode: chainCode.toString('hex'),
-            publicKey: (await getKeyPair(key, true)).toString('hex')
+            publicKey: (await getKeyPair(key, true)).publicKey.toString('hex')
           }).toEqual(vector);
         });
       });
