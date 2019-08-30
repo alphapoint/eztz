@@ -58,7 +58,6 @@ export const trezor = {
         case OperationKind.Origination:
         case OperationKind.Transaction:
         case OperationKind.Delegation: {
-          if (['origination', 'transaction', 'delegation'].indexOf(op.kind) < 0) throw new Error(`Operation kind is not origination, transaction, delegation. Operation kind is ${op.kind}`);
           op2 = {
             kind: op.kind,
             source: this.source(op.source),

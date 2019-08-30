@@ -124,50 +124,32 @@ export type Operation =
   | OperationOrigination
   | OperationDelegation;
 
-/*
-interface OperationBase {
-  nonce?: string;
-  pkh?: string;
-  source?: Source | string | any;
-  counter?: string | number;
-  kind: OperationKind;
-  balance?: string | number;
-  fee?: string | number;
-  gas_limit?: string | number;
-  storage_limit?: string | number;
-  amount?: string | number;
-  destination?: Source | string;
-  delegatable?: boolean;
-  delegate?: string;
-  spendable?: boolean;
-  manager_pubkey?: string;
-  parameters?: OperationParameter | Uint8Array;
-  signature?: string;
-  script?: OperationScript;
-  secret?: string;
-  public_key?: string;
-  level?: number | string;
-  metadata?: OperationMetadata;
+export interface OperationBase {
+  source?: string;
+  destination?: string;
+  fee?: number | string;
+  counter: number | string;
+  gas_limit: number | string;
+  storage_limit: number | string;
 }
- */
 
-export interface OperationSeedNonceRevelation {
+export interface OperationSeedNonceRevelation extends OperationBase {
   kind: OperationKind.SeedNonceRevelation;
   level: number | string;
   nonce: string;
 }
 
-export interface OperationEndorsement {
+export interface OperationEndorsement extends OperationBase {
   kind: OperationKind.Endorsement;
   level: number | string;
   nonce: string;
 }
 
-export interface OperationDoubleEndorsementEvidence {
+export interface OperationDoubleEndorsementEvidence extends OperationBase {
   kind: OperationKind.DoubleEndorsementEvidence;
 }
 
-export interface OperationDoubleBakingEvidence {
+export interface OperationDoubleBakingEvidence extends OperationBase {
   kind: OperationKind.DoubleBakingEvidence;
 }
 
@@ -177,7 +159,7 @@ export interface OperationActivateAccount {
   secret: string;
 }
 
-export interface OperationProposals {
+export interface OperationProposals extends OperationBase {
   kind: OperationKind.Proposals;
   source: string;
   period: number | string;
@@ -185,7 +167,7 @@ export interface OperationProposals {
   ballot: 'yay' | 'nay';
 }
 
-export interface OperationBallot {
+export interface OperationBallot extends OperationBase {
   kind: OperationKind.Ballot;
   source: string;
   period: number | string;
@@ -193,21 +175,15 @@ export interface OperationBallot {
   ballot: 'yay' | 'nay';
 }
 
-export interface OperationBase {
-  source: string;
-  fee?: number | string;
-  counter: number | string;
-  gas_limit: number | string;
-  storage_limit: number | string;
-}
-
 export interface OperationReveal extends OperationBase {
   kind: OperationKind.Reveal;
+  source: string;
   public_key: string;
 }
 
 export interface OperationTransaction extends OperationBase {
   kind: OperationKind.Transaction;
+  source: string;
   amount: bigint | number | string;
   destination: string;
   parameters?: OperationParameter | OperationParameter[];
@@ -215,6 +191,7 @@ export interface OperationTransaction extends OperationBase {
 
 export interface OperationOrigination extends OperationBase {
   kind: OperationKind.Origination;
+  source: string;
   manager_pubkey: string;
   balance: bigint | number | string;
   spendable: boolean;
@@ -225,6 +202,7 @@ export interface OperationOrigination extends OperationBase {
 
 export interface OperationDelegation extends OperationBase {
   kind: OperationKind.Delegation;
+  source: string;
   delegate: string | undefined;
 }
 
