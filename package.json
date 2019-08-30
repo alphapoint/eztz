@@ -1,8 +1,8 @@
 {
   "name": "@ap/eztz",
-  "version": "0.1.36",
+  "version": "0.1.37",
   "main": "dist/index.js",
-  "types": "src/types.d.ts",
+  "types": "dist/index.d.ts",
   "files": [
     "dist/**/*",
     "src/**/*.d.ts",
