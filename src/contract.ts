@@ -1,45 +1,52 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 import sodium from 'libsodium-wrappers';
-import { rpc } from './rpc';
-import { prefix } from './prefix';
-import { utility } from './utility';
 import { node } from './node';
+import { rpc } from './rpc';
+import { utility } from './utility';
 
 export const contract = {
-  hash(operationHash: any, ind: any) {
-    var ob = utility.b58cdecode(operationHash, prefix.o),
-      tt = [],
-      i = 0;
+  oldHash(operationHash: string, ind: number): string {
+    const ob = utility.b58cdecode(operationHash, 'o');
+    let tt = [];
+    let i = 0;
     for (; i < ob.length; i++) {
       tt.push(ob[i]);
     }
     tt = tt.concat([(ind & 0xff000000) >> 24, (ind & 0x00ff0000) >> 16, (ind & 0x0000ff00) >> 8, ind & 0x000000ff]);
-    return utility.b58cencode(sodium.crypto_generichash(20, new Uint8Array(tt)), prefix.KT);
+    return utility.b58cencode(sodium.crypto_generichash(20, new Uint8Array(tt)), 'KT');
   },
-  originate(keys: KeyPair, amount: string, code: any, init: string, spendable: boolean, delegatable: boolean, delegate: string, fee: string, gasLimit?: string, storageLimit?: string) {
-    if (typeof gasLimit == 'undefined') gasLimit = '10000';
-    if (typeof storageLimit == 'undefined') storageLimit = '10000';
+  hash(operationHash: string, ind: number): string {
+    const opHashBytes = utility.b58cdecode(operationHash, 'o');
+    const tt = new Uint8Array(opHashBytes.length + 4);
+
+    tt.set(opHashBytes, 0);
+
+    const dv = new DataView(tt.buffer, tt.byteOffset, tt.byteLength);
+    dv.setUint32(opHashBytes.length, ind, false);
+
+    return utility.b58cencode(sodium.crypto_generichash(20, new Uint8Array(tt)), 'KT');
+  },
+  originate(keys: EzTzKeyPair, amount: string, code: any, init: string, spendable: boolean, delegatable: boolean, delegate: string, fee: string, gasLimit = '10000', storageLimit = '10000') {
     return rpc.originate(keys, amount, code, init, spendable, delegatable, delegate, fee, gasLimit, storageLimit);
   },
-  send(contract: string, from: string, keys: KeyPair, amount: string, parameter: any, fee: string, gasLimit?: string, storageLimit?: string) {
-    if (typeof gasLimit == 'undefined') gasLimit = '2000';
-    if (typeof storageLimit == 'undefined') storageLimit = '0';
-    return rpc.transfer(from, keys, contract, amount, fee, parameter, gasLimit, storageLimit);
+  send(contractAddr: string, from: string, keys: EzTzKeyPair, amount: string, parameter: string, fee: string, gasLimit = '2000', storageLimit = '0') {
+    return rpc.transfer(from, keys, contractAddr, amount, fee, parameter, gasLimit, storageLimit);
   },
-  balance(contract: string) {
-    return rpc.getBalance(contract);
+  balance(contractAddr: string) {
+    return rpc.getBalance(contractAddr);
   },
-  storage(contract: string): Promise<OperationParameter> {
-    return node.query('/chains/main/blocks/head/context/contracts/' + contract + '/storage');
+  storage(contractAddr: string): Promise<OperationParameter> {
+    return node.query(`/chains/main/blocks/head/context/contracts/${contractAddr}/storage`);
   },
-  load: function(contract: string) {
-    return node.query('/chains/main/blocks/head/context/contracts/' + contract);
+  load(contractAddr: string) {
+    return node.query(`/chains/main/blocks/head/context/contracts/${contractAddr}`);
   },
   watch(cc: string, interval: number, cb: any) {
     let storage: OperationParameter[] | OperationParameter = [];
     const ct = () => {
-      this.storage(cc).then(function(r) {
-        if (JSON.stringify(storage) != JSON.stringify(r)) {
+      this.storage(cc).then(r => {
+        if (JSON.stringify(storage) !== JSON.stringify(r)) {
           storage = r;
           cb(storage);
         }

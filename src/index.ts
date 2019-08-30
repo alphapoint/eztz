@@ -1,5 +1,5 @@
 import { library } from './library';
-import { prefix } from './prefix';
+import { prefixes } from './prefixes';
 import { watermark } from './watermark';
 import { utility } from './utility';
 import { crypto } from './crypto';
@@ -10,5 +10,5 @@ import { trezor } from './trezor';
 import { tezos } from './tezos';
 import { tzScan } from './tz-scan';
 
-//Expose library
-export { library, prefix, watermark, utility, crypto, node, rpc, contract, trezor, tezos, tzScan };
+// Expose library
+export { library, prefixes, watermark, utility, crypto, node, rpc, contract, trezor, tezos, tzScan };

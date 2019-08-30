@@ -1,0 +1,41 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true,
+    "jest/globals": true
+  },
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "jest"
+  ],
+  "extends": [
+    "airbnb-base",
+    "plugin:import/typescript",
+    "plugin:@typescript-eslint/recommended",
+    "prettier/@typescript-eslint",
+    "plugin:prettier/recommended"
+  ],
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+  },
+  "parserOptions": {
+    "ecmaVersion": 2019,
+    "sourceType": "module"
+  },
+  "rules": {
+    "no-nested-ternary": "off",
+    "operator-linebreak": [
+      "error",
+      "before"
+    ],
+    "multiline-ternary": [
+      "error",
+      "always-multiline"
+    ],
+    "import/prefer-default-export": "off",
+    "prettier/prettier": "off",
+    "no-console": "off",
+    "no-fallthrough": "off"
+  }
+}

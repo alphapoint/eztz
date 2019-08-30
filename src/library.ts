@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/camelcase
 const op_mapping: { [key: string]: string } = {
   '00': 'parameter',
   '01': 'storage',
@@ -123,6 +124,7 @@ export const library = {
   get bip39(): Promise<typeof import('bip39')> {
     return import('bip39');
   },
+  // eslint-disable-next-line @typescript-eslint/camelcase
   op_mapping_reverse: <{ [key: string]: string }>(function() {
     const result: { [key: string]: string } = {};
     for (const key in op_mapping) {
@@ -130,6 +132,7 @@ export const library = {
     }
     return result;
   })(),
+  // eslint-disable-next-line @typescript-eslint/camelcase
   prim_mapping: <{ [key: string]: string | { name: string; len: number; annots: boolean } }>{
     '00': 'int',
     '01': 'string',
@@ -143,11 +146,13 @@ export const library = {
     '09': { name: 'prim', len: 3, annots: true },
     '0A': 'bytes'
   },
+  // eslint-disable-next-line @typescript-eslint/camelcase
   prim_mapping_reverse: <{ [key: number]: { false?: string; true: string } }>{
-    [0]: { false: '03', true: '04' },
-    [1]: { false: '05', true: '06' },
-    [2]: { false: '07', true: '08' },
-    [3]: { true: '09' }
+    0: { false: '03', true: '04' },
+    1: { false: '05', true: '06' },
+    2: { false: '07', true: '08' },
+    3: { true: '09' }
   },
+  // eslint-disable-next-line @typescript-eslint/camelcase
   op_mapping
 };

@@ -12,6 +12,8 @@
     "noImplicitReturns": true,
     "preserveConstEnums": true,
     "noEmitOnError": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "declarationDir": "./dist/",
     "outDir": "./dist/",
     "rootDir": "./src/",
@@ -26,6 +28,6 @@
     "experimentalDecorators": true
   },
   "include": [
-    "src/**/*.ts"
+    "./src/**/*.ts"
   ]
 }

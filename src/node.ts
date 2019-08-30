@@ -1,7 +1,8 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 import { XMLHttpRequest } from 'w3c-xmlhttprequest';
 
-const defaultProvider = 'https://alphanet.tezrpc.me';
+const defaultProvider = 'https://mainnet.tezrpc.me';
 
 export const node = {
   defaultProvider,
@@ -14,7 +15,7 @@ export const node = {
     this.debugMode = t;
   },
   setProvider(u: string, z?: boolean): void {
-    if (typeof z != 'undefined') this.isZeronet = z;
+    if (typeof z !== 'undefined') this.isZeronet = z;
     this.activeProvider = u;
   },
   resetProvider(): void {
@@ -25,9 +26,7 @@ export const node = {
       if (typeof t === 'undefined') {
         t = 'GET';
       } else o = {};
-    } else {
-      if (typeof t === 'undefined') t = 'POST';
-    }
+    } else if (typeof t === 'undefined') t = 'POST';
     return new Promise((resolve, reject) => {
       try {
         const xhr = this.xhrFactory();
@@ -47,14 +46,12 @@ export const node = {
             } else {
               reject('Empty response returned');
             }
+          } else if (xhr.responseText) {
+            if (this.debugMode) console.log(e, o, xhr.responseText);
+            reject(xhr.responseText);
           } else {
-            if (xhr.responseText) {
-              if (this.debugMode) console.log(e, o, xhr.responseText);
-              reject(xhr.responseText);
-            } else {
-              if (this.debugMode) console.log(e, o, xhr.statusText);
-              reject(xhr.statusText);
-            }
+            if (this.debugMode) console.log(e, o, xhr.statusText);
+            reject(xhr.statusText);
           }
         };
         xhr.onerror = () => {
