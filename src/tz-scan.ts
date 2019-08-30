@@ -2,6 +2,7 @@ import fetch from 'cross-fetch';
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 import { XMLHttpRequest } from 'w3c-xmlhttprequest';
+import { OperationKind, OperationType, TzScanAccountStatus, TzScanOperationEnvelope, TzScanOperationEnvelopeOf } from './types';
 
 const baseUrl = 'https://api6.tzscan.io/v3';
 

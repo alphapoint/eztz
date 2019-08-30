@@ -2,6 +2,7 @@ import { Crypto } from '@peculiar/webcrypto';
 import { TextEncoder } from 'text-encoding';
 import * as edHd from './ed25519hd';
 import { library } from './library';
+import { EzTzGeneratedKeyPair, EzTzKeyPair } from './types';
 import { utility } from './utility';
 
 export const crypto = {
@@ -127,11 +128,6 @@ export const crypto = {
     const signature = sig instanceof Uint8Array ? utility.bufView(sig) : utility.b58cdecode(sig, 'edsig');
     const publicKey = pk instanceof Uint8Array ? utility.bufView(pk) : utility.b58cdecode(pk, 'edpk');
     const message = bytes instanceof Uint8Array ? utility.bufView(bytes) : utility.hex2buf(bytes);
-    return sodium
-      .crypto_sign_verify_detached(
-        signature,
-        sodium.crypto_generichash(32, message),
-        publicKey
-      );
+    return sodium.crypto_sign_verify_detached(signature, sodium.crypto_generichash(32, message), publicKey);
   }
 };

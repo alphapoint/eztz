@@ -3,6 +3,7 @@
 import sodium from 'libsodium-wrappers';
 import { node } from './node';
 import { rpc } from './rpc';
+import { EzTzKeyPair, OperationParameter } from './types';
 import { utility } from './utility';
 
 export const contract = {

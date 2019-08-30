@@ -1,4 +1,4 @@
-declare const enum OperationType {
+export const enum OperationType {
   Activation = 'Activation',
   Delegation = 'Delegation',
   Endorsement = 'Endorsement',
@@ -7,7 +7,7 @@ declare const enum OperationType {
   Transaction = 'Transaction'
 }
 
-declare const enum OperationKind {
+export const enum OperationKind {
   ActivateAccount = 'activate_account',
   Ballot = 'ballot',
   Delegation = 'delegation',
@@ -22,7 +22,7 @@ declare const enum OperationKind {
 }
 
 /* eslint-disable @typescript-eslint/camelcase */
-declare const enum OperationKindTag {
+export const enum OperationKindTag {
   // noinspection PointlessArithmeticExpressionJS
   endorsement = 0,
   seed_nonce_revelation = 1,
@@ -38,12 +38,12 @@ declare const enum OperationKindTag {
   delegation = 7 + 3
 }
 
-declare interface Source {
+export interface Source {
   tag: number;
   hash: Uint8Array;
 }
 
-declare interface Block {
+export interface Block {
   protocol: string;
   chain_id: string;
   header: BlockHeader;
@@ -52,7 +52,7 @@ declare interface Block {
   hash: string;
 }
 
-declare interface BlockHeader {
+export interface BlockHeader {
   context: string;
   level: number;
   priority: number;
@@ -67,7 +67,7 @@ declare interface BlockHeader {
   predecessor: string;
 }
 
-declare interface BlockOperationBase {
+export interface BlockOperationBase {
   branch: string;
   chain_id?: string;
   contents: Operation[];
@@ -76,7 +76,7 @@ declare interface BlockOperationBase {
   signature?: string;
 }
 
-interface BlockOperation extends BlockOperationBase {
+export interface BlockOperation extends BlockOperationBase {
   branch: string;
   chain_id: string;
   contents: Operation[];
@@ -85,7 +85,7 @@ interface BlockOperation extends BlockOperationBase {
   signature: string;
 }
 
-declare interface OperationMetadata {
+export interface OperationMetadata {
   balance_updates: {
     kind: string;
     level: number;
@@ -107,11 +107,11 @@ declare interface OperationMetadata {
   storage_limit: string;
 }
 
-interface ManagerKey {
+export interface ManagerKey {
   manager: string;
 }
 
-declare type Operation =
+export type Operation =
   | OperationEndorsement
   | OperationDoubleEndorsementEvidence
   | OperationDoubleBakingEvidence
@@ -151,33 +151,33 @@ interface OperationBase {
 }
  */
 
-interface OperationSeedNonceRevelation {
+export interface OperationSeedNonceRevelation {
   kind: OperationKind.SeedNonceRevelation;
   level: number | string;
   nonce: string;
 }
 
-interface OperationEndorsement {
+export interface OperationEndorsement {
   kind: OperationKind.Endorsement;
   level: number | string;
   nonce: string;
 }
 
-declare interface OperationDoubleEndorsementEvidence {
+export interface OperationDoubleEndorsementEvidence {
   kind: OperationKind.DoubleEndorsementEvidence;
 }
 
-declare interface OperationDoubleBakingEvidence {
+export interface OperationDoubleBakingEvidence {
   kind: OperationKind.DoubleBakingEvidence;
 }
 
-declare interface OperationActivateAccount {
+export interface OperationActivateAccount {
   kind: OperationKind.ActivateAccount;
   pkh: string;
   secret: string;
 }
 
-declare interface OperationProposals {
+export interface OperationProposals {
   kind: OperationKind.Proposals;
   source: string;
   period: number | string;
@@ -185,7 +185,7 @@ declare interface OperationProposals {
   ballot: 'yay' | 'nay';
 }
 
-declare interface OperationBallot {
+export interface OperationBallot {
   kind: OperationKind.Ballot;
   source: string;
   period: number | string;
@@ -193,7 +193,7 @@ declare interface OperationBallot {
   ballot: 'yay' | 'nay';
 }
 
-declare interface OperationBase {
+export interface OperationBase {
   source: string;
   fee?: number | string;
   counter: number | string;
@@ -201,19 +201,19 @@ declare interface OperationBase {
   storage_limit: number | string;
 }
 
-declare interface OperationReveal extends OperationBase {
+export interface OperationReveal extends OperationBase {
   kind: OperationKind.Reveal;
   public_key: string;
 }
 
-declare interface OperationTransaction extends OperationBase {
+export interface OperationTransaction extends OperationBase {
   kind: OperationKind.Transaction;
   amount: bigint | number | string;
   destination: string;
   parameters?: OperationParameter | OperationParameter[];
 }
 
-declare interface OperationOrigination extends OperationBase {
+export interface OperationOrigination extends OperationBase {
   kind: OperationKind.Origination;
   manager_pubkey: string;
   balance: bigint | number | string;
@@ -223,17 +223,17 @@ declare interface OperationOrigination extends OperationBase {
   script?: OperationScript;
 }
 
-declare interface OperationDelegation extends OperationBase {
+export interface OperationDelegation extends OperationBase {
   kind: OperationKind.Delegation;
   delegate: string | undefined;
 }
 
-declare interface OperationScript {
+export interface OperationScript {
   code: OperationParameter[];
   storage: OperationParameter;
 }
 
-declare type OperationParameter = {
+export type OperationParameter = {
   prim?: string;
   annots?: Uint8Array | string[];
   args?: OperationParameter[];
@@ -242,7 +242,7 @@ declare type OperationParameter = {
   string?: string;
 };
 
-declare interface ContractInfo {
+export interface ContractInfo {
   balance: bigint | string;
   counter: string;
   delegate: { setable: boolean };
@@ -251,18 +251,18 @@ declare interface ContractInfo {
   spendable: boolean;
 }
 
-declare interface ContractScript {
+export interface ContractScript {
   code: OperationParameter[];
   storage: { string: string };
 }
 
-declare interface TypeCheckData {
+export interface TypeCheckData {
   data: OperationParameter;
   type: OperationParameter;
   gas?: string;
 }
 
-declare interface EzTzKeyPair {
+export interface EzTzKeyPair {
   // public key
   pk: any;
   // secret (private) full key
@@ -271,17 +271,17 @@ declare interface EzTzKeyPair {
   pkh: string;
 }
 
-declare interface EzTzGeneratedKeyPair extends EzTzKeyPair {
+export interface EzTzGeneratedKeyPair extends EzTzKeyPair {
   mnemonic: string;
   passphrase: string;
   seed: Uint8Array;
 }
 
-declare interface TzScanAddress {
+export interface TzScanAddress {
   tz: string;
 }
 
-declare interface TzScanOperationBase {
+export interface TzScanOperationBase {
   kind: OperationKind;
   src: TzScanAddress;
   failed: boolean;
@@ -294,24 +294,24 @@ declare interface TzScanOperationBase {
   timestamp: string;
 }
 
-declare interface TzScanOperationTransaction extends TzScanOperationBase {
+export interface TzScanOperationTransaction extends TzScanOperationBase {
   kind: OperationKind.Transaction;
   amount: bigint | number | string;
   destination: TzScanAddress;
 }
 
-declare interface TzScanOperationReveal extends TzScanOperationBase {
+export interface TzScanOperationReveal extends TzScanOperationBase {
   kind: OperationKind.Reveal;
   public_key: string;
 }
 
-declare type TzScanOperation = TzScanOperationTransaction | TzScanOperationReveal;
+export type TzScanOperation = TzScanOperationTransaction | TzScanOperationReveal;
 
-declare type TzScanOperations = {
+export type TzScanOperations = {
   [K in OperationKind]: TzScanOperationMap[K];
 };
 
-declare type TzScanOperationMap = {
+export type TzScanOperationMap = {
   [OperationKind.ActivateAccount]: TzScanOperationBase;
   [OperationKind.Ballot]: TzScanOperationBase;
   [OperationKind.Delegation]: TzScanOperationBase;
@@ -325,7 +325,7 @@ declare type TzScanOperationMap = {
   [OperationKind.Transaction]: TzScanOperationTransaction;
 };
 
-declare interface TzScanOperationEnvelope {
+export interface TzScanOperationEnvelope {
   hash: string;
   block_hash: string;
   network_hash: string;
@@ -336,7 +336,7 @@ declare interface TzScanOperationEnvelope {
   };
 }
 
-declare interface TzScanOperationEnvelopeOf<Kind extends OperationKind> extends TzScanOperationEnvelope {
+export interface TzScanOperationEnvelopeOf<Kind extends OperationKind> extends TzScanOperationEnvelope {
   hash: string;
   block_hash: string;
   network_hash: string;
@@ -347,7 +347,7 @@ declare interface TzScanOperationEnvelopeOf<Kind extends OperationKind> extends 
   };
 }
 
-declare interface TzScanAccountStatus {
+export interface TzScanAccountStatus {
   hash: TzScanAddress & { alias?: string };
   revelation?: string;
   origination?: string;

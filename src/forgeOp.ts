@@ -1,4 +1,5 @@
 import { forgeAddress, forgeBool, forgeParameters, forgePublicKey, forgePublicKeyHash, forgeScript, forgeZarith } from './forgeOpFuncs';
+import { Operation, OperationKind } from './types';
 // eslint-disable-next-line import/named
 
 import { utility } from './utility';

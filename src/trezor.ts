@@ -1,3 +1,4 @@
+import { Operation, OperationKind, Source } from './types';
 import { utility } from './utility';
 
 export const trezor = {

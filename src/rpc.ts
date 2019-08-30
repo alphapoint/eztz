@@ -2,6 +2,19 @@
 import { crypto } from './crypto';
 import { node } from './node';
 import { tezos } from './tezos';
+import {
+  Block,
+  BlockHeader,
+  EzTzKeyPair,
+  Operation,
+  OperationActivateAccount,
+  OperationDelegation,
+  OperationKind,
+  OperationOrigination,
+  OperationScript,
+  OperationTransaction,
+  TypeCheckData
+} from './types';
 import { utility } from './utility';
 import { watermark } from './watermark';
 

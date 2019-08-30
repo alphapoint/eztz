@@ -1,8 +1,8 @@
 {
   "name": "@ap/eztz",
-  "version": "0.1.35",
+  "version": "0.1.36",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "types": "src/types.d.ts",
   "files": [
     "dist/**/*",
     "src/**/*.d.ts",
@@ -24,8 +24,8 @@
   "scripts": {
     "test": "jest",
     "coverage": "jest --coverage && codecov",
-    "build": "npm run prettier:write && tsc",
-    "prepublishOnly": "tsc",
+    "build": "npm run prettier:write && tsc -p ./src/tsconfig.json",
+    "prepublishOnly": "tsc -p ./src/tsconfig.json",
     "prettier:base": "prettier --parser typescript",
     "prettier:scope": "prettier --parser typescript \"{src,test}/**/*.{ts,tsx}\"",
     "prettier:check": "npm run prettier:scope -- --list-different",

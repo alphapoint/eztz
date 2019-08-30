@@ -1,16 +1,15 @@
 {
   "extends": "../base.tsconfig",
   "compilerOptions": {
-    "baseUrl": "../src",
+    "baseUrl": ".",
     "paths": {
       "eztz": [
-        ".."
+        "."
       ]
     },
-    "rootDir": ".."
+    "rootDir": "."
   },
   "include": [
-    "../test/*.ts",
-    "../src/**/*.ts"
+    "./**/*.ts"
   ]
 }

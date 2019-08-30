@@ -1,5 +1,6 @@
 import { forgeOp } from './forgeOp';
 import { node } from './node';
+import { Block, BlockOperationBase } from './types';
 import { utility } from './utility';
 
 export const tezos = {

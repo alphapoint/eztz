@@ -58,10 +58,10 @@ export async function getKeyPair(privateKey: Uint8Array, withZeroByte = false): 
   const { publicKey, privateKey: fullKey } = (await library.sodium).crypto_sign_seed_keypair(utility.bufView(privateKey));
   return withZeroByte
     ? {
-      privateKey,
-      fullKey,
-      publicKey: utility.bufView(Buffer.concat([Buffer.alloc(1, 0), Buffer.from(publicKey)]))
-    }
+        privateKey,
+        fullKey,
+        publicKey: utility.bufView(Buffer.concat([Buffer.alloc(1, 0), Buffer.from(publicKey)]))
+      }
     : { privateKey, fullKey, publicKey };
 }
 

@@ -4,6 +4,7 @@ import BN from 'bignumber.js';
 // @ts-ignore
 import bs58checkImport from 'bs58check';
 import { prefixes } from './prefixes';
+import { OperationParameter } from './types';
 
 const bs58check: {
   encode: (buf: Buffer) => string;

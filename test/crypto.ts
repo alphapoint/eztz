@@ -74,7 +74,7 @@ describe('eztz.crypto', () => {
   });
 
   test('verify', async () => {
-    console.log("verify");
+    console.log('verify');
     const { sk, pk } = await crypto.deriveKey({ mnemonic }, `0'/0'`);
     const message = Buffer.from('fixture');
     const { edsig } = await crypto.sign(message, sk);

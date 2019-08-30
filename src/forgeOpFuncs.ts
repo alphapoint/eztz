@@ -2,6 +2,7 @@
 import BN from 'bignumber.js';
 import { TextDecoder, TextEncoder } from 'text-encoding';
 import { library } from './library';
+import { OperationParameter, OperationScript } from './types';
 // eslint-disable-next-line import/named
 import { utility } from './utility';
 
