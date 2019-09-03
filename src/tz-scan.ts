@@ -4,7 +4,7 @@ import fetch from 'cross-fetch';
 import { XMLHttpRequest } from 'w3c-xmlhttprequest';
 import { OperationKind, OperationType, TzScanAccountStatus, TzScanOperationEnvelope, TzScanOperationEnvelopeOf } from './types';
 
-const baseUrl = 'https://api6.tzscan.io/v3';
+const baseUrl = 'https://api6.tzscan.io';
 
 export const tzScan = {
   baseUrl,
@@ -24,7 +24,7 @@ export const tzScan = {
   },
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async query(uri: string, d?: object | string, t?: any): Promise<any> {
+  async query(uri: string, d?: object | string, t?: any, versionPrefx = 'v3'): Promise<any> {
     let data: object | string | undefined;
     let m: string | undefined;
     if (d === undefined) {
@@ -44,7 +44,7 @@ export const tzScan = {
       if (d !== undefined) options.body = JSON.stringify(d);
     }
 
-    const fetched = await fetch(this.activeProvider + uri, options);
+    const fetched = await fetch(`${this.activeProvider}/${versionPrefx}${uri}`, options);
 
     if (fetched.status !== 200) {
       console.error('TzScan error:', uri, d, fetched.status, fetched.statusText);
