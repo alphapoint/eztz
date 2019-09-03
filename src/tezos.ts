@@ -6,7 +6,7 @@ import { utility } from './utility';
 export const tezos = {
   async forge(head: Block, opOb: BlockOperationBase): Promise<{ opbytes: string; opOb: BlockOperationBase }> {
     const remoteForgedBytes = await node.query(`/chains/${head.chain_id}/blocks/${head.hash}/helpers/forge/operations`, opOb, undefined);
-    let localForgedBytes = utility.buf2hex(utility.b58cdecode(opOb.branch, 'b'));
+    let localForgedBytes = utility.buf2hex(utility.b58cdecode(opOb.branch, 'B'));
     for (let i = 0; i < opOb.contents.length; i++) {
       localForgedBytes += forgeOp(opOb.contents[i]);
     }

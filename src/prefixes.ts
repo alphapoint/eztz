@@ -22,7 +22,7 @@ export const prefixes = {
 
   Net: new Uint8Array([87, 82, 0]),
   nce: new Uint8Array([69, 220, 169]),
-  b: new Uint8Array([1, 52]),
+  B: new Uint8Array([1, 52]),
   o: new Uint8Array([5, 116]),
   Lo: new Uint8Array([133, 233]),
   LLo: new Uint8Array([29, 159, 109]),
