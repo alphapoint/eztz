@@ -128,7 +128,7 @@ export const rpc = {
         case OperationKind.Reveal:
           if (!isNewAccount) {
             promises.push(this.getCounter(from));
-            promises.push(Promise.resolve(manager) || this.getManager(from));
+            promises.push(manager ? Promise.resolve(manager) : this.getManager(from));
           } else {
             promises.push(Promise.resolve(0));
             promises.push(Promise.resolve({}));

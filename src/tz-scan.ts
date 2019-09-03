@@ -7,7 +7,6 @@ import { OperationKind, OperationType, TzScanAccountStatus, TzScanOperationEnvel
 const baseUrl = 'https://api6.tzscan.io';
 
 export const tzScan = {
-  baseUrl,
   xhrFactory() {
     return new XMLHttpRequest();
   },
