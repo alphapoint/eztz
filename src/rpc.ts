@@ -27,6 +27,7 @@ function delay(ms: number): Promise<void> {
 }
 
 export const rpc = {
+  skipPrevalidationOnTransfer: false,
   call(e: string, d?: any): Promise<any> {
     return node.query(e, d);
   },
@@ -304,7 +305,7 @@ export const rpc = {
       source: from
     };
 
-    return this.sendOperation(from, operation, keys, true, newAccount);
+    return this.sendOperation(from, operation, keys, this.skipPrevalidationOnTransfer, newAccount);
   },
   originate(
     keys: EzTzKeyPair,
