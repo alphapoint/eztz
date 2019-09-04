@@ -131,6 +131,7 @@ export interface OperationBase {
   counter: number | string;
   gas_limit: number | string;
   storage_limit: number | string;
+  metadata: OperationMetadata;
 }
 
 export interface OperationSeedNonceRevelation extends OperationBase {
