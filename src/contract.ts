@@ -5,6 +5,7 @@ import { node } from './node';
 import { rpc } from './rpc';
 import { EzTzKeyPair, OperationParameter } from './types';
 import { utility } from './utility';
+import { encodeRawBytes } from './forgeOp';
 
 export const contract = {
   oldHash(operationHash: string, ind: number): string {
@@ -31,11 +32,24 @@ export const contract = {
   originate(keys: EzTzKeyPair, amount: string, code: any, init: string, spendable: boolean, delegatable: boolean, delegate: string, fee: string, gasLimit = '10000', storageLimit = '10000') {
     return rpc.originate(keys, amount, code, init, spendable, delegatable, delegate, fee, gasLimit, storageLimit);
   },
-  send(contractAddr: string, from: string, keys: EzTzKeyPair, amount: string, parameter: string, fee: string, gasLimit = '2000', storageLimit = '0') {
-    return rpc.transfer(from, keys, contractAddr, amount, fee, parameter, gasLimit, storageLimit);
+  send(contractAddress: string, from: string, keys: EzTzKeyPair, to: string, amount: string, newAccount: boolean, fee: string = '16000', gasLimit = '150000', storageLimit = '10') {
+    const encodeTransfer = (to: string, amount: string) => {
+      var data = '0x19308cc0';
+      data += '050707';
+      data += encodeRawBytes(utility.sexp2mic('"' + to + '"')).toLowerCase();
+      data += '0707';
+      data += encodeRawBytes(utility.sexp2mic(amount.toString())).toLowerCase();
+      data += '0306';
+      return data;
+    };
+    return rpc.transfer(from, keys, contractAddress, '0', fee, encodeTransfer(to, amount), gasLimit, storageLimit, newAccount);
   },
-  balance(contractAddr: string) {
-    return rpc.getBalance(contractAddr);
+  balance(contractAddress: string, accountAddress: string) {
+    var key = {
+      key: utility.sexp2mic('"' + accountAddress + '"'),
+      type: utility.sexp2mic('address')
+    };
+    return rpc.call('/chains/main/blocks/head/context/contracts/' + contractAddress + '/big_map_get', key);
   },
   storage(contractAddr: string): Promise<OperationParameter> {
     return node.query(`/chains/main/blocks/head/context/contracts/${contractAddr}/storage`);

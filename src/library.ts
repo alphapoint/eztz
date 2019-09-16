@@ -153,6 +153,7 @@ export const library = {
     2: { false: '07', true: '08' },
     3: { true: '09' }
   },
+
   // eslint-disable-next-line @typescript-eslint/camelcase
   op_mapping
 };

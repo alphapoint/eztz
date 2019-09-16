@@ -1,4 +1,4 @@
-import { forgeAddress, forgeBool, forgeParameters, forgePublicKey, forgePublicKeyHash, forgeScript, forgeZarith } from './forgeOpFuncs';
+import { forgeAddress, forgeBool, forgeParameters, forgePublicKey, forgePublicKeyHash, forgeScript, forgeZarith, encodeRawBytes, decodeRawBytes } from './forgeOpFuncs';
 import { Operation, OperationKind } from './types';
 // eslint-disable-next-line import/named
 
@@ -113,4 +113,4 @@ function forgeOp(op: Operation): string {
   return fop;
 }
 
-export { forgeOp };
+export { forgeOp, encodeRawBytes, decodeRawBytes };
