@@ -109,7 +109,7 @@ export const rpc = {
       }
     }
   },
-  async prepareOperation(from: string, operation: Operation, keys?: EzTzKeyPair, newAccount?: boolean, manager?: string) {
+  async prepareOperation(from: string, operation: Operation, keys?: EzTzKeyPair, newAccount?: boolean, manager?: any) {
     const promises = [];
     let isNewAccount = newAccount;
     let requiresReveal = false;
@@ -206,7 +206,7 @@ export const rpc = {
     keys: EzTzKeyPair | boolean | any,
     skipPrevalidation = false,
     newAccount?: boolean,
-    manager?: string
+    manager?: any
   ): Promise<{ hash: string; operations?: Operation[] }> {
     const fullOp = await this.prepareOperation(from, operation, keys, newAccount, manager);
     if (keys.sk === false) {
@@ -305,7 +305,7 @@ export const rpc = {
       source: from
     };
 
-    return this.sendOperation(from, operation, keys, this.skipPrevalidationOnTransfer, newAccount);
+    return this.sendOperation(from, operation, keys, this.skipPrevalidationOnTransfer, newAccount, {});
   },
   originate(
     keys: EzTzKeyPair,
