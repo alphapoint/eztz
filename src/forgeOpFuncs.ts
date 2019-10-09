@@ -203,6 +203,7 @@ export function forgeScript(s: OperationScript): string {
 }
 
 export function forgeParameters(p: OperationParameter | OperationParameter[]): string {
+  
   const t = encodeRawBytes(p).toLowerCase();
   return utility.toBytesInt32Hex(t.length / 2) + t;
 }

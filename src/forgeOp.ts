@@ -71,6 +71,7 @@ function forgeOp(op: Operation): string {
           fop += forgeZarith(op.amount);
           fop += forgeAddress(op.destination);
           if (typeof op.parameters !== 'undefined' && op.parameters) {
+            
             fop += forgeBool(true);
             fop += forgeParameters(op.parameters);
           } else {

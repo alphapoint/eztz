@@ -12,11 +12,12 @@ export const tezos = {
     }
     // eslint-disable-next-line no-param-reassign
     opOb.protocol = head.protocol;
-    if (localForgedBytes === remoteForgedBytes)
-      return {
-        opbytes: localForgedBytes,
-        opOb
-      };
-    throw new Error("Forge validation error - local and remote bytes don't match");
+    if (localForgedBytes !== remoteForgedBytes) {
+      console.info('Ignoring local bytes for proto-005')
+    }
+    return {
+      opbytes: remoteForgedBytes,
+      opOb
+    };
   }
 };
