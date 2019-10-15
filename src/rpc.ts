@@ -126,11 +126,10 @@ export const rpc = {
           if (isNewAccount === undefined && operation.kind === 'transaction') isNewAccount = true;
         // fall through
         case OperationKind.Reveal:
+          promises.push(this.getCounter(from));
           if (!isNewAccount) {
-            promises.push(this.getCounter(from));
             promises.push(manager ? Promise.resolve(manager) : this.getManager(from));
           } else {
-            promises.push(Promise.resolve(0));
             promises.push(Promise.resolve({}));
           }
           break;
