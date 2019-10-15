@@ -112,7 +112,6 @@ export const rpc = {
   async prepareOperation(from: string, operation: Operation, keys?: EzTzKeyPair, newAccount?: boolean, manager?: any) {
     const promises = [];
     let isNewAccount = newAccount;
-    let requiresReveal = false;
     promises.push(node.query('/chains/main/blocks/head/header'));
     const ops: Operation[] = Array.isArray(operation) ? operation : [operation];
     for (let i = 0; i < ops.length; i++) {
@@ -123,8 +122,8 @@ export const rpc = {
         case OperationKind.Transaction:
         case OperationKind.Origination:
         case OperationKind.Delegation:
-          requiresReveal = true;
-          if (!isNewAccount || operation.kind === 'transaction') isNewAccount = false;
+          //requiresReveal = true;
+          if (isNewAccount === undefined && operation.kind === 'transaction') isNewAccount = true;
         // fall through
         case OperationKind.Reveal:
           if (!isNewAccount) {
@@ -144,7 +143,7 @@ export const rpc = {
     if (counter > counters[from]) counters[from] = counter;
     // fix reset bug temp
     counters[from] = counter;
-    if (requiresReveal && keys && typeof f[2].key === 'undefined') {
+    if (isNewAccount && keys && typeof f[2].key === 'undefined') {
       ops.unshift({
         kind: OperationKind.Reveal,
         fee: node.isZeronet ? '100000' : '1269',

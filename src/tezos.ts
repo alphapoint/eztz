@@ -13,7 +13,7 @@ export const tezos = {
     // eslint-disable-next-line no-param-reassign
     opOb.protocol = head.protocol;
     if (localForgedBytes !== remoteForgedBytes) {
-      console.info('Ignoring local bytes for proto-005')
+      console.info('Ignoring local bytes for proto-005');
     }
     return {
       opbytes: remoteForgedBytes,
